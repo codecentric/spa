@@ -2,11 +2,9 @@ package de.codecentric.spa.metadata;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import de.codecentric.spa.metadata.EntityMetaData;
-import de.codecentric.spa.metadata.EntityMetaDataProvider;
-import de.codecentric.spa.metadata.EntityScanner;
 import de.codecentric.spa.metadata.EntityScanner.StringUtils;
 import de.codecentric.spa.test.entities.DummySubEntity;
 
@@ -19,8 +17,9 @@ public class EntityScannerTest {
 	private EntityMetaDataProvider entityMetaDataProvider;
 
 	@Before
-	public void beforeTest() {
+	public void setUp() {
 		entityMetaDataProvider = EntityMetaDataProvider.getInstance();
+		entityMetaDataProvider.clearMetaData();
 	}
 
 	/**
@@ -43,7 +42,6 @@ public class EntityScannerTest {
 
 		EntityScanner.scanClass(DummyNotPersistedEntity.class, true);
 		Assert.assertNull(entityMetaDataProvider.getMetaData(DummyNotPersistedEntity.class));
-
 	}
 
 	/**

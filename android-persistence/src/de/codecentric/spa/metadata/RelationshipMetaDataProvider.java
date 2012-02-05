@@ -79,6 +79,13 @@ public class RelationshipMetaDataProvider {
 
 		return result;
 	}
+	
+	/**
+	 * Method clears all previously cached meta data.
+	 */
+	public void clearMetaData() {
+		metaDataMap.clear();
+	}
 
 	/**
 	 * Method returns a singleton instance of this class.

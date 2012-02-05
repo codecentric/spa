@@ -23,6 +23,7 @@ public class RelationshipMetaDataProviderTest {
 	@Before
 	public void setUp() {
 		provider = RelationshipMetaDataProvider.getInstance();
+		provider.clearMetaData();
 	}
 
 	@Test

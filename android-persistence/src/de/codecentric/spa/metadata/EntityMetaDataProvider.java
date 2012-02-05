@@ -3,10 +3,9 @@ package de.codecentric.spa.metadata;
 import java.util.HashMap;
 import java.util.Set;
 
-
 /**
- * EntityMetaDataProvider is singleton class containing {@link EntityMetaData} information obtained through
- * {@link EntityScanner} scanning process.
+ * EntityMetaDataProvider is singleton class containing {@link EntityMetaData}
+ * information obtained through {@link EntityScanner} scanning process.
  * 
  * @see EntityScanner#scanClass(Class)
  */
@@ -24,8 +23,9 @@ public class EntityMetaDataProvider {
 	}
 
 	/**
-	 * Method adds {@link EntityMetaData} to this provider. This object can be latter retrieved via
-	 * {@link EntityMetaDataProvider#getMetaData(Class)} method.
+	 * Method adds {@link EntityMetaData} to this provider. This object can be
+	 * latter retrieved via {@link EntityMetaDataProvider#getMetaData(Class)}
+	 * method.
 	 * 
 	 * @param cls
 	 *            class which meta data are passed in
@@ -47,8 +47,9 @@ public class EntityMetaDataProvider {
 	}
 
 	/**
-	 * Method returns an array of entity classes that were scanned with {@link EntityScanner}, i.e. persistent classes,
-	 * or null if none was scanned.
+	 * Method returns an array of entity classes that were scanned with
+	 * {@link EntityScanner}, i.e. persistent classes, or null if none was
+	 * scanned.
 	 * 
 	 * @return array of persistent classes or null
 	 */
@@ -60,6 +61,13 @@ public class EntityMetaDataProvider {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Method clears all previously cached meta data.
+	 */
+	public void clearMetaData() {
+		metaDataMap.clear();
 	}
 
 	/**

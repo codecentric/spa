@@ -8,7 +8,8 @@ import org.junit.Test;
 import de.codecentric.spa.metadata.EntityMetaData;
 import de.codecentric.spa.metadata.EntityMetaDataProvider;
 import de.codecentric.spa.metadata.EntityScanner;
-import de.codecentric.spa.sql.SQLGenerator;
+import de.codecentric.spa.metadata.FieldMetaData;
+import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
 import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 import de.codecentric.spa.test.entities.DummyAttribute;
 import de.codecentric.spa.test.entities.DummySubEntity;
@@ -37,37 +38,110 @@ public class SQLGeneratorTest {
 	private static final String UPDATE_SQL_CHILD = "UPDATE dummy_attribute SET dummy_name = ?, dummy_value = ?, attributes_fk = ?, dummy_sub_entity_id = ?, parent_sub_entity_fk = ?, parent_id = ? WHERE id = ?";
 
 	@Before
-	public void initMetaData() {
+	public void setUp() {
+		RelationshipMetaDataProvider.getInstance().clearMetaData();
+		EntityMetaDataProvider entityMetaDataProvider = EntityMetaDataProvider
+				.getInstance();
+		entityMetaDataProvider.clearMetaData();
 		EntityScanner.scanClass(DummySubEntity.class, true);
-		parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(DummySubEntity.class);
-		childMetaData = EntityMetaDataProvider.getInstance().getMetaData(DummyAttribute.class);
+		parentMetaData = entityMetaDataProvider
+				.getMetaData(DummySubEntity.class);
+		childMetaData = entityMetaDataProvider
+				.getMetaData(DummyAttribute.class);
 	}
 
 	@Test
 	public void testGenerateSQL() {
 		Assert.assertNotNull(parentMetaData);
 		SQLStatements sql = SQLGenerator.generateSQL(parentMetaData);
-
-		Assert.assertEquals(CREATE_SQL_PARENT, sql.getCreateTableSQL());
+		
+		Assert.assertTrue(checkCreateSQLStringContents(CREATE_SQL_PARENT, sql.getCreateTableSQL()));
 		Assert.assertEquals(DROP_SQL_PARENT, sql.getDropTableSQL());
 		Assert.assertEquals(DELETE_ALL_SQL_PARENT, sql.getDeleteAllSQL());
 		Assert.assertEquals(DELETE_SINGLE_SQL_PARENT, sql.getDeleteSingleSQL());
-		Assert.assertEquals(INSERT_SQL_PARENT, sql.getInsertSQL());
-		Assert.assertEquals(SELECT_ALL_SQL_PARENT, sql.getSelectAllSQL());
-		Assert.assertEquals(SELECT_SINGLE_SQL_PARENT, sql.getSelectSingleSQL());
-		Assert.assertEquals(UPDATE_SQL_PARENT, sql.getUpdateSQL());
+		Assert.assertTrue(checkCreateSQLStringContents(INSERT_SQL_PARENT, sql.getInsertSQL()));
+		Assert.assertTrue(checkSelectSQLStringContents(SELECT_ALL_SQL_PARENT, sql.getSelectAllSQL()));
+		Assert.assertTrue(checkSelectSQLStringContents(SELECT_SINGLE_SQL_PARENT, sql.getSelectSingleSQL()));
+		Assert.assertTrue(checkUpdateSQLStringContents(UPDATE_SQL_PARENT, sql.getUpdateSQL()));
 
 		Assert.assertNotNull(childMetaData);
 		SQLStatements childSQL = SQLGenerator.generateSQL(childMetaData);
-
-		Assert.assertEquals(CREATE_SQL_CHILD, childSQL.getCreateTableSQL());
+		
+		Assert.assertTrue(checkCreateSQLStringContents(CREATE_SQL_CHILD,
+				childSQL.getCreateTableSQL()));
 		Assert.assertEquals(DROP_SQL_CHILD, childSQL.getDropTableSQL());
 		Assert.assertEquals(DELETE_ALL_SQL_CHILD, childSQL.getDeleteAllSQL());
-		Assert.assertEquals(DELETE_SINGLE_SQL_CHILD, childSQL.getDeleteSingleSQL());
-		Assert.assertEquals(INSERT_SQL_CHILD, childSQL.getInsertSQL());
-		Assert.assertEquals(SELECT_ALL_SQL_CHILD, childSQL.getSelectAllSQL());
-		Assert.assertEquals(SELECT_SINGLE_SQL_CHILD, childSQL.getSelectSingleSQL());
-		Assert.assertEquals(UPDATE_SQL_CHILD, childSQL.getUpdateSQL());
+		Assert.assertEquals(DELETE_SINGLE_SQL_CHILD,
+				childSQL.getDeleteSingleSQL());
+		Assert.assertTrue(checkCreateSQLStringContents(INSERT_SQL_CHILD,
+				childSQL.getInsertSQL()));
+		Assert.assertTrue(checkSelectSQLStringContents(SELECT_ALL_SQL_CHILD,
+				childSQL.getSelectAllSQL()));
+		Assert.assertTrue(checkSelectSQLStringContents(SELECT_SINGLE_SQL_CHILD,
+				childSQL.getSelectSingleSQL()));
+		Assert.assertTrue(checkUpdateSQLStringContents(UPDATE_SQL_CHILD,
+				childSQL.getUpdateSQL()));
+	}
+
+	private static boolean checkCreateSQLStringContents(String expected,
+			String actual) {
+		boolean result = expected.substring(0, expected.indexOf('(')).equals(
+				actual.substring(0, actual.indexOf('(')));
+
+		if (result) {
+			expected = expected.substring(expected.indexOf('(') + 1,
+					expected.indexOf(')'));
+			actual = actual.substring(actual.indexOf('(') + 1,
+					actual.indexOf(')'));
+		}
+
+		return compareContent(expected.split(","), actual);
+	}
+
+	private static boolean checkSelectSQLStringContents(String expected,
+			String actual) {
+		boolean result = expected.substring(expected.indexOf("FROM")).equals(
+				actual.substring(actual.indexOf("FROM")));
+
+		if (result) {
+			expected = expected.substring("SELECT ".length(),
+					expected.indexOf("FROM"));
+			actual = actual.substring("SELECT ".length(),
+					actual.indexOf("FROM"));
+		}
+
+		return compareContent(expected.split(","), actual);
+	}
+
+	private static boolean checkUpdateSQLStringContents(String expected,
+			String actual) {
+		boolean result = expected.substring(expected.indexOf("WHERE")).equals(
+				actual.substring(actual.indexOf("WHERE")));
+
+		if (result) {
+			expected = expected.substring("UPDATE ".length(),
+					expected.indexOf("WHERE"));
+			actual = actual.substring("UPDATE ".length(),
+					actual.indexOf("WHERE"));
+		}
+
+		return compareContent(expected.split(","), actual);
+	}
+
+	private static boolean compareContent(String[] expectedTokens, String actual) {
+		String[] actualTokens = actual.split(",");
+		boolean result = expectedTokens.length == actualTokens.length;
+
+		if (result) {
+			for (String expectedToken : expectedTokens) {
+				result = actual.contains(expectedToken.trim());
+				if (!result) {
+					break;
+				}
+			}
+		}
+
+		return result;
 	}
 
 }

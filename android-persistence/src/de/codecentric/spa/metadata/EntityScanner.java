@@ -42,7 +42,6 @@ public class EntityScanner {
 
 		// Check if class should be scanned at all.
 		if (isPersistentClass(cls)) {
-
 			// Check if class is already scanned and if it is - do nothing, otherwise - scan it.
 			EntityMetaDataProvider entityMetaDataProvider = EntityMetaDataProvider.getInstance();
 			if (entityMetaDataProvider.getMetaData(cls) == null) {

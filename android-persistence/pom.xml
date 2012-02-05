@@ -14,7 +14,7 @@
 	<name>Simple Persistence for Android</name>
 	<description>Simple persistence library for Android</description>
 	<packaging>jar</packaging>
-	
+
 	<build>
 		<sourceDirectory>${project.basedir}/src</sourceDirectory>
 		<outputDirectory>${project.basedir}/target/classes</outputDirectory>
@@ -24,10 +24,10 @@
 			<plugins>
 				<plugin>
 					<inherited>true</inherited>
-                    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
-                    <artifactId>android-maven-plugin</artifactId>
-                    <version>3.0.0</version>
-                    <extensions>true</extensions>
+					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+					<artifactId>android-maven-plugin</artifactId>
+					<version>3.0.0</version>
+					<extensions>true</extensions>
 					<configuration>
 						<deleteConflictingFiles>true</deleteConflictingFiles>
 						<undeployBeforeDeploy>true</undeployBeforeDeploy>
@@ -124,7 +124,7 @@
 			<artifactId>android</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>android-test</artifactId>

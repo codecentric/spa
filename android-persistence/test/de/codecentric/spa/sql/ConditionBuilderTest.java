@@ -17,8 +17,9 @@ public class ConditionBuilderTest {
 	private EntityMetaDataProvider entityMetaDataProvider;
 
 	@Before
-	public void beforeTest() {
+	public void setUp() {
 		entityMetaDataProvider = EntityMetaDataProvider.getInstance();
+		entityMetaDataProvider.clearMetaData();
 	}
 
 	/**
