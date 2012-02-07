@@ -21,8 +21,9 @@ import de.codecentric.spa.sql.SQLiteTypeMapper;
 public class FieldScanner {
 
 	/**
-	 * Method checks if the given field is relationship field, i.e. if it is annotated with one of annotations defining
-	 * any kind of relationship (one-to-one, one-to-many, many-to-one, many-to-many).
+	 * Method checks if the given field is relationship field, i.e. if it is
+	 * annotated with one of annotations defining any kind of relationship
+	 * (one-to-one, one-to-many, many-to-one, many-to-many).
 	 * 
 	 * @param f
 	 * @return true if the field declares relationship between two classes
@@ -32,15 +33,19 @@ public class FieldScanner {
 			return false;
 		}
 
-		return f.getAnnotation(OneToOne.class) != null || f.getAnnotation(OneToMany.class) != null
-				|| f.getAnnotation(ManyToOne.class) != null || f.getAnnotation(ManyToMany.class) != null;
+		return f.getAnnotation(OneToOne.class) != null
+				|| f.getAnnotation(OneToMany.class) != null
+				|| f.getAnnotation(ManyToOne.class) != null
+				|| f.getAnnotation(ManyToMany.class) != null;
 	}
 
 	/**
-	 * Method checks if the given field is persistent field, i.e. if it is annotated with {@link Transient} annotation.
+	 * Method checks if the given field is persistent field, i.e. if it is
+	 * annotated with {@link Transient} annotation.
 	 * 
 	 * @param f
-	 * @return true if the field is NOT annotated with {@link Transient} annotation
+	 * @return true if the field is NOT annotated with {@link Transient}
+	 *         annotation
 	 */
 	public static boolean isPersistentField(Field f) {
 		if (!Modifier.isStatic(f.getModifiers())) {
@@ -53,7 +58,8 @@ public class FieldScanner {
 	}
 
 	/**
-	 * Method checks if the given field is identifier field, i.e. if it is annotated with {@link Id} annotation.
+	 * Method checks if the given field is identifier field, i.e. if it is
+	 * annotated with {@link Id} annotation.
 	 * 
 	 * @param f
 	 * @return true if the field is annotated with {@link Transient} annotation
@@ -80,7 +86,8 @@ public class FieldScanner {
 	}
 
 	/**
-	 * Method scans {@link Field} on which is declared relationship between two entity classes.
+	 * Method scans {@link Field} on which is declared relationship between two
+	 * entity classes.
 	 * 
 	 * @param f
 	 *            field to scan
@@ -98,8 +105,9 @@ public class FieldScanner {
 	}
 
 	/**
-	 * Method scans {@link Field} on which is declared one-to-one relationship between two entity classes and sets
-	 * appropriate columns as primary key for child of this relationship.
+	 * Method scans {@link Field} on which is declared one-to-one relationship
+	 * between two entity classes and sets appropriate columns as primary key
+	 * for child of this relationship.
 	 * 
 	 * @param f
 	 *            field to scan
@@ -117,9 +125,10 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(cls.getSimpleName() + "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(cls
+					.getSimpleName() + "_fk"));
 		}
-		
+
 		RelationshipInfo relationshipInfo = new RelationshipInfo();
 		relationshipInfo.setFetch(f.getAnnotation(OneToOne.class).fetch());
 		relationshipInfo.setCascade(f.getAnnotation(OneToOne.class).cascade());
@@ -129,8 +138,9 @@ public class FieldScanner {
 	}
 
 	/**
-	 * Method scans {@link Field} on which is declared one-to-many relationship between two entity classes and puts
-	 * appropriate {@link RelationshipMetaData} into {@link RelationshipMetaDataProvider}.
+	 * Method scans {@link Field} on which is declared one-to-many relationship
+	 * between two entity classes and puts appropriate
+	 * {@link RelationshipMetaData} into {@link RelationshipMetaDataProvider}.
 	 * 
 	 * @param f
 	 *            field to scan
@@ -147,23 +157,26 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName() + "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName()
+					+ "_fk"));
 		}
-		
+
 		RelationshipInfo relationshipInfo = new RelationshipInfo();
 		relationshipInfo.setFetch(f.getAnnotation(OneToMany.class).fetch());
 		relationshipInfo.setCascade(f.getAnnotation(OneToMany.class).cascade());
 		result.setRelationshipInfo(relationshipInfo);
-		
-		Class<?> relationshipClass = (Class<?>) ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0];
+
+		Class<?> relationshipClass = (Class<?>) ((ParameterizedType) f
+				.getGenericType()).getActualTypeArguments()[0];
 		result.setChildClass(relationshipClass);
 
 		RelationshipMetaDataProvider.getInstance().addMetaData(cls, result);
 	}
 
 	/**
-	 * Method scans {@link Field} on which is declared many-to-one relationship between two entity classes and puts
-	 * appropriate {@link RelationshipMetaData} into {@link RelationshipMetaDataProvider}.
+	 * Method scans {@link Field} on which is declared many-to-one relationship
+	 * between two entity classes and puts appropriate
+	 * {@link RelationshipMetaData} into {@link RelationshipMetaDataProvider}.
 	 * 
 	 * @param f
 	 *            field to scan
@@ -181,9 +194,10 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName() + "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName()
+					+ "_fk"));
 		}
-		
+
 		RelationshipInfo relationshipInfo = new RelationshipInfo();
 		relationshipInfo.setFetch(f.getAnnotation(ManyToOne.class).fetch());
 		relationshipInfo.setCascade(f.getAnnotation(ManyToOne.class).cascade());

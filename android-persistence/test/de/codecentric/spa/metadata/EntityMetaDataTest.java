@@ -43,7 +43,8 @@ public class EntityMetaDataTest {
 		id.setFieldName("id");
 		metaData.setIdentifier(id);
 
-		Assert.assertEquals("subFldDbl", metaData.getFieldNameForColumn("sub_fld_dbl"));
+		Assert.assertEquals("subFldDbl",
+				metaData.getFieldNameForColumn("sub_fld_dbl"));
 		Assert.assertNotNull(metaData.getPersistentField("subFldDbl"));
 		Assert.assertEquals(1, metaData.getPersistentFields().size());
 

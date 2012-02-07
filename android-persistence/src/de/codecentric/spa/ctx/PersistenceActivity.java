@@ -3,7 +3,8 @@ package de.codecentric.spa.ctx;
 import android.app.Activity;
 
 /**
- * Persistence activity class - all activities that do some persistence jobs should subclass this class.
+ * Persistence activity class - all activities that do some persistence jobs
+ * should subclass this class.
  */
 public abstract class PersistenceActivity extends Activity {
 
@@ -15,7 +16,8 @@ public abstract class PersistenceActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		dbHelper = ((PersistenceApplicationContext) getApplication()).getDatabaseHelper();
+		dbHelper = ((PersistenceApplicationContext) getApplication())
+				.getDatabaseHelper();
 
 	}
 

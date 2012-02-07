@@ -14,9 +14,11 @@ import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 /**
  * A helper class to manage database creation and version management.
  * 
- * Instances of this class must be created after all entity classes are scanned with {@link EntityScanner}.
+ * Instances of this class must be created after all entity classes are scanned
+ * with {@link EntityScanner}.
  * 
- * Users should extend this class in order to implement needed logic in methods {@link #onCreate(SQLiteDatabase)} and
+ * Users should extend this class in order to implement needed logic in methods
+ * {@link #onCreate(SQLiteDatabase)} and
  * {@link #onUpgrade(SQLiteDatabase, int, int)}.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -24,8 +26,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	protected List<SQLStatements> sqlStatements;
 
 	/**
-	 * Constructs database helper. Retrieves persistent classes from {@link EntityMetaDataProvider} used in given
-	 * {@link PersistenceApplicationContext} and retrieves generated {@link SQLStatements} for each of those classes.
+	 * Constructs database helper. Retrieves persistent classes from
+	 * {@link EntityMetaDataProvider} used in given
+	 * {@link PersistenceApplicationContext} and retrieves generated
+	 * {@link SQLStatements} for each of those classes.
 	 * 
 	 * @param context
 	 *            application context
@@ -34,10 +38,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * @param dbVersion
 	 *            database version
 	 */
-	public DatabaseHelper(PersistenceApplicationContext context, String dbName, int dbVersion) {
+	public DatabaseHelper(PersistenceApplicationContext context, String dbName,
+			int dbVersion) {
 		super(context, dbName, null, dbVersion);
 
-		Class<?>[] persistentClasses = context.getEntityMetaDataProvider().getPersistentClasses();
+		Class<?>[] persistentClasses = context.getEntityMetaDataProvider()
+				.getPersistentClasses();
 		if (persistentClasses != null && persistentClasses.length != 0) {
 			sqlStatements = new ArrayList<SQLGenerator.SQLStatements>(0);
 
@@ -52,8 +58,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * Creation of whole database structure should happen here. Current implementation does nothing, it's up to user to
-	 * define logic extending this class.
+	 * Creation of whole database structure should happen here. Current
+	 * implementation does nothing, it's up to user to define logic extending
+	 * this class.
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase database) {
@@ -61,11 +68,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * Upgrading of whole database structure should happen here. Current implementation does nothing, it's up to user to
-	 * define logic extending this class.
+	 * Upgrading of whole database structure should happen here. Current
+	 * implementation does nothing, it's up to user to define logic extending
+	 * this class.
 	 */
 	@Override
-	public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+	public void onUpgrade(SQLiteDatabase database, int oldVersion,
+			int newVersion) {
 		// Leave unimplemented - let users implement their logic.
 	}
 

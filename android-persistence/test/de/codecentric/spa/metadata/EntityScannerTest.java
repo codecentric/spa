@@ -35,13 +35,17 @@ public class EntityScannerTest {
 		EntityMetaData entityMetaData = entityMetaDataProvider.getMetaData(cls);
 		Assert.assertEquals("dummy_sub_entity", entityMetaData.getTableName());
 
-		Assert.assertEquals("name", entityMetaData.getFieldNameForColumn("name"));
-		Assert.assertEquals("someInt", entityMetaData.getFieldNameForColumn("some_int"));
-		Assert.assertEquals("subFldDbl", entityMetaData.getFieldNameForColumn("sub_fld_dbl"));
+		Assert.assertEquals("name",
+				entityMetaData.getFieldNameForColumn("name"));
+		Assert.assertEquals("someInt",
+				entityMetaData.getFieldNameForColumn("some_int"));
+		Assert.assertEquals("subFldDbl",
+				entityMetaData.getFieldNameForColumn("sub_fld_dbl"));
 		Assert.assertNull(entityMetaData.getFieldNameForColumn("not_persisted"));
 
 		EntityScanner.scanClass(DummyNotPersistedEntity.class, true);
-		Assert.assertNull(entityMetaDataProvider.getMetaData(DummyNotPersistedEntity.class));
+		Assert.assertNull(entityMetaDataProvider
+				.getMetaData(DummyNotPersistedEntity.class));
 	}
 
 	/**
@@ -49,10 +53,14 @@ public class EntityScannerTest {
 	 */
 	@Test
 	public void stringUtilsScan() {
-		Assert.assertEquals("some_field_name", StringUtils.uncamelize("someFieldName"));
-		Assert.assertEquals("somefieldname", StringUtils.uncamelize("somefieldname"));
-		Assert.assertEquals("some_field_name", StringUtils.uncamelize("SomeFieldName"));
-		Assert.assertEquals("some_field_name_somefield_name", StringUtils.uncamelize("SomeFieldName_somefieldName"));
+		Assert.assertEquals("some_field_name",
+				StringUtils.uncamelize("someFieldName"));
+		Assert.assertEquals("somefieldname",
+				StringUtils.uncamelize("somefieldname"));
+		Assert.assertEquals("some_field_name",
+				StringUtils.uncamelize("SomeFieldName"));
+		Assert.assertEquals("some_field_name_somefield_name",
+				StringUtils.uncamelize("SomeFieldName_somefieldName"));
 		Assert.assertNull(StringUtils.uncamelize(null));
 	}
 

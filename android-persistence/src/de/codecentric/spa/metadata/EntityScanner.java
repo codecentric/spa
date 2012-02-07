@@ -11,39 +11,48 @@ import de.codecentric.spa.annotations.Transient;
 import de.codecentric.spa.metadata.RelationshipMetaData.RelationshipType;
 
 /**
- * Utility that scans entity class and returns {@link EntityMetaData} containing the information how should the given
- * class be persisted.
+ * Utility that scans entity class and returns {@link EntityMetaData} containing
+ * the information how should the given class be persisted.
  * 
- * Only classes annotated with {@link Entity} annotation can be scanned with this scanner.
+ * Only classes annotated with {@link Entity} annotation can be scanned with
+ * this scanner.
  * 
- * NOTE: Discovery of foreign keys is not yet supported. Only fields declared as public are supported.
+ * NOTE: Discovery of foreign keys is not yet supported. Only fields declared as
+ * public are supported.
  */
 public class EntityScanner {
 
 	/**
-	 * Method scans the given class and puts it's descriptor in shape of {@link EntityMetaData} into
-	 * {@link EntityMetaDataProvider}. Class hierarchy of the given class is scanned starting from the given class to
-	 * the most general class. Scanning process stops at the point where it comes to {@link Object} class.
+	 * Method scans the given class and puts it's descriptor in shape of
+	 * {@link EntityMetaData} into {@link EntityMetaDataProvider}. Class
+	 * hierarchy of the given class is scanned starting from the given class to
+	 * the most general class. Scanning process stops at the point where it
+	 * comes to {@link Object} class.
 	 * 
-	 * If class is not annotated with {@link Entity} annotation, method will do nothing. Fields annotated with
-	 * {@link Transient} annotation will be ignored since those should not be persisted.
+	 * If class is not annotated with {@link Entity} annotation, method will do
+	 * nothing. Fields annotated with {@link Transient} annotation will be
+	 * ignored since those should not be persisted.
 	 * 
-	 * Each class can have one identifier field (that field will be primary key in database table structure). Identifier
-	 * field is field annotated with {@link Id} annotation. If there is more than one field annotated as identifier,
-	 * field that is first resolved as identifier will be kept.
+	 * Each class can have one identifier field (that field will be primary key
+	 * in database table structure). Identifier field is field annotated with
+	 * {@link Id} annotation. If there is more than one field annotated as
+	 * identifier, field that is first resolved as identifier will be kept.
 	 * 
 	 * @param cls
 	 *            class that will be scanned
 	 * @param hasStructure
-	 *            should be true if class should have separate structure, i.e. table, otherwise false
+	 *            should be true if class should have separate structure, i.e.
+	 *            table, otherwise false
 	 */
 	public static void scanClass(Class<?> cls, boolean hasStructure) {
 		EntityMetaData result = null;
 
 		// Check if class should be scanned at all.
 		if (isPersistentClass(cls)) {
-			// Check if class is already scanned and if it is - do nothing, otherwise - scan it.
-			EntityMetaDataProvider entityMetaDataProvider = EntityMetaDataProvider.getInstance();
+			// Check if class is already scanned and if it is - do nothing,
+			// otherwise - scan it.
+			EntityMetaDataProvider entityMetaDataProvider = EntityMetaDataProvider
+					.getInstance();
 			if (entityMetaDataProvider.getMetaData(cls) == null) {
 				result = doScan(cls);
 
@@ -54,7 +63,8 @@ public class EntityScanner {
 				}
 
 				// Check the relationship meta data related to this class.
-				List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaData(cls);
+				List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider
+						.getInstance().getMetaData(cls);
 				if (rMetaDataList != null && !rMetaDataList.isEmpty()) {
 
 					// Scan all relationship classes implicitly.
@@ -67,18 +77,26 @@ public class EntityScanner {
 							toScan = rmd.getChildClass();
 						}
 						if (entityMetaDataProvider.getMetaData(toScan) == null) {
-							scanClass(toScan, !RelationshipType.ONE_TO_ONE.equals(rType));
+							scanClass(toScan,
+									!RelationshipType.ONE_TO_ONE.equals(rType));
 						}
 					}
 
-					// After scanning is done, iterate once again through the relationship meta data in order to...
+					// After scanning is done, iterate once again through the
+					// relationship meta data in order to...
 					for (RelationshipMetaData rmd : rMetaDataList) {
-						// ... use ONE_TO_ONE relationship to copy persistent fields to the parent class.
-						//TODO Check this! This way we do not have distinction between one-to-one relation in eager and lazy mode. In both cases 
+						// ... use ONE_TO_ONE relationship to copy persistent
+						// fields to the parent class.
+						// TODO Check this! This way we do not have distinction
+						// between one-to-one relation in eager and lazy mode.
+						// In both cases
 						// there is EAGER strategy.
-						if (RelationshipType.ONE_TO_ONE.equals(rmd.getRelationshipType())) {
-							EntityMetaData child = entityMetaDataProvider.getMetaData(rmd.getChildClass());
-							result.getPersistentFields().addAll(child.getPersistentFields());
+						if (RelationshipType.ONE_TO_ONE.equals(rmd
+								.getRelationshipType())) {
+							EntityMetaData child = entityMetaDataProvider
+									.getMetaData(rmd.getChildClass());
+							result.getPersistentFields().addAll(
+									child.getPersistentFields());
 						}
 					}
 				}
@@ -87,8 +105,9 @@ public class EntityScanner {
 	}
 
 	/**
-	 * Method does actual scanning of the given class and calls itself recursively in order to retrieve information
-	 * about all it's super classes.
+	 * Method does actual scanning of the given class and calls itself
+	 * recursively in order to retrieve information about all it's super
+	 * classes.
 	 * 
 	 * @param cls
 	 *            class that will be scanned
@@ -111,7 +130,8 @@ public class EntityScanner {
 						result.addPersistentField(FieldScanner.scanField(f));
 					}
 				} else {
-					if (result.getIdentifier() == null && FieldScanner.isPersistentField(f)) {
+					if (result.getIdentifier() == null
+							&& FieldScanner.isPersistentField(f)) {
 						result.setIdentifier(FieldScanner.scanField(f));
 					}
 				}
@@ -132,8 +152,9 @@ public class EntityScanner {
 	/**
 	 * Method merges two results.
 	 * 
-	 * Merging will be done only if right describing class {@link EntityMetaData} is super class of left describing
-	 * class {@link EntityMetaData}.
+	 * Merging will be done only if right describing class
+	 * {@link EntityMetaData} is super class of left describing class
+	 * {@link EntityMetaData}.
 	 * 
 	 * @param left
 	 *            class being scanned
@@ -143,7 +164,8 @@ public class EntityScanner {
 	 * 
 	 * @see EntityMetaData#getDescribingClass()
 	 */
-	private static EntityMetaData merge(EntityMetaData left, EntityMetaData right) {
+	private static EntityMetaData merge(EntityMetaData left,
+			EntityMetaData right) {
 		EntityMetaData result = new EntityMetaData(left.getDescribingClass());
 
 		if (right.getIdentifier() != null) {
@@ -170,7 +192,8 @@ public class EntityScanner {
 	}
 
 	/**
-	 * Method checks if the given class is persistent class, i.e. if it is annotated with {@link Entity} annotation.
+	 * Method checks if the given class is persistent class, i.e. if it is
+	 * annotated with {@link Entity} annotation.
 	 * 
 	 * @param cls
 	 * @return true if the class is annotated with {@link Entity} annotation.
@@ -188,8 +211,9 @@ public class EntityScanner {
 		/**
 		 * Method uncamelizes the input string.
 		 * 
-		 * Input string is converted from camel case to a string in a form of string which words are separated with "_".
-		 * For example, for given input "SimpleClassName" table name will be "simple_class_name".
+		 * Input string is converted from camel case to a string in a form of
+		 * string which words are separated with "_". For example, for given
+		 * input "SimpleClassName" table name will be "simple_class_name".
 		 * 
 		 * @param input
 		 * @return uncamelized string
@@ -205,7 +229,8 @@ public class EntityScanner {
 			while (m.find()) {
 				if (m.group().length() > 1) {
 					StringBuffer caps = new StringBuffer(m.group());
-					m.appendReplacement(sb, caps.insert(m.group().length() - 1, '_').toString());
+					m.appendReplacement(sb,
+							caps.insert(m.group().length() - 1, '_').toString());
 				} else {
 					m.appendReplacement(sb, ' ' + m.group());
 				}

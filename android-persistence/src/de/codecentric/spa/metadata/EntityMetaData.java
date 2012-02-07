@@ -7,8 +7,8 @@ import java.util.List;
 import de.codecentric.spa.metadata.EntityScanner.StringUtils;
 
 /**
- * This is data transfer object class that holds the information about class scanning result done by
- * {@link EntityScanner}.
+ * This is data transfer object class that holds the information about class
+ * scanning result done by {@link EntityScanner}.
  */
 public class EntityMetaData {
 
@@ -36,7 +36,8 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Method adds entity field to the list of persistent fields that are already discovered by {@link EntityScanner}.
+	 * Method adds entity field to the list of persistent fields that are
+	 * already discovered by {@link EntityScanner}.
 	 * 
 	 * @param f
 	 *            field to add
@@ -51,14 +52,16 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Method returns a name of the field of the class described by this object that is represented with given column in
-	 * corresponding database table. Null value will be return if there is no corresponding field.
+	 * Method returns a name of the field of the class described by this object
+	 * that is represented with given column in corresponding database table.
+	 * Null value will be return if there is no corresponding field.
 	 * 
-	 * Link between field name and column is established by {@link EntityMetaData#addPersistentField(FieldMetaData)}
-	 * method.
+	 * Link between field name and column is established by
+	 * {@link EntityMetaData#addPersistentField(FieldMetaData)} method.
 	 * 
 	 * @param columnName
-	 *            a name of the column in database table representing class described by this object
+	 *            a name of the column in database table representing class
+	 *            described by this object
 	 * @return field represented with given column
 	 */
 	public String getFieldNameForColumn(String columnName) {
@@ -75,7 +78,8 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Method returns the list of persistent fields discovered by {@link EntityScanner}.
+	 * Method returns the list of persistent fields discovered by
+	 * {@link EntityScanner}.
 	 * 
 	 * @return
 	 */
@@ -84,7 +88,8 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Method returns a field meta data for field with a given name. If it doesn't exists, method returns null.
+	 * Method returns a field meta data for field with a given name. If it
+	 * doesn't exists, method returns null.
 	 * 
 	 * @param fieldName
 	 *            field name
@@ -129,8 +134,8 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Returns true if class described by this meta data should have separate structure - separate database table -
-	 * otherwise returns false.
+	 * Returns true if class described by this meta data should have separate
+	 * structure - separate database table - otherwise returns false.
 	 * 
 	 * @return
 	 */
@@ -139,7 +144,8 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Sets whether class described by this meta data should have separate structure - separate database table.
+	 * Sets whether class described by this meta data should have separate
+	 * structure - separate database table.
 	 * 
 	 * @param hasStructure
 	 */
@@ -148,7 +154,8 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Method returns the field that is discovered by {@link EntityScanner} as database table primary key.
+	 * Method returns the field that is discovered by {@link EntityScanner} as
+	 * database table primary key.
 	 * 
 	 * @return identifier field
 	 */
@@ -157,7 +164,8 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Method sets the field that is discovered by {@link EntityScanner} as database table primary key.
+	 * Method sets the field that is discovered by {@link EntityScanner} as
+	 * database table primary key.
 	 * 
 	 * @param identifier
 	 *            a field to set as identifier

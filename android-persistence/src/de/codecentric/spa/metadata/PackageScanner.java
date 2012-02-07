@@ -14,13 +14,15 @@ import java.util.zip.ZipInputStream;
 import de.codecentric.spa.utils.ZipClassLoader;
 
 /**
- * Utility that scans given package for entity classes and returns {@link EntityMetaData} containing the information how
- * should the given class be persisted. It is heavily dependent on {@link EntityScanner}.
+ * Utility that scans given package for entity classes and returns
+ * {@link EntityMetaData} containing the information how should the given class
+ * be persisted. It is heavily dependent on {@link EntityScanner}.
  */
 public class PackageScanner {
 
 	/**
-	 * Method scans the given package and returns list of class descriptors in shape of {@link EntityMetaData}.
+	 * Method scans the given package and returns list of class descriptors in
+	 * shape of {@link EntityMetaData}.
 	 * 
 	 * @param pckgName
 	 *            package name
@@ -29,8 +31,10 @@ public class PackageScanner {
 	 * @throws ClassNotFoundException
 	 * @see EntityScanner#scanClass(Class)
 	 */
-	public static List<EntityMetaData> scanPackage(String packageName) throws Exception {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	public static List<EntityMetaData> scanPackage(String packageName)
+			throws Exception {
+		ClassLoader classLoader = Thread.currentThread()
+				.getContextClassLoader();
 		assert classLoader != null;
 
 		String path = packageName.replace('.', '/');
@@ -53,7 +57,8 @@ public class PackageScanner {
 			for (Class<?> cls : classes) {
 				EntityScanner.scanClass(cls, true);
 
-				EntityMetaData scanResult = EntityMetaDataProvider.getInstance().getMetaData(cls);
+				EntityMetaData scanResult = EntityMetaDataProvider
+						.getInstance().getMetaData(cls);
 				if (scanResult != null) {
 					result.add(scanResult);
 				}
@@ -64,7 +69,8 @@ public class PackageScanner {
 	}
 
 	/**
-	 * Recursive method used to find all classes in a given directory and sub-directories.
+	 * Recursive method used to find all classes in a given directory and
+	 * sub-directories.
 	 * 
 	 * @param directory
 	 *            base directory
@@ -73,7 +79,8 @@ public class PackageScanner {
 	 * @return list of classes
 	 * @throws ClassNotFoundException
 	 */
-	private static List<Class<?>> findClasses(File directory, String packageName) throws Exception {
+	private static List<Class<?>> findClasses(File directory, String packageName)
+			throws Exception {
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 		if (!directory.exists()) {
 			return classes;
@@ -89,9 +96,14 @@ public class PackageScanner {
 			} else if (fileName.endsWith(".class") && !fileName.contains("$")) {
 				Class<?> _class;
 				try {
-					_class = Class.forName(packageName + '.' + fileName.substring(0, fileName.length() - 6));
+					_class = Class.forName(packageName + '.'
+							+ fileName.substring(0, fileName.length() - 6));
 				} catch (ExceptionInInitializerError e) {
-					_class = Class.forName(packageName + '.' + fileName.substring(0, fileName.length() - 6), false,
+					_class = Class.forName(
+							packageName
+									+ '.'
+									+ fileName.substring(0,
+											fileName.length() - 6), false,
 							Thread.currentThread().getContextClassLoader());
 				}
 				classes.add(_class);
@@ -128,7 +140,8 @@ public class PackageScanner {
 	 * @return list of class descriptors
 	 * @throws Exception
 	 */
-	public static List<EntityMetaData> scanJar(String path, String packageName) throws Exception {
+	public static List<EntityMetaData> scanJar(String path, String packageName)
+			throws Exception {
 		String pckg = packageName.replaceAll("\\.", "/");
 		List<Class<?>> classes = new ArrayList<Class<?>>(0);
 
@@ -136,7 +149,8 @@ public class PackageScanner {
 		ZipEntry entry = zip.getNextEntry();
 		while (entry != null) {
 			String entryName = entry.getName();
-			if (!entry.isDirectory() && entryName.startsWith(pckg) && entryName.endsWith("class")) {
+			if (!entry.isDirectory() && entryName.startsWith(pckg)
+					&& entryName.endsWith("class")) {
 				File jarFile = new File(path);
 
 				String s = jarFile.getAbsolutePath();
@@ -153,7 +167,8 @@ public class PackageScanner {
 			for (Class<?> cls : classes) {
 				EntityScanner.scanClass(cls, true);
 
-				EntityMetaData scanResult = EntityMetaDataProvider.getInstance().getMetaData(cls);
+				EntityMetaData scanResult = EntityMetaDataProvider
+						.getInstance().getMetaData(cls);
 				if (scanResult != null) {
 					result.add(scanResult);
 				}

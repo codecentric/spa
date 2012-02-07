@@ -26,7 +26,7 @@ public class PackageScannerTest {
 				.size());
 	}
 
-	/**
+/**
 	 * Method tests situation when existing package name is used to call {@link PackageScanner#scanPackage(String)(legal situation).
 	 * 
 	 * @throws Exception

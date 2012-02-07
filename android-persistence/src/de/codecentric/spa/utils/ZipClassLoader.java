@@ -19,7 +19,8 @@ public class ZipClassLoader extends ClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		String escaped = name.replace("/", ".").substring(0, name.lastIndexOf('.'));
+		String escaped = name.replace("/", ".").substring(0,
+				name.lastIndexOf('.'));
 		ZipEntry entry = this.file.getEntry(name);
 		if (entry == null) {
 			throw new ClassNotFoundException(escaped);
@@ -33,7 +34,7 @@ public class ZipClassLoader extends ClassLoader {
 				out.write(array, 0, length);
 				length = in.read(array);
 			}
-			
+
 			return defineClass(escaped, out.toByteArray(), 0, out.size());
 		} catch (IOException exception) {
 			throw new ClassNotFoundException(escaped, exception);

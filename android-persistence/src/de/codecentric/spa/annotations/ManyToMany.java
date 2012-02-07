@@ -11,10 +11,9 @@ import java.lang.annotation.Target;
 @Target({ METHOD, FIELD })
 @Retention(RUNTIME)
 public @interface ManyToMany {
-	
+
 	CascadeType[] cascade() default {};
 
-    FetchType fetch() default LAZY;
-
+	FetchType fetch() default LAZY;
 
 }

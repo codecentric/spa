@@ -3,18 +3,22 @@ package de.codecentric.spa;
 import java.util.HashMap;
 
 /**
- * This class represents a cache of entities which should have very short life - only while one transaction (operation)
- * lasts.
+ * This class represents a cache of entities which should have very short life -
+ * only while one transaction (operation) lasts.
  * 
- * Example of usage: saving of complex entity being relationship parent class. In order to save child of any
- * relationship, values from parent object are needed (to insert/update them in foreign key columns). In that situation,
+ * Example of usage: saving of complex entity being relationship parent class.
+ * In order to save child of any relationship, values from parent object are
+ * needed (to insert/update them in foreign key columns). In that situation,
  * parent objects should be sought for in entity transaction cache.
  * 
- * With above said, proper usage of this cache would be like this: save relationship parent object, cache it, save child
- * object (read values of parent from cached entity), clear the cache.
+ * With above said, proper usage of this cache would be like this: save
+ * relationship parent object, cache it, save child object (read values of
+ * parent from cached entity), clear the cache.
  * 
- * NOTE: This class is designed to cache only one entity per given class at the time. If user tries to cache more than
- * one object of a single class in the same moment, objects most recently cached will overwrite those cached earlier.
+ * NOTE: This class is designed to cache only one entity per given class at the
+ * time. If user tries to cache more than one object of a single class in the
+ * same moment, objects most recently cached will overwrite those cached
+ * earlier.
  */
 public class EntityTransactionCache {
 
@@ -36,7 +40,8 @@ public class EntityTransactionCache {
 	}
 
 	/**
-	 * Method returns the cached entity or null if there is no cached entity of given class.
+	 * Method returns the cached entity or null if there is no cached entity of
+	 * given class.
 	 * 
 	 * @param cls
 	 * @return cached entity or null

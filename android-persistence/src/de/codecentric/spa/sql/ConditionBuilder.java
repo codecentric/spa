@@ -9,13 +9,15 @@ import de.codecentric.spa.metadata.FieldMetaData;
 public class ConditionBuilder {
 
 	/**
-	 * Enumeration describing supported operators that can be used for creating SQL conditions.
+	 * Enumeration describing supported operators that can be used for creating
+	 * SQL conditions.
 	 * 
 	 * @see ConditionBuilder
 	 */
 	public static enum Operator {
 
-		LESS("<"), LESS_EQ("<="), EQ("=="), GREATER_EQ(">="), GREATER(">"), NOT_EQ("<>");
+		LESS("<"), LESS_EQ("<="), EQ("=="), GREATER_EQ(">="), GREATER(">"), NOT_EQ(
+				"<>");
 
 		private String string;
 
@@ -30,9 +32,11 @@ public class ConditionBuilder {
 	}
 
 	/**
-	 * Variable defining grouping level. A group represents a statement inside brackets. Every time a group is opened,
-	 * grouping level is incremented and, vice-versa - every time group is closed, grouping level is decremented. At the
-	 * end of building condition, grouping level should be zero.
+	 * Variable defining grouping level. A group represents a statement inside
+	 * brackets. Every time a group is opened, grouping level is incremented
+	 * and, vice-versa - every time group is closed, grouping level is
+	 * decremented. At the end of building condition, grouping level should be
+	 * zero.
 	 */
 	private int groupingLevel;
 
@@ -59,7 +63,8 @@ public class ConditionBuilder {
 	}
 
 	/**
-	 * Method adds an expression in this condition. Null values are not supported.
+	 * Method adds an expression in this condition. Null values are not
+	 * supported.
 	 * 
 	 * @param fieldName
 	 * @param value
@@ -68,11 +73,13 @@ public class ConditionBuilder {
 	 * @throws IllegalStateException
 	 *             if given field could not be found or if given value is null
 	 */
-	public ConditionBuilder addCondition(String fieldName, String value, Operator op) throws IllegalStateException {
+	public ConditionBuilder addCondition(String fieldName, String value,
+			Operator op) throws IllegalStateException {
 		FieldMetaData fld = entityMData.getPersistentField(fieldName);
 
 		if (fld == null) {
-			throw new IllegalStateException("Field with name " + fieldName + " not found.");
+			throw new IllegalStateException("Field with name " + fieldName
+					+ " not found.");
 		}
 
 		if (value == null) {
@@ -135,7 +142,8 @@ public class ConditionBuilder {
 	public String build() throws IllegalStateException {
 		if (groupingLevel != 0) {
 			throw new IllegalStateException(
-					"Grouping level is not zero. Some brackets remained open.\nCondition content:\n" + sb.toString());
+					"Grouping level is not zero. Some brackets remained open.\nCondition content:\n"
+							+ sb.toString());
 		}
 
 		return sb.toString();

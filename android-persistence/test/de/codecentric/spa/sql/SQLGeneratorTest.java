@@ -54,19 +54,24 @@ public class SQLGeneratorTest {
 	public void testGenerateSQL() {
 		Assert.assertNotNull(parentMetaData);
 		SQLStatements sql = SQLGenerator.generateSQL(parentMetaData);
-		
-		Assert.assertTrue(checkCreateSQLStringContents(CREATE_SQL_PARENT, sql.getCreateTableSQL()));
+
+		Assert.assertTrue(checkCreateSQLStringContents(CREATE_SQL_PARENT,
+				sql.getCreateTableSQL()));
 		Assert.assertEquals(DROP_SQL_PARENT, sql.getDropTableSQL());
 		Assert.assertEquals(DELETE_ALL_SQL_PARENT, sql.getDeleteAllSQL());
 		Assert.assertEquals(DELETE_SINGLE_SQL_PARENT, sql.getDeleteSingleSQL());
-		Assert.assertTrue(checkCreateSQLStringContents(INSERT_SQL_PARENT, sql.getInsertSQL()));
-		Assert.assertTrue(checkSelectSQLStringContents(SELECT_ALL_SQL_PARENT, sql.getSelectAllSQL()));
-		Assert.assertTrue(checkSelectSQLStringContents(SELECT_SINGLE_SQL_PARENT, sql.getSelectSingleSQL()));
-		Assert.assertTrue(checkUpdateSQLStringContents(UPDATE_SQL_PARENT, sql.getUpdateSQL()));
+		Assert.assertTrue(checkCreateSQLStringContents(INSERT_SQL_PARENT,
+				sql.getInsertSQL()));
+		Assert.assertTrue(checkSelectSQLStringContents(SELECT_ALL_SQL_PARENT,
+				sql.getSelectAllSQL()));
+		Assert.assertTrue(checkSelectSQLStringContents(
+				SELECT_SINGLE_SQL_PARENT, sql.getSelectSingleSQL()));
+		Assert.assertTrue(checkUpdateSQLStringContents(UPDATE_SQL_PARENT,
+				sql.getUpdateSQL()));
 
 		Assert.assertNotNull(childMetaData);
 		SQLStatements childSQL = SQLGenerator.generateSQL(childMetaData);
-		
+
 		Assert.assertTrue(checkCreateSQLStringContents(CREATE_SQL_CHILD,
 				childSQL.getCreateTableSQL()));
 		Assert.assertEquals(DROP_SQL_CHILD, childSQL.getDropTableSQL());

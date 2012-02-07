@@ -2,18 +2,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
-		<android.version>2.2.1</android.version>
-	</properties>
-
 	<groupId>de.codecentric</groupId>
 	<artifactId>spa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Simple Persistence for Android</name>
 	<description>Simple persistence library for Android</description>
 	<packaging>jar</packaging>
+	
+	<properties>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
+		<android.version>2.2.1</android.version>
+	</properties>
 
 	<build>
 		<sourceDirectory>${project.basedir}/src</sourceDirectory>

@@ -1,7 +1,8 @@
 package de.codecentric.spa.metadata;
 
 /**
- * This is data transfer object class that holds the information about the relationship between two entity classes.
+ * This is data transfer object class that holds the information about the
+ * relationship between two entity classes.
  */
 public class RelationshipMetaData {
 
@@ -9,10 +10,9 @@ public class RelationshipMetaData {
 	private Class<?> childClass;
 
 	private RelationshipType relationshipType;
-	
+
 	private RelationshipInfo relationshipInfo;
 
-	
 	public RelationshipInfo getRelationshipInfo() {
 		return relationshipInfo;
 	}
@@ -26,14 +26,16 @@ public class RelationshipMetaData {
 	private String foreignKeyColumnName;
 
 	/**
-	 * Default constructor - sets {{@link #relationshipType} to {@link RelationshipType#OTHER}.
+	 * Default constructor - sets {{@link #relationshipType} to
+	 * {@link RelationshipType#OTHER}.
 	 */
 	public RelationshipMetaData() {
 		relationshipType = RelationshipType.OTHER;
 	}
 
 	/**
-	 * Method returns class which database table will be the parent of the relationship.
+	 * Method returns class which database table will be the parent of the
+	 * relationship.
 	 * 
 	 * @return relationship parent class
 	 */
@@ -42,7 +44,8 @@ public class RelationshipMetaData {
 	}
 
 	/**
-	 * Method sets parent class, i.e. class which database table will be the parent of the relationship.
+	 * Method sets parent class, i.e. class which database table will be the
+	 * parent of the relationship.
 	 * 
 	 * @param parentClass
 	 */
@@ -51,7 +54,8 @@ public class RelationshipMetaData {
 	}
 
 	/**
-	 * Method returns class which database table will be the child of the relationship.
+	 * Method returns class which database table will be the child of the
+	 * relationship.
 	 * 
 	 * @return relationship child class
 	 */
@@ -60,7 +64,8 @@ public class RelationshipMetaData {
 	}
 
 	/**
-	 * Method sets child class, i.e. class which database table will be the child of the relationship.
+	 * Method sets child class, i.e. class which database table will be the
+	 * child of the relationship.
 	 * 
 	 * @param parentClass
 	 */
@@ -105,7 +110,8 @@ public class RelationshipMetaData {
 	}
 
 	/**
-	 * Method returns the name of the column that represents foreign key of described relationship.
+	 * Method returns the name of the column that represents foreign key of
+	 * described relationship.
 	 * 
 	 * @return foreign key column name
 	 */

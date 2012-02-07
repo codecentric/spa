@@ -7,8 +7,9 @@ import de.codecentric.spa.metadata.EntityScanner;
 import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 
 /**
- * SQLProvider is singleton class containing basic SQL statements and strings based on {@link EntityMetaData}s obtained
- * through {@link EntityScanner} scanning process.
+ * SQLProvider is singleton class containing basic SQL statements and strings
+ * based on {@link EntityMetaData}s obtained through {@link EntityScanner}
+ * scanning process.
  * 
  * @see EntityScanner#scanClass(Class)
  */
@@ -26,8 +27,9 @@ public final class SQLProvider {
 	}
 
 	/**
-	 * Method adds generated {@link SQLStatements} object to this provider. This object can be latter retrieved via
-	 * {@link SQLProvider#getSQL(Class)} method.
+	 * Method adds generated {@link SQLStatements} object to this provider. This
+	 * object can be latter retrieved via {@link SQLProvider#getSQL(Class)}
+	 * method.
 	 * 
 	 * @param cls
 	 *            class which SQL statements are passed in

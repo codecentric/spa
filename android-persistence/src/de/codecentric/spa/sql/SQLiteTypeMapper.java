@@ -4,7 +4,8 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 /**
- * SQLiteTypeMapper class is used to map Java field types to appropriate SQLite types.
+ * SQLiteTypeMapper class is used to map Java field types to appropriate SQLite
+ * types.
  * 
  * This is how the types are mapped:
  * 
@@ -67,10 +68,12 @@ public class SQLiteTypeMapper {
 	}
 
 	/**
-	 * Method reads the field's Java type and returns appropriate SQLite type or null if type could not be resolved.
+	 * Method reads the field's Java type and returns appropriate SQLite type or
+	 * null if type could not be resolved.
 	 * 
 	 * @param f
-	 * @return SQLite type that corresponds to the Java type of the input or null, if type could not be resolved
+	 * @return SQLite type that corresponds to the Java type of the input or
+	 *         null, if type could not be resolved
 	 */
 	public static String mapFieldType(Field f) {
 		return typePairs.get(f.getType().getName());

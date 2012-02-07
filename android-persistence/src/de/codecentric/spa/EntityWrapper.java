@@ -7,19 +7,22 @@ import java.util.Map;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 
 /**
- * Wrapper for {@link EntityHelper}. Contains list of all helpers that can be used.
+ * Wrapper for {@link EntityHelper}. Contains list of all helpers that can be
+ * used.
  * 
  * @author zkovacevic
  * 
  */
 public class EntityWrapper {
 
-	// TODO Consider to make this class singleton.Map should be filled during scanning phase, when persistent classes are discovered.
+	// TODO Consider to make this class singleton.Map should be filled during
+	// scanning phase, when persistent classes are discovered.
 	private Map<Class<?>, EntityHelper<?>> entityHelperMap;
 	private PersistenceApplicationContext cont;
 
 	/**
-	 * Constructor which require context object in order to properly initialize entity helper classes.
+	 * Constructor which require context object in order to properly initialize
+	 * entity helper classes.
 	 * 
 	 * @param con
 	 *            PersistenceApplicationContext object
@@ -44,7 +47,8 @@ public class EntityWrapper {
 	 * @param entityHelperMap
 	 *            map contains entity helpers.
 	 */
-	public void setEntityHelperMap(Map<Class<?>, EntityHelper<?>> entityHelperMap) {
+	public void setEntityHelperMap(
+			Map<Class<?>, EntityHelper<?>> entityHelperMap) {
 		this.entityHelperMap = entityHelperMap;
 	}
 
@@ -72,7 +76,8 @@ public class EntityWrapper {
 
 	public <T> void saveOrUpdate(T entity) {
 		@SuppressWarnings("unchecked")
-		EntityHelper<T> entityHelper = (EntityHelper<T>) getEntityHelper(entity.getClass());
+		EntityHelper<T> entityHelper = (EntityHelper<T>) getEntityHelper(entity
+				.getClass());
 		entityHelper.saveOrUpdate(entity);
 	}
 
@@ -88,7 +93,8 @@ public class EntityWrapper {
 
 	@SuppressWarnings("unchecked")
 	private <T> EntityHelper<T> getEntityHelper(Class<T> clazz) {
-		// Check if there is EntityHelper for this class, if not try to initialize it and add into map.
+		// Check if there is EntityHelper for this class, if not try to
+		// initialize it and add into map.
 		EntityHelper<T> entityHelper = null;
 		if (entityHelperMap.containsKey(clazz)) {
 			entityHelper = (EntityHelper<T>) entityHelperMap.get(clazz);

@@ -48,8 +48,10 @@ public class RelationshipMetaDataProviderTest {
 
 		provider.addMetaData(cls, metaData);
 		Assert.assertNotNull(provider.getMetaData(cls));
-		Assert.assertNotNull(provider.getMetaData(cls).get(0).getRelationshipInfo().getCascade());
-		Assert.assertEquals(FetchType.LAZY, provider.getMetaData(cls).get(0).getRelationshipInfo().getFetch());
+		Assert.assertNotNull(provider.getMetaData(cls).get(0)
+				.getRelationshipInfo().getCascade());
+		Assert.assertEquals(FetchType.LAZY, provider.getMetaData(cls).get(0)
+				.getRelationshipInfo().getFetch());
 		Assert.assertNotNull(provider.getMetaDataByChild(DummyAttribute.class));
 
 	}

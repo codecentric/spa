@@ -7,7 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * RelationshipMetaDataProvider is singleton class containing {@link RelationshipMetaData} information obtained through
+ * RelationshipMetaDataProvider is singleton class containing
+ * {@link RelationshipMetaData} information obtained through
  * {@link EntityScanner} scanning process.
  * 
  * @see EntityScanner#scanClass(Class)
@@ -26,7 +27,8 @@ public class RelationshipMetaDataProvider {
 	}
 
 	/**
-	 * Method adds {@link RelationshipMetaData} to this provider. This object can be latter retrieved via
+	 * Method adds {@link RelationshipMetaData} to this provider. This object
+	 * can be latter retrieved via
 	 * {@link RelationshipMetaDataProvider#getMetaData(Class)} method.
 	 * 
 	 * @param cls
@@ -44,7 +46,8 @@ public class RelationshipMetaDataProvider {
 	}
 
 	/**
-	 * Method returns a list of {@link RelationshipMetaData} describing relationships between entity classes.
+	 * Method returns a list of {@link RelationshipMetaData} describing
+	 * relationships between entity classes.
 	 * 
 	 * @param cls
 	 *            class which database table is parent of the relationships
@@ -55,14 +58,16 @@ public class RelationshipMetaDataProvider {
 	}
 
 	/**
-	 * Method returns a list of {@link RelationshipMetaData} describing relationship between entity classes.
+	 * Method returns a list of {@link RelationshipMetaData} describing
+	 * relationship between entity classes.
 	 * 
 	 * @param cls
 	 *            class which database table is child of the relationships
 	 * @return list of {@link RelationshipMetaData}
 	 */
 	public List<RelationshipMetaData> getMetaDataByChild(Class<?> cls) {
-		List<RelationshipMetaData> result = new ArrayList<RelationshipMetaData>(0);
+		List<RelationshipMetaData> result = new ArrayList<RelationshipMetaData>(
+				0);
 
 		Collection<List<RelationshipMetaData>> meta = metaDataMap.values();
 		if (meta != null && !meta.isEmpty()) {
@@ -79,7 +84,7 @@ public class RelationshipMetaDataProvider {
 
 		return result;
 	}
-	
+
 	/**
 	 * Method clears all previously cached meta data.
 	 */

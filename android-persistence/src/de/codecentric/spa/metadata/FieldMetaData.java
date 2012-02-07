@@ -1,8 +1,8 @@
 package de.codecentric.spa.metadata;
 
 /**
- * This is data transfer object class that holds the information about class field scanning result done by
- * {@link EntityScanner}.
+ * This is data transfer object class that holds the information about class
+ * field scanning result done by {@link EntityScanner}.
  */
 public class FieldMetaData {
 

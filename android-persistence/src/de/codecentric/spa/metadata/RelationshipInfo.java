@@ -4,12 +4,12 @@ import de.codecentric.spa.annotations.CascadeType;
 import de.codecentric.spa.annotations.FetchType;
 
 public class RelationshipInfo {
-	
-    private CascadeType[] cascade;
+
+	private CascadeType[] cascade;
 
 	private FetchType fetch;
 
-    public CascadeType[] getCascade() {
+	public CascadeType[] getCascade() {
 		return cascade;
 	}
 
@@ -24,6 +24,5 @@ public class RelationshipInfo {
 	public void setFetch(FetchType fetch) {
 		this.fetch = fetch;
 	}
-
 
 }
