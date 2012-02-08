@@ -1,4 +1,4 @@
-package rs.codecentric.android.persistence.entity;
+package de.codecentric.spa.entity;
 
 import de.codecentric.spa.annotations.Id;
 

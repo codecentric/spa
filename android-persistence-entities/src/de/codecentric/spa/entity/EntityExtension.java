@@ -1,4 +1,4 @@
-package rs.codecentric.android.persistence.entity;
+package de.codecentric.spa.entity;
 
 
 @de.codecentric.spa.annotations.Entity
