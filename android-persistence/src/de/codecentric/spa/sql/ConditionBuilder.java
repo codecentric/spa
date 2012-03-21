@@ -11,7 +11,7 @@ public class ConditionBuilder {
 	/**
 	 * Enumeration describing supported operators that can be used for creating
 	 * SQL conditions.
-	 * 
+	 *
 	 * @see ConditionBuilder
 	 */
 	public static enum Operator {
@@ -52,7 +52,7 @@ public class ConditionBuilder {
 
 	/**
 	 * Default constructor.
-	 * 
+	 *
 	 * @param entityMData
 	 *            entity meta data
 	 */
@@ -65,7 +65,7 @@ public class ConditionBuilder {
 	/**
 	 * Method adds an expression in this condition. Null values are not
 	 * supported.
-	 * 
+	 *
 	 * @param fieldName
 	 * @param value
 	 * @param op
@@ -86,18 +86,18 @@ public class ConditionBuilder {
 			throw new IllegalStateException("Given value must not be null.");
 		}
 
-		sb.append(fld.getColumnName() + op.getString() + value);
+		sb.append(fld.getColumnName()).append(op.getString()).append(value);
 
 		return this;
 	}
 
 	/**
 	 * Method opens a group (brackets) inside a condition.
-	 * 
+	 *
 	 * @return builder
 	 */
 	public ConditionBuilder openGroup() {
-		sb.append("(");
+		sb.append('(');
 		groupingLevel++;
 
 		return this;
@@ -105,14 +105,14 @@ public class ConditionBuilder {
 
 	/**
 	 * Method closes a group (brackets) inside a condition.
-	 * 
+	 *
 	 * @return builder
 	 * @throws IllegalStateException
 	 *             when more groups are closed than is opened
 	 */
 	public ConditionBuilder closeGroup() throws IllegalStateException {
 		groupingLevel--;
-		sb.append(")");
+		sb.append(')');
 
 		if (groupingLevel < 0) {
 			throw new IllegalStateException(
@@ -135,7 +135,7 @@ public class ConditionBuilder {
 
 	/**
 	 * Method builds a condition string.
-	 * 
+	 *
 	 * @return condition string
 	 * @throws IllegalStateException
 	 */
