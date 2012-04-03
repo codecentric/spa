@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/root_layout" android:orientation="vertical">
+
+	<LinearLayout style="@style/rec_ctrl_container">
+		<TextView android:id="@+id/recLbl" style="@style/rec_lbl" android:text="@string/rec_explanation" />
+		<ImageButton android:id="@+id/recBtn" style="@style/rec_btn" />
+		<TextView android:id="@+id/timeLbl" style="@style/rec_lbl" />
+		<ProgressBar android:id="@+id/recProgress" style="@style/rec_progress" android:max="100"/>
+	</LinearLayout>
+	
+</LinearLayout>

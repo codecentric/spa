@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="menu_preferences_title">Preferences</string>
+    <string name="menu_txtnote_title">New textual note</string>
+    <string name="menu_listnotes_title">List notes</string>
+</resources>

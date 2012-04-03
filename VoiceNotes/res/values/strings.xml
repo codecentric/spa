@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VoiceNotes</string>
+    <string name="hint_tap">Tap here to type</string>
+   	<string name="hint_select">Tap here to select</string> 
+    
+    <string name="action_save">Save</string>
+    
+    <string name="google_maps_api_key">0ZI41n5taVtZsdSLcqCM8pb91QBj3dSXEoxj8zw</string>
+    <string name="address_not_found">Address could not be found.</string>
+    
+    <string name="set_exp_time">Set expiration time</string>
+    
+    <!-- Application preferences -->
+    <string name="rec_prefs_category">Recording preferences</string>
+    <string name="p_play_sounds">play_sounds</string>
+    <string name="play_sounds">Play sounds</string>
+    <string name="play_sounds_desc">Play sounds on recording actions</string>
+    <string name="p_vibrate_on_rec">vibrate_on_rec</string>
+    <string name="vibrate_on_rec">Phone vibrate</string>
+    <string name="vibrate_on_rec_desc">Vibrate device on recording actions</string>
+    <string name="p_bind_location">bind_location</string>
+    <string name="bind_location">Bind location</string>
+    <string name="bind_location_desc">Pair note with user\'s location</string>
+    
+</resources>

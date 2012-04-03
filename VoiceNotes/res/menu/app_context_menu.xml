@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<item android:id="@+id/app_ctx_menu_listnotes_btn" android:title="@string/menu_listnotes_title"
+		android:icon="@drawable/ic_menu_agenda" />
+		
+	<item android:id="@+id/app_ctx_menu_txtnote_btn" android:title="@string/menu_txtnote_title"
+		android:icon="@drawable/ic_menu_txt_note" />
+
+	<item android:id="@+id/app_ctx_menu_pref_btn" android:title="@string/menu_preferences_title"
+		android:icon="@drawable/ic_menu_preferences" />
+	
+</menu>

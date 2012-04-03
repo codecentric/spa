@@ -9,6 +9,11 @@
 	<description>Simple persistence library for Android build project</description>
 	<packaging>pom</packaging>
 	
+	<modules>
+		<module>../android-persistence</module>
+		<module>../android-persistence-entities</module>
+	</modules>
+	
 	<properties>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>

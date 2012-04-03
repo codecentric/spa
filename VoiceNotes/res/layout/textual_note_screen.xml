@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/root_layout" android:id="@+id/scroll_view">
+
+	<LinearLayout style="@style/root_layout.with_margins">
+
+		<TextView android:id="@+id/successLbl" style="@style/default_label"
+			android:gravity="center_horizontal" android:visibility="gone"
+			android:textColor="@color/label_ok_color" />
+
+		<TextView style="@style/default_label" android:text="@string/textual_note_title" />
+		<EditText android:id="@+id/note_title_txt" style="@style/default_input"
+			android:maxLength="30" />
+
+		<TextView style="@style/line_break" />
+
+		<TextView style="@style/default_label" android:text="@string/textual_note_text" />
+		<EditText android:id="@+id/note_text_txt" style="@style/default_input.multiline"
+			android:maxLength="300" />
+
+		<TextView style="@style/line_break" />
+
+		<LinearLayout android:id="@+id/due_time_containter"
+			style="@style/root_layout">
+			<TextView style="@style/default_label" android:text="@string/textual_note_due_time" />
+
+			<LinearLayout style="@style/root_layout"
+				android:orientation="horizontal">
+				<EditText android:id="@+id/note_due_time_txt"
+					style="@style/default_input.txt_note_due_time" />
+				<ImageButton android:id="@+id/alarmBtn" style="@style/alarm_btn"
+					android:src="@drawable/notify_alarm_add" />
+			</LinearLayout>
+		</LinearLayout>
+
+		<LinearLayout android:id="@+id/creation_time_containter"
+			style="@style/root_layout" android:visibility="visible">
+			<TextView android:id="@+id/note_creation_time_lbl" style="@style/default_label" />
+		</LinearLayout>
+
+		<TextView style="@style/line_break" />
+
+		<Button android:id="@+id/saveBtn" style="@style/default_button.image"
+			android:layout_gravity="right" android:text="@string/action_save"
+			android:drawableLeft="@drawable/save" />
+
+	</LinearLayout>
+
+</ScrollView>

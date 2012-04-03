@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="textual_note_title">Title:</string>
+	<string name="textual_note_text">Text:</string>
+	<string name="textual_note_location">Location:</string>
+	<string name="textual_note_creation_time">Created:</string>
+	<string name="textual_note_due_time">Due:</string>
+	
+	<string name="txt_note_empty_title">Title of textual note must not be empty.</string>
+	<string name="txt_note_empty_text">Text of textual note must not be empty.</string>
+	<string name="txt_note_due_date_empty_text">Due date of textual note must be defined.</string>
+	<string name="txt_note_due_date_passed">Due date already passed.</string>
+	
+	<string name="note_saved_ok">Textual note successfully saved.</string>
+</resources>

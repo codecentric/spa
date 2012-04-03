@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="rec_in_progress">Recording. Press button to stop.</string>
+	<string name="rec_explanation">Press button to start recording.</string>
+	<string name="max_time_to_record">15000</string><!-- in millis -->
+</resources>
