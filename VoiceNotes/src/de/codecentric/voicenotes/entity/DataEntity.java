@@ -1,4 +1,6 @@
-package de.codecentric.voicenotes.persistence.entity;
+package de.codecentric.voicenotes.entity;
+
+import de.codecentric.spa.annotations.Id;
 
 /**
  * Base entity class. All objects that should be persisted into database should
@@ -6,6 +8,7 @@ package de.codecentric.voicenotes.persistence.entity;
  */
 public abstract class DataEntity {
 
+	@Id
 	public long id;
 
 	/**

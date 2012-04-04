@@ -2,6 +2,7 @@ package de.codecentric.voicenotes;
 
 import java.util.List;
 
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,14 +14,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import de.codecentric.voicenotes.persistence.NoteEntityHelper;
-import de.codecentric.voicenotes.persistence.entity.Note;
+import de.codecentric.spa.EntityWrapper;
+import de.codecentric.spa.ctx.PersistenceApplicationContext;
+import de.codecentric.voicenotes.entity.Note;
 
-public class NoteListActivity extends PersistenceListActivity {
+public class NoteListActivity extends ListActivity {
 
 	private ListView listView;
-
-	private NoteEntityHelper entityHelper;
+	private EntityWrapper wrapper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,23 +30,20 @@ public class NoteListActivity extends PersistenceListActivity {
 
 		listView = (ListView) findViewById(android.R.id.list);
 
-		entityHelper = new NoteEntityHelper();
+		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		List<Note> entities = entityHelper.listAllNotes(dbHelper.getDatabase());
-		setListAdapter(new NoteListAdapter(this,
-				android.R.layout.simple_list_item_1, entities));
+		List<Note> entities = wrapper.listAll(Note.class);
+		setListAdapter(new NoteListAdapter(this, android.R.layout.simple_list_item_1, entities));
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View view, int pos,
-					long id) {
-				Intent intent = new Intent(NoteListActivity.this,
-						TextualNoteActivity.class);
+			public void onItemClick(AdapterView<?> arg0, View view, int pos, long id) {
+				Intent intent = new Intent(NoteListActivity.this, TextualNoteActivity.class);
 				intent.putExtra(Note.Extras.EXTRA_NOTE_ID, (Long) view.getTag());
 				startActivity(intent);
 			}
@@ -54,15 +52,13 @@ public class NoteListActivity extends PersistenceListActivity {
 
 	private class NoteListAdapter extends ArrayAdapter<Note> {
 
-		public NoteListAdapter(Context context, int textViewResourceId,
-				List<Note> objects) {
+		public NoteListAdapter(Context context, int textViewResourceId, List<Note> objects) {
 			super(context, textViewResourceId, objects);
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) getContext()
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View v = inflater.inflate(R.layout.note_list_item_view, null);
 
 			Note note = getItem(position);

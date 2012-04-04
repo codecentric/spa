@@ -17,15 +17,16 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import de.codecentric.spa.EntityWrapper;
+import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.voicenotes.context.Constants;
 import de.codecentric.voicenotes.context.PreferenceHelper;
-import de.codecentric.voicenotes.persistence.NoteEntityHelper;
-import de.codecentric.voicenotes.persistence.entity.Note;
+import de.codecentric.voicenotes.entity.Note;
 
 /**
  * Activity presenting the screen used for recording the voice note.
  */
-public class RecordActivity extends PersistenceActivity {
+public class RecordActivity extends BaseActivity {
 
 	/**
 	 * True if recording is in progress, otherwise false;
@@ -59,12 +60,11 @@ public class RecordActivity extends PersistenceActivity {
 
 	private Vibrator vibrator;
 
-	private NoteEntityHelper entityHelper;
-
 	private static final long vibrator_delay = 700;
 	private static final long delay = 997;
 
 	private Note aNote;
+	private EntityWrapper wrapper;
 
 	/**
 	 * Amount of time in milliseconds how long a voice note can be.
@@ -85,7 +85,7 @@ public class RecordActivity extends PersistenceActivity {
 		recProgressHandler = new Handler();
 		isRecording = false;
 
-		entityHelper = new NoteEntityHelper();
+		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
 		aNote = new Note();
 	}
 
@@ -101,17 +101,13 @@ public class RecordActivity extends PersistenceActivity {
 
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		doVibrateOnRec = vibrator != null
-				&& PreferenceHelper.getBooleanPreference(this,
-						getString(R.string.p_vibrate_on_rec));
+				&& PreferenceHelper.getBooleanPreference(this, getString(R.string.p_vibrate_on_rec));
 
-		playSounds = PreferenceHelper.getBooleanPreference(this,
-				getString(R.string.p_play_sounds));
+		playSounds = PreferenceHelper.getBooleanPreference(this, getString(R.string.p_play_sounds));
 		if (playSounds) {
 			startMediaPlayer = MediaPlayer.create(this, R.raw.beep);
 			stopMediaPlayer = MediaPlayer.create(this, R.raw.rec_over);
 		}
-
-		entityHelper.compileSQLStatements(dbHelper.getDatabase());
 	}
 
 	@Override
@@ -127,8 +123,6 @@ public class RecordActivity extends PersistenceActivity {
 
 		recProgressBar.setProgress(0);
 		timeLbl.setText("");
-
-		entityHelper.close();
 	}
 
 	@Override
@@ -248,11 +242,10 @@ public class RecordActivity extends PersistenceActivity {
 			if (aNote == null) {
 				aNote = new Note();
 			}
-			aNote.timeCreated = (new SimpleDateFormat(Constants.DATE_FORMAT))
-					.format(new Date());
+			aNote.timeCreated = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(new Date());
 			aNote.hasRecording = true;
 			aNote.recordingPath = recordingFileName;
-			entityHelper.saveOrUpdate(aNote);
+			wrapper.saveOrUpdate(aNote);
 		}
 
 		/**
@@ -263,8 +256,7 @@ public class RecordActivity extends PersistenceActivity {
 		 * @return generated file name
 		 */
 		private String generateAudioFileName() {
-			String fileName = Environment.getExternalStorageDirectory()
-					.getAbsolutePath();
+			String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 			fileName += "/voicenote_" + System.currentTimeMillis() + ".3gp";
 			return fileName;
 		}

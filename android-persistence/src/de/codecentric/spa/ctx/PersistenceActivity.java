@@ -16,9 +16,7 @@ public abstract class PersistenceActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		dbHelper = ((PersistenceApplicationContext) getApplication())
-				.getDatabaseHelper();
-
+		dbHelper = ((PersistenceApplicationContext) getApplication()).getDatabaseHelper();
 	}
 
 }

@@ -9,13 +9,10 @@ import de.codecentric.spa.ctx.PersistenceApplicationContext;
 /**
  * Wrapper for {@link EntityHelper}. Contains list of all helpers that can be
  * used.
- * 
- * @author zkovacevic
- * 
  */
 public class EntityWrapper {
 
-	// TODO Consider to make this class singleton.Map should be filled during
+	// TODO Consider to make this class singleton. Map should be filled during
 	// scanning phase, when persistent classes are discovered.
 	private Map<Class<?>, EntityHelper<?>> entityHelperMap;
 	private PersistenceApplicationContext cont;
@@ -47,8 +44,7 @@ public class EntityWrapper {
 	 * @param entityHelperMap
 	 *            map contains entity helpers.
 	 */
-	public void setEntityHelperMap(
-			Map<Class<?>, EntityHelper<?>> entityHelperMap) {
+	public void setEntityHelperMap(Map<Class<?>, EntityHelper<?>> entityHelperMap) {
 		this.entityHelperMap = entityHelperMap;
 	}
 
@@ -75,9 +71,10 @@ public class EntityWrapper {
 	}
 
 	public <T> void saveOrUpdate(T entity) {
+		// TODO consider returning boolean here in order to know if everything
+		// went fine
 		@SuppressWarnings("unchecked")
-		EntityHelper<T> entityHelper = (EntityHelper<T>) getEntityHelper(entity
-				.getClass());
+		EntityHelper<T> entityHelper = (EntityHelper<T>) getEntityHelper(entity.getClass());
 		entityHelper.saveOrUpdate(entity);
 	}
 

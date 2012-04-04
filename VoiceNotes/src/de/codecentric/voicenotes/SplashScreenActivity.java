@@ -1,11 +1,12 @@
 package de.codecentric.voicenotes;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import de.codecentric.voicenotes.context.ApplicationContext;
+import de.codecentric.voicenotes.context.VoiceNotesApplicationContext;
 
-public class SplashScreenActivity extends PersistenceActivity {
+public class SplashScreenActivity extends Activity {
 
 	private boolean isFirstRun;
 
@@ -20,13 +21,11 @@ public class SplashScreenActivity extends PersistenceActivity {
 		super.onResume();
 
 		// Initialize database state on first application run.
-		SharedPreferences settings = getSharedPreferences(
-				ApplicationContext.PREFS_NAME, 0);
-		isFirstRun = settings.getBoolean(
-				ApplicationContext.APP_FIRST_RUN_CHECK, true);
+		SharedPreferences settings = getSharedPreferences(VoiceNotesApplicationContext.PREFS_NAME, 0);
+		isFirstRun = settings.getBoolean(VoiceNotesApplicationContext.APP_FIRST_RUN_CHECK, true);
 		if (isFirstRun) {
 			SharedPreferences.Editor editor = settings.edit();
-			editor.putBoolean(ApplicationContext.APP_FIRST_RUN_CHECK, false);
+			editor.putBoolean(VoiceNotesApplicationContext.APP_FIRST_RUN_CHECK, false);
 			editor.commit();
 		}
 
@@ -53,13 +52,11 @@ public class SplashScreenActivity extends PersistenceActivity {
 					 * Called after splash times up. Do some action after splash
 					 * times up. Here we moved to another main activity class
 					 */
-					startActivity(new Intent(SplashScreenActivity.this,
-							RecordActivity.class));
+					startActivity(new Intent(SplashScreenActivity.this, RecordActivity.class));
 					finish();
 				}
 			}
 		};
 		welcomeThread.start();
 	}
-
 }

@@ -12,7 +12,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -27,10 +26,12 @@ import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import de.codecentric.spa.EntityWrapper;
+import de.codecentric.spa.ctx.PersistenceActivity;
+import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.voicenotes.context.Constants;
 import de.codecentric.voicenotes.context.OnetimeAlarmReceiver;
-import de.codecentric.voicenotes.persistence.NoteEntityHelper;
-import de.codecentric.voicenotes.persistence.entity.Note;
+import de.codecentric.voicenotes.entity.Note;
 
 /**
  * Activity used to show and edit textual note.
@@ -38,7 +39,7 @@ import de.codecentric.voicenotes.persistence.entity.Note;
 public class TextualNoteActivity extends PersistenceActivity {
 
 	private Note entity;
-	private NoteEntityHelper entityHelper;
+	private EntityWrapper wrapper;
 
 	private ScrollView scrollView;
 	private EditText noteTitleTxt;
@@ -62,11 +63,11 @@ public class TextualNoteActivity extends PersistenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.textual_note_screen);
+		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
 
 		entity = new Note();
-		entityHelper = new NoteEntityHelper();
 
-		// check if this activity is started in 'view/edit note' mode
+		// check if activity is started in 'view/edit note' or 'create' mode
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			entity.id = extras.getLong(Note.Extras.EXTRA_NOTE_ID);
@@ -82,52 +83,6 @@ public class TextualNoteActivity extends PersistenceActivity {
 		successLbl = (TextView) findViewById(R.id.successLbl);
 		alarmBtn = (ImageButton) findViewById(R.id.alarmBtn);
 		saveBtn = (Button) findViewById(R.id.saveBtn);
-	}
-
-	/**
-	 * Method creates date and time picker dialog.
-	 * 
-	 * @return date and time picker dialog
-	 */
-	private Dialog createDateTimePickerDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.set_exp_time);
-
-		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View v = inflater.inflate(R.layout.date_time_picker_view, null);
-		builder.setView(v);
-
-		((TimePicker) v.findViewById(R.id.time_picker)).setIs24HourView(true);
-
-		builder.setPositiveButton(android.R.string.ok,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						int hour = timePicker.getCurrentHour();
-						int minute = timePicker.getCurrentMinute();
-						int year = datePicker.getYear();
-						int month = datePicker.getMonth();
-						int day = datePicker.getDayOfMonth();
-
-						Calendar c = new GregorianCalendar(year, month, day,
-								hour, minute);
-						dueDate = c.getTime();
-						String timeString = (new SimpleDateFormat(
-								Constants.DATE_FORMAT)).format(dueDate);
-						noteDueTimeTxt.setText(timeString);
-
-						dialog.cancel();
-					}
-				});
-		builder.setNegativeButton(android.R.string.cancel,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-
-		return builder.show();
 	}
 
 	@Override
@@ -152,17 +107,13 @@ public class TextualNoteActivity extends PersistenceActivity {
 	protected void onResume() {
 		super.onResume();
 
-		SQLiteDatabase db = dbHelper.getDatabase();
-		entityHelper.compileSQLStatements(db);
 		if (entity.id != 0) {
-			entity = entityHelper.loadTextualNote(db, entity.id);
+			entity = wrapper.findById(entity.id, entity.getClass());
 			if (entity != null) {
 				presentTextualNoteData();
 
-				Intent intent = new Intent(TextualNoteActivity.this,
-						OnetimeAlarmReceiver.class);
-				pendingIntent = PendingIntent.getBroadcast(
-						TextualNoteActivity.this, 0, intent,
+				Intent intent = new Intent(TextualNoteActivity.this, OnetimeAlarmReceiver.class);
+				pendingIntent = PendingIntent.getBroadcast(TextualNoteActivity.this, 0, intent,
 						PendingIntent.FLAG_CANCEL_CURRENT);
 			}
 		}
@@ -175,43 +126,25 @@ public class TextualNoteActivity extends PersistenceActivity {
 		noteTitleTxt.setText(entity.title);
 		noteTextTxt.setText(entity.text);
 		noteDueTimeTxt.setText(entity.dueTime);
-		noteCreationTimeLbl
-				.setText(getString(R.string.textual_note_creation_time) + " "
-						+ entity.timeCreated);
+		noteCreationTimeLbl.setText(getString(R.string.textual_note_creation_time) + " " + entity.timeCreated);
 
 		if (entity.dueTime != null && entity.dueTime.length() > 0) {
 			String[] timeAndDateStringArr = entity.dueTime.split(" ");
 			String[] timeStringArr = timeAndDateStringArr[0].split(":");
 			String[] dateStringArr = timeAndDateStringArr[1].split("-");
-			Calendar c = new GregorianCalendar(
-					Integer.parseInt(dateStringArr[0]),
-					Integer.parseInt(dateStringArr[1]) - 1,
-					Integer.parseInt(dateStringArr[2]),
-					Integer.parseInt(timeStringArr[0]),
-					Integer.parseInt(timeStringArr[1]));
+			Calendar c = new GregorianCalendar(Integer.parseInt(dateStringArr[0]),
+					Integer.parseInt(dateStringArr[1]) - 1, Integer.parseInt(dateStringArr[2]),
+					Integer.parseInt(timeStringArr[0]), Integer.parseInt(timeStringArr[1]));
 			dueDate = c.getTime();
 		} else {
 			dueDate = null;
 		}
 
 		if (entity.hasAlarm) {
-			alarmBtn.setImageDrawable(getResources().getDrawable(
-					R.drawable.notify_alarm_remove));
+			alarmBtn.setImageDrawable(getResources().getDrawable(R.drawable.notify_alarm_remove));
 		} else {
-			alarmBtn.setImageDrawable(getResources().getDrawable(
-					R.drawable.notify_alarm_add));
+			alarmBtn.setImageDrawable(getResources().getDrawable(R.drawable.notify_alarm_add));
 		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		entityHelper.close();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
 	}
 
 	/**
@@ -226,8 +159,7 @@ public class TextualNoteActivity extends PersistenceActivity {
 		String text = noteTextTxt.getText().toString();
 		String dueTime = noteDueTimeTxt.getText().toString();
 
-		if ("".equals(title) || "".equals(text) || "".equals(dueTime)
-				|| new Date().after(dueDate)) {
+		if ("".equals(title) || "".equals(text) || "".equals(dueTime) || new Date().after(dueDate)) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
 			if ("".equals(title)) {
@@ -244,13 +176,12 @@ public class TextualNoteActivity extends PersistenceActivity {
 				noteDueTimeTxt.requestFocus();
 			}
 
-			builder.setPositiveButton(android.R.string.ok,
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
-						}
-					});
+			builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
 
 			d = builder.create();
 		}
@@ -266,23 +197,18 @@ public class TextualNoteActivity extends PersistenceActivity {
 				if (dateTimePickerDialog == null) {
 					dateTimePickerDialog = createDateTimePickerDialog();
 				}
-				timePicker = (TimePicker) dateTimePickerDialog
-						.findViewById(R.id.time_picker);
-				datePicker = (DatePicker) dateTimePickerDialog
-						.findViewById(R.id.date_picker);
+				timePicker = (TimePicker) dateTimePickerDialog.findViewById(R.id.time_picker);
+				datePicker = (DatePicker) dateTimePickerDialog.findViewById(R.id.date_picker);
 				String currentDueDate = noteDueTimeTxt.getText().toString();
 				if (!"".equals(currentDueDate)) {
 					String[] timeAndDateStringArr = currentDueDate.split(" ");
 
 					String[] timeStringArr = timeAndDateStringArr[0].split(":");
-					timePicker.setCurrentHour(Integer
-							.parseInt(timeStringArr[0]));
-					timePicker.setCurrentMinute(Integer
-							.parseInt(timeStringArr[1]));
+					timePicker.setCurrentHour(Integer.parseInt(timeStringArr[0]));
+					timePicker.setCurrentMinute(Integer.parseInt(timeStringArr[1]));
 
 					String[] dateStringArr = timeAndDateStringArr[1].split("-");
-					datePicker.updateDate(Integer.parseInt(dateStringArr[0]),
-							Integer.parseInt(dateStringArr[1]) - 1,
+					datePicker.updateDate(Integer.parseInt(dateStringArr[0]), Integer.parseInt(dateStringArr[1]) - 1,
 							Integer.parseInt(dateStringArr[2]));
 				}
 				dateTimePickerDialog.show();
@@ -290,6 +216,48 @@ public class TextualNoteActivity extends PersistenceActivity {
 			return true;
 		}
 
+	}
+
+	/**
+	 * Method creates date and time picker dialog.
+	 * 
+	 * @return date and time picker dialog
+	 */
+	private Dialog createDateTimePickerDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.set_exp_time);
+
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View v = inflater.inflate(R.layout.date_time_picker_view, null);
+		builder.setView(v);
+
+		((TimePicker) v.findViewById(R.id.time_picker)).setIs24HourView(true);
+
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				int hour = timePicker.getCurrentHour();
+				int minute = timePicker.getCurrentMinute();
+				int year = datePicker.getYear();
+				int month = datePicker.getMonth();
+				int day = datePicker.getDayOfMonth();
+
+				Calendar c = new GregorianCalendar(year, month, day, hour, minute);
+				dueDate = c.getTime();
+				String timeString = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(dueDate);
+				noteDueTimeTxt.setText(timeString);
+
+				dialog.cancel();
+			}
+		});
+		builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
+
+		return builder.show();
 	}
 
 	/**
@@ -314,28 +282,21 @@ public class TextualNoteActivity extends PersistenceActivity {
 			}
 
 			Bundle extras = new Bundle();
-			extras.putString(Constants.EXTRA_NOTIFICATION_TITLE, noteTitleTxt
-					.getText().toString());
-			extras.putString(Constants.EXTRA_NOTIFICATION_TEXT, noteTextTxt
-					.getText().toString());
-			extras.putString(Constants.EXTRA_NOTIFICATION_ACTIVITY_NAME,
-					"TextualNoteActivity");
+			extras.putString(Constants.EXTRA_NOTIFICATION_TITLE, noteTitleTxt.getText().toString());
+			extras.putString(Constants.EXTRA_NOTIFICATION_TEXT, noteTextTxt.getText().toString());
+			extras.putString(Constants.EXTRA_NOTIFICATION_ACTIVITY_NAME, "TextualNoteActivity");
 			extras.putLong(Note.Extras.EXTRA_NOTE_ID, entity.id);
 
 			entity.hasAlarm = true;
 			if (saveTextualNote()) {
-				Intent intent = new Intent(TextualNoteActivity.this,
-						OnetimeAlarmReceiver.class);
+				Intent intent = new Intent(TextualNoteActivity.this, OnetimeAlarmReceiver.class);
 				intent.putExtras(extras);
 
-				pendingIntent = PendingIntent.getBroadcast(
-						TextualNoteActivity.this, 0, intent,
+				pendingIntent = PendingIntent.getBroadcast(TextualNoteActivity.this, 0, intent,
 						PendingIntent.FLAG_CANCEL_CURRENT);
-				alarmManager.set(AlarmManager.RTC_WAKEUP, dueDate.getTime(),
-						pendingIntent);
+				alarmManager.set(AlarmManager.RTC_WAKEUP, dueDate.getTime(), pendingIntent);
 
-				alarmBtn.setImageDrawable(getResources().getDrawable(
-						R.drawable.notify_alarm_remove));
+				alarmBtn.setImageDrawable(getResources().getDrawable(R.drawable.notify_alarm_remove));
 			}
 		}
 
@@ -343,8 +304,7 @@ public class TextualNoteActivity extends PersistenceActivity {
 			entity.hasAlarm = false;
 			if (saveTextualNote()) {
 				alarmManager.cancel(pendingIntent);
-				alarmBtn.setImageDrawable(getResources().getDrawable(
-						R.drawable.notify_alarm_add));
+				alarmBtn.setImageDrawable(getResources().getDrawable(R.drawable.notify_alarm_add));
 			}
 		}
 
@@ -384,11 +344,10 @@ public class TextualNoteActivity extends PersistenceActivity {
 		entity.dueTime = noteDueTimeTxt.getText().toString();
 
 		if (entity.id == 0) {
-			entity.timeCreated = (new SimpleDateFormat(Constants.DATE_FORMAT))
-					.format(new Date());
+			entity.timeCreated = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(new Date());
 		}
 
-		entityHelper.saveOrUpdate(entity);
+		wrapper.saveOrUpdate(entity);
 		return true;
 	}
 
@@ -410,8 +369,7 @@ public class TextualNoteActivity extends PersistenceActivity {
 			}
 		};
 
-		uiUpdater.postDelayed(updateUITask,
-				Constants.UI_POST_NOTIFICATION_DELAY);
+		uiUpdater.postDelayed(updateUITask, Constants.UI_POST_NOTIFICATION_DELAY);
 	}
 
 }

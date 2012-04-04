@@ -1,8 +1,11 @@
-package de.codecentric.voicenotes.persistence.entity;
+package de.codecentric.voicenotes.entity;
+
+import de.codecentric.spa.annotations.Entity;
 
 /**
  * Class representing a single note.
  */
+@Entity
 public class Note extends DataEntity {
 
 	public String title;

@@ -22,6 +22,8 @@ import de.codecentric.spa.metadata.RelationshipMetaData.RelationshipType;
  */
 public class EntityScanner {
 
+	private static EntityMetaDataProvider entityMetaDataProvider = EntityMetaDataProvider.getInstance();
+
 	/**
 	 * Method scans the given class and puts it's descriptor in shape of
 	 * {@link EntityMetaData} into {@link EntityMetaDataProvider}. Class
@@ -51,8 +53,6 @@ public class EntityScanner {
 		if (isPersistentClass(cls)) {
 			// Check if class is already scanned and if it is - do nothing,
 			// otherwise - scan it.
-			EntityMetaDataProvider entityMetaDataProvider = EntityMetaDataProvider
-					.getInstance();
 			if (entityMetaDataProvider.getMetaData(cls) == null) {
 				result = doScan(cls);
 
@@ -63,8 +63,7 @@ public class EntityScanner {
 				}
 
 				// Check the relationship meta data related to this class.
-				List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider
-						.getInstance().getMetaData(cls);
+				List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaData(cls);
 				if (rMetaDataList != null && !rMetaDataList.isEmpty()) {
 
 					// Scan all relationship classes implicitly.
@@ -77,8 +76,7 @@ public class EntityScanner {
 							toScan = rmd.getChildClass();
 						}
 						if (entityMetaDataProvider.getMetaData(toScan) == null) {
-							scanClass(toScan,
-									!RelationshipType.ONE_TO_ONE.equals(rType));
+							scanClass(toScan, !RelationshipType.ONE_TO_ONE.equals(rType));
 						}
 					}
 
@@ -91,12 +89,9 @@ public class EntityScanner {
 						// between one-to-one relation in eager and lazy mode.
 						// In both cases
 						// there is EAGER strategy.
-						if (RelationshipType.ONE_TO_ONE.equals(rmd
-								.getRelationshipType())) {
-							EntityMetaData child = entityMetaDataProvider
-									.getMetaData(rmd.getChildClass());
-							result.getPersistentFields().addAll(
-									child.getPersistentFields());
+						if (RelationshipType.ONE_TO_ONE.equals(rmd.getRelationshipType())) {
+							EntityMetaData child = entityMetaDataProvider.getMetaData(rmd.getChildClass());
+							result.getPersistentFields().addAll(child.getPersistentFields());
 						}
 					}
 				}
@@ -130,8 +125,7 @@ public class EntityScanner {
 						result.addPersistentField(FieldScanner.scanField(f));
 					}
 				} else {
-					if (result.getIdentifier() == null
-							&& FieldScanner.isPersistentField(f)) {
+					if (result.getIdentifier() == null && FieldScanner.isPersistentField(f)) {
 						result.setIdentifier(FieldScanner.scanField(f));
 					}
 				}
@@ -164,8 +158,7 @@ public class EntityScanner {
 	 * 
 	 * @see EntityMetaData#getDescribingClass()
 	 */
-	private static EntityMetaData merge(EntityMetaData left,
-			EntityMetaData right) {
+	private static EntityMetaData merge(EntityMetaData left, EntityMetaData right) {
 		EntityMetaData result = new EntityMetaData(left.getDescribingClass());
 
 		if (right.getIdentifier() != null) {
@@ -229,8 +222,7 @@ public class EntityScanner {
 			while (m.find()) {
 				if (m.group().length() > 1) {
 					StringBuffer caps = new StringBuffer(m.group());
-					m.appendReplacement(sb,
-							caps.insert(m.group().length() - 1, '_').toString());
+					m.appendReplacement(sb, caps.insert(m.group().length() - 1, '_').toString());
 				} else {
 					m.appendReplacement(sb, ' ' + m.group());
 				}
