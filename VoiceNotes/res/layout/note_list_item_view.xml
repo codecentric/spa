@@ -7,6 +7,7 @@
 		<TextView android:id="@+id/item_txt1" style="@style/note_list_item.text" />
 		<LinearLayout style="@style/note_list_item.img_desc">
 			<ImageView android:id="@+id/sound_marker" style="@style/note_list_item.marker_img" android:src="@drawable/ic_sound" />
+			<ImageView android:id="@+id/text_marker" style="@style/note_list_item.marker_img" android:src="@drawable/ic_text" />
 			<!--
 			<ImageView android:id="@+id/photo_marker" style="@style/note_list_item.marker_img" android:src="@drawable/ic_camera" />
 			-->

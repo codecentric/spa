@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/root_layout" android:fitsSystemWindows="true">
+
+    <RadioGroup android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <RadioButton android:id="@+id/action_edit_note" style="@style/choose_action_item" android:text="@string/edit_note" />
+		<RadioButton android:id="@+id/action_listen_voice_note" style="@style/choose_action_item" android:text="@string/listen_voice_note" />
+		<RadioButton android:id="@+id/action_edit_comments" style="@style/choose_action_item" android:text="@string/view_comments"  />
+	</RadioGroup>
+	
+</LinearLayout>

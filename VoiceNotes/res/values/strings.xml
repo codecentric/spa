@@ -11,6 +11,11 @@
     
     <string name="set_exp_time">Set expiration time</string>
     
+    <string name="choose_action">Choose action</string>
+    <string name="listen_voice_note">Listen voice note</string>
+    <string name="edit_note">Edit note</string>
+    <string name="view_comments">View comments</string>
+    
     <!-- Application preferences -->
     <string name="rec_prefs_category">Recording preferences</string>
     <string name="p_play_sounds">play_sounds</string>

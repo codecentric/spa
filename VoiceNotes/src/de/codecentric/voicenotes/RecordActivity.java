@@ -28,6 +28,9 @@ import de.codecentric.voicenotes.entity.Note;
  */
 public class RecordActivity extends BaseActivity {
 
+	private static final long vibrator_delay = 700;
+	private static final long delay = 997;
+
 	/**
 	 * True if recording is in progress, otherwise false;
 	 */
@@ -45,26 +48,23 @@ public class RecordActivity extends BaseActivity {
 	 */
 	private boolean doVibrateOnRec;
 
-	private TextView recLbl;
-	private ImageButton recBtn;
-	private TextView timeLbl;
-	private ProgressBar recProgressBar;
+	private Note aNote;
+	private EntityWrapper wrapper;
 
-	private Handler recProgressHandler;
+	private TextView successLbl;
+	private TextView recLbl;
+	private TextView timeLbl;
+	private ImageButton recBtn;
+	private ProgressBar recProgressBar;
 
 	private MediaPlayer startMediaPlayer;
 	private MediaPlayer stopMediaPlayer;
-
 	private MediaRecorder mediaRecorder;
 	private String recordingFileName;
 
 	private Vibrator vibrator;
-
-	private static final long vibrator_delay = 700;
-	private static final long delay = 997;
-
-	private Note aNote;
-	private EntityWrapper wrapper;
+	private Handler recProgressHandler;
+	private Handler uiUpdater;
 
 	/**
 	 * Amount of time in milliseconds how long a voice note can be.
@@ -76,17 +76,19 @@ public class RecordActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.record_screen);
 
-		recBtn = (ImageButton) findViewById(R.id.recBtn);
+		successLbl = (TextView) findViewById(R.id.successLbl);
 		recLbl = (TextView) findViewById(R.id.recLbl);
 		timeLbl = (TextView) findViewById(R.id.timeLbl);
+		recBtn = (ImageButton) findViewById(R.id.recBtn);
 		recProgressBar = (ProgressBar) findViewById(R.id.recProgress);
+
+		aNote = new Note();
+		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
 
 		maxTime = Integer.parseInt(getString(R.string.max_time_to_record));
 		recProgressHandler = new Handler();
+		uiUpdater = new Handler();
 		isRecording = false;
-
-		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
-		aNote = new Note();
 	}
 
 	@Override
@@ -196,21 +198,11 @@ public class RecordActivity extends BaseActivity {
 		}
 
 		/**
-		 * Method handles UI components behavior when recording is stopped.
+		 * Method initializes progress bar and starts its updating.
 		 */
-		private void handleUIOnRecStop() {
-			if (doVibrateOnRec) {
-				vibrator.vibrate(vibrator_delay);
-			}
-			if (playSounds) {
-				stopMediaPlayer.start();
-				while (stopMediaPlayer.isPlaying()) {
-					// nothing to do, just wait
-				}
-			}
-			recBtn.setBackgroundResource(R.drawable.microphone_enabled_config);
-			recLbl.setText(R.string.rec_explanation);
-			recProgressHandler.removeCallbacks(updateProgressTask);
+		private void startProgress() {
+			startTime = System.currentTimeMillis();
+			recProgressHandler.postDelayed(updateProgressTask, 100);
 		}
 
 		/**
@@ -242,10 +234,69 @@ public class RecordActivity extends BaseActivity {
 			if (aNote == null) {
 				aNote = new Note();
 			}
+
+			saveAudioNoteAndFinish();
+		}
+
+		/**
+		 * Method saves audio note and finishes this activity.
+		 */
+		private void saveAudioNoteAndFinish() {
+			if (saveAudioNote()) {
+				issueSuccessNotification();
+			}
+		}
+
+		/**
+		 * Method forms a {@link Note} by reading the date from UI fields and
+		 * saves it.
+		 */
+		private boolean saveAudioNote() {
 			aNote.timeCreated = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(new Date());
 			aNote.hasRecording = true;
 			aNote.recordingPath = recordingFileName;
 			wrapper.saveOrUpdate(aNote);
+			return true;
+		}
+
+		/**
+		 * Method presents a notification for user stating that {@link Note} is
+		 * saved successfully.
+		 */
+		private void issueSuccessNotification() {
+			successLbl.setText(R.string.note_saved_ok);
+			successLbl.setVisibility(View.VISIBLE);
+
+			Runnable updateUITask = new Runnable() {
+				@Override
+				public void run() {
+					successLbl.setText("");
+					successLbl.setVisibility(View.INVISIBLE);
+					recProgressBar.setProgress(0);
+					recProgressHandler.removeCallbacks(updateProgressTask);
+					timeLbl.setText("");
+				}
+			};
+
+			uiUpdater.postDelayed(updateUITask, Constants.UI_POST_NOTIFICATION_DELAY);
+		}
+
+		/**
+		 * Method handles UI components behavior when recording is stopped.
+		 */
+		private void handleUIOnRecStop() {
+			if (doVibrateOnRec) {
+				vibrator.vibrate(vibrator_delay);
+			}
+			if (playSounds) {
+				stopMediaPlayer.start();
+				while (stopMediaPlayer.isPlaying()) {
+					// nothing to do, just wait
+				}
+			}
+			recBtn.setBackgroundResource(R.drawable.microphone_enabled_config);
+			recLbl.setText(R.string.rec_explanation);
+			recProgressHandler.removeCallbacks(updateProgressTask);
 		}
 
 		/**
@@ -259,17 +310,6 @@ public class RecordActivity extends BaseActivity {
 			String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 			fileName += "/voicenote_" + System.currentTimeMillis() + ".3gp";
 			return fileName;
-		}
-
-		/**
-		 * Method initializes progress bar and starts its updating.
-		 */
-		private void startProgress() {
-			startTime = System.currentTimeMillis();
-
-			recProgressBar.setProgress(0);
-			recProgressHandler.removeCallbacks(updateProgressTask);
-			recProgressHandler.postDelayed(updateProgressTask, 100);
 		}
 
 	}

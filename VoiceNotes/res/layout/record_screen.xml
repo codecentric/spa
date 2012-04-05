@@ -3,6 +3,10 @@
 	style="@style/root_layout" android:orientation="vertical">
 
 	<LinearLayout style="@style/rec_ctrl_container">
+	    <TextView android:id="@+id/successLbl" style="@style/default_label"
+			android:gravity="center_horizontal" android:visibility="invisible"
+			android:textColor="@color/label_ok_color" />
+	    
 		<TextView android:id="@+id/recLbl" style="@style/rec_lbl" android:text="@string/rec_explanation" />
 		<ImageButton android:id="@+id/recBtn" style="@style/rec_btn" />
 		<TextView android:id="@+id/timeLbl" style="@style/rec_lbl" />
