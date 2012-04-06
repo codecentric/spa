@@ -131,7 +131,9 @@ public class NoteListActivity extends ListActivity {
 				intent.putExtra(Note.Extras.EXTRA_NOTE_ID, note.id);
 				startActivity(intent);
 			} else if (button.getId() == R.id.action_listen_voice_note) {
-
+				Intent intent = new Intent(NoteListActivity.this, PlayVoiceNoteActivity.class);
+				intent.putExtra(Note.Extras.EXTRA_NOTE_ID, note.id);
+				startActivity(intent);
 			} else if (button.getId() == R.id.action_edit_comments) {
 
 			}

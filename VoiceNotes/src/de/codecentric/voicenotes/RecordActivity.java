@@ -28,9 +28,6 @@ import de.codecentric.voicenotes.entity.Note;
  */
 public class RecordActivity extends BaseActivity {
 
-	private static final long vibrator_delay = 700;
-	private static final long delay = 997;
-
 	/**
 	 * True if recording is in progress, otherwise false;
 	 */

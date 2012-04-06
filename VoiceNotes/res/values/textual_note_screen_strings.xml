@@ -11,5 +11,5 @@
 	<string name="txt_note_due_date_empty_text">Due date of textual note must be defined.</string>
 	<string name="txt_note_due_date_passed">Due date already passed.</string>
 	
-	<string name="note_saved_ok">Textual note successfully saved.</string>
+	<string name="note_saved_ok">Note successfully saved.</string>
 </resources>

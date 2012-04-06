@@ -31,6 +31,13 @@
 			</intent-filter>
 		</activity>
 		
+        <activity android:name=".PlayVoiceNoteActivity" android:screenOrientation="portrait">
+			<intent-filter>
+				<action android:name="android.intent.action.DEFAULT" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		
         <activity android:name=".PreferencesActivity" android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.DEFAULT" />
@@ -51,6 +58,8 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		
+		<service android:enabled="true" android:name=".PlayVoiceNoteService" />
 		
     </application>
 

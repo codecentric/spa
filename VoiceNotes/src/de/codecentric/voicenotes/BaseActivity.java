@@ -18,6 +18,9 @@ import de.codecentric.voicenotes.context.OptionsMenuSelectionHandler;
  */
 public abstract class BaseActivity extends Activity {
 
+	protected static final long vibrator_delay = 700;
+	protected static final long delay = 997;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

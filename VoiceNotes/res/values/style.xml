@@ -42,6 +42,18 @@
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_gravity">center</item>
 	</style>
+	<style name="play_btn">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_gravity">center</item>
+		<item name="android:background">@drawable/ic_play_config</item>
+	</style>
+	<style name="stop_btn">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_gravity">center</item>
+		<item name="android:background">@drawable/ic_stop_config</item>
+	</style>
 	<style name="default_label">
 		<item name="android:layout_width">fill_parent</item>
 		<item name="android:layout_height">wrap_content</item>

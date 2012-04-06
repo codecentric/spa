@@ -16,6 +16,9 @@
     <string name="edit_note">Edit note</string>
     <string name="view_comments">View comments</string>
     
+    <string name="play_explanation">Press button to start playback.</string>
+    <string name="stop_explanation">Playing. Press button to stop.</string>
+    
     <!-- Application preferences -->
     <string name="rec_prefs_category">Recording preferences</string>
     <string name="p_play_sounds">play_sounds</string>
