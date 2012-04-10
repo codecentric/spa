@@ -1,5 +1,7 @@
 package de.codecentric.voicenotes.entity;
 
+import java.util.Date;
+
 import de.codecentric.spa.annotations.Entity;
 
 /**
@@ -10,7 +12,7 @@ public class Note extends DataEntity {
 
 	public String title;
 	public String text;
-	public String dueTime;
+	public Date dueTime;
 	public boolean hasAlarm;
 	public boolean hasRecording;
 	public String recordingPath;
@@ -19,7 +21,7 @@ public class Note extends DataEntity {
 		super();
 		title = "";
 		text = "";
-		timeCreated = 0L;
+		timeCreated = null;
 		dueTime = null;
 		hasAlarm = false;
 		hasRecording = false;

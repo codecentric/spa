@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -676,6 +677,9 @@ public class EntityHelper<T> {
 						if (boolean.class.getName().equals(dataFld.getType().getName())
 								|| Boolean.class.getName().equals(dataFld.getType().getName())) {
 							values.put(mFld.getColumnName(), (Boolean) dataFld.get(object) ? 1 : 0);
+						} else if (Date.class.getName().equals(dataFld.getType().getName())) {
+							Date date = (Date) dataFld.get(object);
+							values.put(mFld.getColumnName(), date != null ? date.getTime() : null);
 						} else {
 							String value = dataFld.get(object) != null ? String.valueOf(dataFld.get(object)) : null;
 							values.put(mFld.getColumnName(), value);
@@ -701,6 +705,9 @@ public class EntityHelper<T> {
 							if (boolean.class.getName().equals(dataFld.getType().getName())
 									|| Boolean.class.getName().equals(dataFld.getType().getName())) {
 								values.put(mFld.getColumnName(), (Boolean) dataFld.get(particle) ? 1 : 0);
+							} else if (Date.class.getName().equals(dataFld.getType().getName())) {
+								Date date = (Date) dataFld.get(object);
+								values.put(mFld.getColumnName(), date != null ? date.getTime() : null);
 							} else {
 								String value = dataFld.get(object) != null ? String.valueOf(dataFld.get(object)) : null;
 								values.put(mFld.getColumnName(), value);
@@ -872,6 +879,11 @@ public class EntityHelper<T> {
 		} else if (boolean.class.getName().equals(typeName) || Boolean.class.getName().equals(typeName)) {
 
 			fld.set(data, c.getInt(idx) == 1 ? true : false);
+
+		} else if (Date.class.getName().equals(typeName)) {
+
+			Date d = new Date(c.getLong(idx));
+			fld.set(data, d);
 
 		}
 	}

@@ -1,5 +1,7 @@
 package de.codecentric.voicenotes.entity;
 
+import java.util.Date;
+
 import de.codecentric.spa.annotations.Id;
 
 /**
@@ -11,7 +13,7 @@ public abstract class DataEntity {
 	@Id
 	public long id;
 
-	public long timeCreated;
+	public Date timeCreated;
 
 	/**
 	 * Initializes an id property to zero value.

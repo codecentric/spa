@@ -1,6 +1,7 @@
 package de.codecentric.spa.sql;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -29,6 +30,7 @@ import java.util.HashMap;
  * <li>java.lang.Double - TYPE_REAL</li>
  * <li>java.lang.Boolean - TYPE_INT</li>
  * <li>java.lang.Character - TYPE_TEXT</li>
+ * <li>java.util.Date - TYPE_INT</li>
  * </ul>
  * 
  */
@@ -65,6 +67,8 @@ public class SQLiteTypeMapper {
 		typePairs.put(Character.class.getName(), TYPE_TEXT);
 
 		typePairs.put(byte[].class.getName(), TYPE_BLOB);
+
+		typePairs.put(Date.class.getName(), TYPE_INT);
 	}
 
 	/**

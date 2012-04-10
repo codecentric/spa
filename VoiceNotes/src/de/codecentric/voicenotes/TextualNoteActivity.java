@@ -1,5 +1,6 @@
 package de.codecentric.voicenotes;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -124,12 +126,14 @@ public class TextualNoteActivity extends BaseActivity {
 	private void presentTextualNoteData() {
 		noteTitleTxt.setText(entity.title);
 		noteTextTxt.setText(entity.text);
-		noteDueTimeTxt.setText(entity.dueTime);
-		String timeString = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(new Date(entity.timeCreated));
-		noteCreationTimeLbl.setText(getString(R.string.textual_note_creation_time) + " " + timeString);
+		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
+		String dueTimeString = sdf.format(entity.dueTime);
+		noteCreationTimeLbl.setText(getString(R.string.textual_note_creation_time) + " "
+				+ sdf.format(entity.timeCreated));
 
-		if (entity.dueTime != null && entity.dueTime.length() > 0) {
-			String[] timeAndDateStringArr = entity.dueTime.split(" ");
+		if (dueTimeString != null && dueTimeString.length() > 0) {
+			noteDueTimeTxt.setText(dueTimeString);
+			String[] timeAndDateStringArr = dueTimeString.split(" ");
 			String[] timeStringArr = timeAndDateStringArr[0].split(":");
 			String[] dateStringArr = timeAndDateStringArr[1].split("-");
 			Calendar c = new GregorianCalendar(Integer.parseInt(dateStringArr[0]),
@@ -341,10 +345,16 @@ public class TextualNoteActivity extends BaseActivity {
 
 		entity.title = noteTitleTxt.getText().toString();
 		entity.text = noteTextTxt.getText().toString();
-		entity.dueTime = noteDueTimeTxt.getText().toString();
+		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
+		try {
+			entity.dueTime = sdf.parse(noteDueTimeTxt.getText().toString());
+		} catch (ParseException e) {
+			Log.e(this.getClass().getName(), "Error parsing date: " + noteDueTimeTxt.getText().toString());
+			entity.dueTime = null;
+		}
 
 		if (entity.id == 0) {
-			entity.timeCreated = (new Date()).getTime();
+			entity.timeCreated = new Date();
 		}
 
 		wrapper.saveOrUpdate(entity);
