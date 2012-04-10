@@ -317,7 +317,5 @@ public class RecordActivity extends BaseActivity {
 			fileName += "/voicenote_" + System.currentTimeMillis() + ".3gp";
 			return fileName;
 		}
-
 	}
-
 }
