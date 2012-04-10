@@ -145,6 +145,7 @@ public class NoteListActivity extends ListActivity {
 		fixSingleRadioButtonLayout(radioButtons[0], scale);
 		fixSingleRadioButtonLayout(radioButtons[1], scale);
 		fixSingleRadioButtonLayout(radioButtons[2], scale);
+		fixSingleRadioButtonLayout(radioButtons[3], scale);
 
 		if (!aNote.hasRecording) {
 			radioButtons[1].setVisibility(View.INVISIBLE);

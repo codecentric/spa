@@ -15,6 +15,7 @@
     <string name="listen_voice_note">Listen voice note</string>
     <string name="edit_note">Edit note</string>
     <string name="view_comments">View comments</string>
+    <string name="delete_note">Delete Note</string>
     
     <string name="play_explanation">Press button to start playback.</string>
     <string name="stop_explanation">Playing. Press button to stop.</string>
@@ -31,7 +32,6 @@
     <string name="bind_location">Bind location</string>
     <string name="bind_location_desc">Pair note with user\'s location</string>
     
-    <string name="delete_all">Delete All</string>
-    <string name="delete_note">Delete Note</string>
+    <string name="delete_all">Delete All</string>    
     
 </resources>
