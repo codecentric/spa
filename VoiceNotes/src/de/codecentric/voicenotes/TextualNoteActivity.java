@@ -27,7 +27,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import de.codecentric.spa.EntityWrapper;
-import de.codecentric.spa.ctx.PersistenceActivity;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.voicenotes.context.Constants;
 import de.codecentric.voicenotes.context.OnetimeAlarmReceiver;
@@ -36,7 +35,7 @@ import de.codecentric.voicenotes.entity.Note;
 /**
  * Activity used to show and edit textual note.
  */
-public class TextualNoteActivity extends PersistenceActivity {
+public class TextualNoteActivity extends BaseActivity {
 
 	private Note entity;
 	private EntityWrapper wrapper;
@@ -63,9 +62,9 @@ public class TextualNoteActivity extends PersistenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.textual_note_screen);
-		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
 
 		entity = new Note();
+		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplicationContext());
 
 		// check if activity is started in 'view/edit note' or 'create' mode
 		Bundle extras = getIntent().getExtras();
@@ -126,7 +125,8 @@ public class TextualNoteActivity extends PersistenceActivity {
 		noteTitleTxt.setText(entity.title);
 		noteTextTxt.setText(entity.text);
 		noteDueTimeTxt.setText(entity.dueTime);
-		noteCreationTimeLbl.setText(getString(R.string.textual_note_creation_time) + " " + entity.timeCreated);
+		String timeString = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(new Date(entity.timeCreated));
+		noteCreationTimeLbl.setText(getString(R.string.textual_note_creation_time) + " " + timeString);
 
 		if (entity.dueTime != null && entity.dueTime.length() > 0) {
 			String[] timeAndDateStringArr = entity.dueTime.split(" ");
@@ -344,7 +344,7 @@ public class TextualNoteActivity extends PersistenceActivity {
 		entity.dueTime = noteDueTimeTxt.getText().toString();
 
 		if (entity.id == 0) {
-			entity.timeCreated = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(new Date());
+			entity.timeCreated = (new Date()).getTime();
 		}
 
 		wrapper.saveOrUpdate(entity);

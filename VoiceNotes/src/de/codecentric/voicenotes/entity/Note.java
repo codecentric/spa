@@ -10,7 +10,6 @@ public class Note extends DataEntity {
 
 	public String title;
 	public String text;
-	public String timeCreated;
 	public String dueTime;
 	public boolean hasAlarm;
 	public boolean hasRecording;
@@ -20,8 +19,8 @@ public class Note extends DataEntity {
 		super();
 		title = "";
 		text = "";
-		timeCreated = "";
-		dueTime = "";
+		timeCreated = 0L;
+		dueTime = null;
 		hasAlarm = false;
 		hasRecording = false;
 		recordingPath = "";

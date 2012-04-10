@@ -1,7 +1,6 @@
 package de.codecentric.voicenotes;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
@@ -18,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import de.codecentric.spa.EntityWrapper;
+import de.codecentric.spa.ctx.PersistenceActivity;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.voicenotes.context.Constants;
 import de.codecentric.voicenotes.context.PreferenceHelper;
@@ -25,6 +25,9 @@ import de.codecentric.voicenotes.entity.Note;
 
 /**
  * Activity presenting the screen used for recording the voice note.
+ * 
+ * This activity is not extending {@link PersistenceActivity} but rather using
+ * {@link EntityWrapper} to do database operations.
  */
 public class RecordActivity extends BaseActivity {
 
@@ -249,7 +252,7 @@ public class RecordActivity extends BaseActivity {
 		 * saves it.
 		 */
 		private boolean saveAudioNote() {
-			aNote.timeCreated = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(new Date());
+			aNote.timeCreated = (new Date()).getTime();
 			aNote.hasRecording = true;
 			aNote.recordingPath = recordingFileName;
 			wrapper.saveOrUpdate(aNote);

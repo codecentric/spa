@@ -444,7 +444,8 @@ public class EntityHelper<T> {
 	 * Cascade delete in case entity is annotated using CascadeType.REMOVE or
 	 * CascadeType.ALL .
 	 * 
-	 * @param entity
+	 * @param id
+	 * @param db
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
@@ -676,7 +677,8 @@ public class EntityHelper<T> {
 								|| Boolean.class.getName().equals(dataFld.getType().getName())) {
 							values.put(mFld.getColumnName(), (Boolean) dataFld.get(object) ? 1 : 0);
 						} else {
-							values.put(mFld.getColumnName(), String.valueOf(dataFld.get(object)));
+							String value = dataFld.get(object) != null ? String.valueOf(dataFld.get(object)) : null;
+							values.put(mFld.getColumnName(), value);
 						}
 					} catch (NoSuchFieldException e) {
 						// If the field is not found, we should try a search
@@ -700,7 +702,8 @@ public class EntityHelper<T> {
 									|| Boolean.class.getName().equals(dataFld.getType().getName())) {
 								values.put(mFld.getColumnName(), (Boolean) dataFld.get(particle) ? 1 : 0);
 							} else {
-								values.put(mFld.getColumnName(), String.valueOf(dataFld.get(particle)));
+								String value = dataFld.get(object) != null ? String.valueOf(dataFld.get(object)) : null;
+								values.put(mFld.getColumnName(), value);
 							}
 						}
 					}

@@ -1,5 +1,7 @@
 package de.codecentric.voicenotes.layout;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import de.codecentric.voicenotes.R;
+import de.codecentric.voicenotes.context.Constants;
 import de.codecentric.voicenotes.entity.Note;
 
 public class NoteListAdapter extends ArrayAdapter<Note> {
@@ -31,7 +34,7 @@ public class NoteListAdapter extends ArrayAdapter<Note> {
 
 		String itemTitle = note.title;
 		if (itemTitle == null || "".equals(itemTitle)) {
-			itemTitle = note.timeCreated;
+			itemTitle = (new SimpleDateFormat(Constants.DATE_FORMAT)).format(new Date(note.timeCreated));
 		}
 		TextView txt = (TextView) v.findViewById(R.id.item_txt1);
 		txt.setText(itemTitle);

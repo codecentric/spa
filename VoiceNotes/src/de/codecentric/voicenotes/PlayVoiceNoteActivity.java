@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -39,9 +38,6 @@ public class PlayVoiceNoteActivity extends BaseActivity {
 
 	private Vibrator vibrator;
 	private Handler playProgressHandler;
-	private Handler uiUpdater;
-
-	private MediaPlayer mediaPlayer;
 
 	private boolean isPlaying;
 
@@ -56,7 +52,6 @@ public class PlayVoiceNoteActivity extends BaseActivity {
 		isPlaying = false;
 
 		playProgressHandler = new Handler();
-		uiUpdater = new Handler();
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -104,10 +99,11 @@ public class PlayVoiceNoteActivity extends BaseActivity {
 				currentMediaPosition += updateDelay;
 
 				int seconds = (int) (currentMediaPosition / 1000);
+				long tenthsOfASecond = (currentMediaPosition % 1000) / 100;
 				if (seconds < 10) {
-					playTimeLbl.setText("0:0" + seconds);
+					playTimeLbl.setText("0" + seconds + ":" + tenthsOfASecond);
 				} else {
-					playTimeLbl.setText("0:" + seconds);
+					playTimeLbl.setText(seconds + ":" + tenthsOfASecond);
 				}
 
 				if (currentMediaPosition < mediaDuration) {
@@ -168,20 +164,6 @@ public class PlayVoiceNoteActivity extends BaseActivity {
 			}
 			stopService(new Intent(PlayVoiceNoteActivity.this, PlayVoiceNoteService.class));
 			playProgressHandler.removeCallbacks(updateProgressTask);
-		}
-
-	}
-
-	class PlayVoiceNoteAsyncTask extends AsyncTask<Uri, Void, Boolean> {
-
-		private MediaPlayer mediaPlayer;
-		private Uri fileUri;
-
-		@Override
-		protected Boolean doInBackground(Uri... params) {
-			mediaPlayer = MediaPlayer.create(PlayVoiceNoteActivity.this, params[0]);
-			mediaPlayer.start();
-			return null;
 		}
 
 	}

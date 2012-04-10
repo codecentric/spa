@@ -11,6 +11,8 @@ public abstract class DataEntity {
 	@Id
 	public long id;
 
+	public long timeCreated;
+
 	/**
 	 * Initializes an id property to zero value.
 	 */

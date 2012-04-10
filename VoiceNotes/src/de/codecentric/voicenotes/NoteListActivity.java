@@ -20,6 +20,11 @@ import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.voicenotes.entity.Note;
 import de.codecentric.voicenotes.layout.NoteListAdapter;
 
+/**
+ * Activity lists of notes.
+ * 
+ * This activity uses {@link EntityWrapper} to do all database work.
+ */
 public class NoteListActivity extends ListActivity {
 
 	private ListView listView;
