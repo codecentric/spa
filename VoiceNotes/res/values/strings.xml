@@ -31,4 +31,6 @@
     <string name="bind_location">Bind location</string>
     <string name="bind_location_desc">Pair note with user\'s location</string>
     
+    <string name="delete_all">Delete All</string>
+    
 </resources>
