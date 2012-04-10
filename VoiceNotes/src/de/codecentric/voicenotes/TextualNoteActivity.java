@@ -127,7 +127,7 @@ public class TextualNoteActivity extends BaseActivity {
 		noteTitleTxt.setText(entity.title);
 		noteTextTxt.setText(entity.text);
 		SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
-		String dueTimeString = sdf.format(entity.dueTime);
+		String dueTimeString = entity.dueTime != null ? sdf.format(entity.dueTime) : "";
 		noteCreationTimeLbl.setText(getString(R.string.textual_note_creation_time) + " "
 				+ sdf.format(entity.timeCreated));
 

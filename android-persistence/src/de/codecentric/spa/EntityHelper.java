@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import de.codecentric.spa.annotations.CascadeType;
@@ -22,8 +21,6 @@ import de.codecentric.spa.metadata.EntityMetaData;
 import de.codecentric.spa.metadata.EntityMetaDataProvider;
 import de.codecentric.spa.metadata.EntityScanner.StringUtils;
 import de.codecentric.spa.metadata.FieldMetaData;
-import de.codecentric.spa.metadata.RelationshipMetaData;
-import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
 import de.codecentric.spa.sql.ConditionBuilder;
 import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 
@@ -37,6 +34,7 @@ public class EntityHelper<T> {
 
 	private PersistenceApplicationContext context;
 	private EntityMetaData entityMData;
+	private ContentValuesPreparer contentValuesPreparer;
 
 	private String selectAllStmtSQL;
 	private String selectSingleStmtSQL;
@@ -57,6 +55,7 @@ public class EntityHelper<T> {
 	public EntityHelper(PersistenceApplicationContext ctx, Class<?> cls) {
 		context = ctx;
 		entityMData = ctx.getEntityMetaDataProvider().getMetaData(cls);
+		contentValuesPreparer = new ContentValuesPreparer(this);
 
 		SQLStatements sql = ctx.getSQLProvider().getSQL(cls);
 		selectSingleStmtSQL = sql.getSelectSingleSQL();
@@ -310,11 +309,12 @@ public class EntityHelper<T> {
 			if (idVal != 0) { // update entity
 				String idColumn = entityMData.getIdentifier().getColumnName();
 				String where = idColumn + " = ?";
-				db.update(entityMData.getTableName(), prepareValues(object, entityMData), where,
+				db.update(entityMData.getTableName(), contentValuesPreparer.prepareValues(object, entityMData), where,
 						new String[] { String.valueOf(idVal) });
 				updateCascadingRelationColumns(object, db);
 			} else { // new one, insert it
-				long rowId = db.insert(entityMData.getTableName(), null, prepareValues(object, entityMData));
+				long rowId = db.insert(entityMData.getTableName(), null,
+						contentValuesPreparer.prepareValues(object, entityMData));
 				if (rowId != -1) {
 					setIdentifierValue(object, rowId);
 					insertCascadingRelationColumns(object, db);
@@ -355,7 +355,7 @@ public class EntityHelper<T> {
 				for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
 					Object child = iterator.next();
 					long rowId = db.insert(ehChild.entityMData.getTableName(), null,
-							prepareValues(child, ehChild.entityMData));
+							contentValuesPreparer.prepareValues(child, ehChild.entityMData));
 					if (rowId != -1) {
 						setIdentifierValue(child, rowId);
 					}
@@ -370,7 +370,7 @@ public class EntityHelper<T> {
 				Object result = ehParent.findById(primaryKeyFieldChild.getLong(parent));
 				if (result == null) {
 					long rowId = db.insert(ehParent.entityMData.getTableName(), null,
-							prepareValues(parent, entityMData));
+							contentValuesPreparer.prepareValues(parent, entityMData));
 					if (rowId != -1) {
 						setIdentifierValue(parent, rowId);
 						field.set(entity, parent);
@@ -401,7 +401,8 @@ public class EntityHelper<T> {
 		long idVal = getIdentifierValue(entity, eh);
 		String idColumn = eh.entityMData.getIdentifier().getColumnName();
 		String where = idColumn + " = ?";
-		int rowsAffected = db.update(eh.entityMData.getTableName(), prepareValues(entity, eh.entityMData), where,
+		int rowsAffected = db.update(eh.entityMData.getTableName(),
+				contentValuesPreparer.prepareValues(entity, eh.entityMData), where,
 				new String[] { String.valueOf(idVal) });
 		if (rowsAffected == 0) {
 			throw new RuntimeException("No row to update!Database not consistent");
@@ -649,101 +650,6 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method returns {@link ContentValues} object filled with column names and
-	 * values.
-	 * 
-	 * NOTE: method does not work properly with byte[] parameters.
-	 * 
-	 * @param object
-	 *            object which mapping is done
-	 * @return {@link ContentValues} object filled with column names and values
-	 * @throws NoSuchFieldException
-	 * @throws IllegalAccessException
-	 */
-	private ContentValues prepareValues(final Object object, EntityMetaData emd) {
-		ContentValues values = new ContentValues();
-
-		try {
-
-			List<FieldMetaData> mFieldList = emd.getPersistentFields();
-			if (mFieldList != null && !mFieldList.isEmpty()) {
-
-				for (FieldMetaData mFld : mFieldList) {
-					Field dataFld = null;
-					try {
-						dataFld = object.getClass().getField(mFld.getFieldName());
-						// TODO this part is problematic
-						// probably should be done better
-						if (boolean.class.getName().equals(dataFld.getType().getName())
-								|| Boolean.class.getName().equals(dataFld.getType().getName())) {
-							values.put(mFld.getColumnName(), (Boolean) dataFld.get(object) ? 1 : 0);
-						} else if (Date.class.getName().equals(dataFld.getType().getName())) {
-							Date date = (Date) dataFld.get(object);
-							values.put(mFld.getColumnName(), date != null ? date.getTime() : null);
-						} else {
-							String value = dataFld.get(object) != null ? String.valueOf(dataFld.get(object)) : null;
-							values.put(mFld.getColumnName(), value);
-						}
-					} catch (NoSuchFieldException e) {
-						// If the field is not found, we should try a search
-						// through complex structure.
-						// Try to find a field of it's type and than field of
-						// given name in substructure.
-						Field[] flds = object.getClass().getFields();
-						Object particle = null;
-						for (Field f : flds) {
-							Class<?> particleClass = f.getType();
-							if (particleClass.equals(mFld.getDeclaringClass())) {
-								dataFld = particleClass.getField(mFld.getFieldName());
-								particle = f.get(object);
-								break;
-							}
-						}
-						if (dataFld != null) {
-							// TODO this part is problematic
-							// probably should be done better
-							if (boolean.class.getName().equals(dataFld.getType().getName())
-									|| Boolean.class.getName().equals(dataFld.getType().getName())) {
-								values.put(mFld.getColumnName(), (Boolean) dataFld.get(particle) ? 1 : 0);
-							} else if (Date.class.getName().equals(dataFld.getType().getName())) {
-								Date date = (Date) dataFld.get(object);
-								values.put(mFld.getColumnName(), date != null ? date.getTime() : null);
-							} else {
-								String value = dataFld.get(object) != null ? String.valueOf(dataFld.get(object)) : null;
-								values.put(mFld.getColumnName(), value);
-							}
-						}
-					}
-				}
-
-			}
-
-			// Go through relationship meta data of given entity's class...
-			List<RelationshipMetaData> rMFieldList = RelationshipMetaDataProvider.getInstance().getMetaDataByChild(
-					object.getClass());
-			if (rMFieldList != null && !rMFieldList.isEmpty()) {
-				EntityTransactionCache eCache = EntityTransactionCache.getInstance();
-				for (RelationshipMetaData rmd : rMFieldList) {
-					Class<?> parentClass = rmd.getParentClass();
-					// Try to find parent entity in entity transaction cache and
-					// use it's values.
-					Object parentEntity = eCache.read(parentClass);
-					if (parentEntity != null) {
-						values.put(
-								rmd.getForeignKeyColumnName(),
-								getIdentifierValue(parentEntity,
-										new EntityHelper<Class<?>>(context, parentEntity.getClass())));
-					}
-				}
-			}
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
-		}
-
-		return values;
-	}
-
-	/**
 	 * Method reads cursor column at specific index into the entity data
 	 * parameter and sets that value as value of data field described with mFld
 	 * parameter.
@@ -882,7 +788,8 @@ public class EntityHelper<T> {
 
 		} else if (Date.class.getName().equals(typeName)) {
 
-			Date d = new Date(c.getLong(idx));
+			long l = c.getLong(idx);
+			Date d = l != 0 ? new Date(c.getLong(idx)) : null;
 			fld.set(data, d);
 
 		}
@@ -921,6 +828,15 @@ public class EntityHelper<T> {
 		}
 
 		return retVal;
+	}
+
+	/**
+	 * Method returns current {@link PersistenceApplicationContext}.
+	 * 
+	 * @return
+	 */
+	public PersistenceApplicationContext getPersistenceApplicationContext() {
+		return context;
 	}
 
 }

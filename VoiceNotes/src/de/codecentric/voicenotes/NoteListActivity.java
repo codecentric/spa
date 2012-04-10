@@ -40,8 +40,7 @@ public class NoteListActivity extends ListActivity {
 		setContentView(R.layout.list_note_screen);
 
 		listView = (ListView) findViewById(android.R.id.list);
-		wrapper = new EntityWrapper(
-				(PersistenceApplicationContext) getApplication());
+		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
 	}
 
 	@Override
@@ -49,8 +48,7 @@ public class NoteListActivity extends ListActivity {
 		super.onStart();
 
 		noteList = wrapper.listAll(Note.class);
-		setListAdapter(new NoteListAdapter(this,
-				android.R.layout.simple_list_item_1, noteList));
+		setListAdapter(new NoteListAdapter(this, android.R.layout.simple_list_item_1, noteList));
 		listView.setOnItemClickListener(new NoteListItemClickListener());
 	}
 
@@ -69,8 +67,7 @@ public class NoteListActivity extends ListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		wrapper.deleteAll(Note.class);
-		Toast.makeText(getApplicationContext(), "Notes deleted",
-				Toast.LENGTH_SHORT).show();
+		Toast.makeText(getApplicationContext(), "Notes deleted", Toast.LENGTH_SHORT).show();
 		startActivity(getIntent());
 		finish();
 		return true;
@@ -79,8 +76,7 @@ public class NoteListActivity extends ListActivity {
 	private class NoteListItemClickListener implements OnItemClickListener {
 
 		@Override
-		public void onItemClick(AdapterView<?> adapterView, View view, int pos,
-				long id) {
+		public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
 			Note note = noteList.get(pos);
 			if (note.hasRecording) {
 
@@ -101,16 +97,12 @@ public class NoteListActivity extends ListActivity {
 		builder.setTitle(R.string.choose_action);
 
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View dialogView = inflater.inflate(
-				R.layout.action_chooser_dialog, null);
+		final View dialogView = inflater.inflate(R.layout.action_chooser_dialog, null);
 
 		RadioButton[] radioArray = new RadioButton[3];
-		radioArray[0] = (RadioButton) dialogView
-				.findViewById(R.id.action_edit_note);
-		radioArray[1] = (RadioButton) dialogView
-				.findViewById(R.id.action_listen_voice_note);
-		radioArray[2] = (RadioButton) dialogView
-				.findViewById(R.id.action_edit_comments);
+		radioArray[0] = (RadioButton) dialogView.findViewById(R.id.action_edit_note);
+		radioArray[1] = (RadioButton) dialogView.findViewById(R.id.action_listen_voice_note);
+		radioArray[2] = (RadioButton) dialogView.findViewById(R.id.action_edit_comments);
 
 		fixRadioButtonsLayout(aNote, radioArray);
 		builder.setView(dialogView);
@@ -133,15 +125,12 @@ public class NoteListActivity extends ListActivity {
 	}
 
 	private void fixSingleRadioButtonLayout(RadioButton radioBtn, float scale) {
-		radioBtn.setPadding(radioBtn.getPaddingLeft()
-				+ (int) (10.0f * scale + 0.5f), radioBtn.getPaddingTop(),
+		radioBtn.setPadding(radioBtn.getPaddingLeft() + (int) (10.0f * scale + 0.5f), radioBtn.getPaddingTop(),
 				radioBtn.getPaddingRight(), radioBtn.getPaddingBottom());
 	}
 
-	private void attachRadioButtonListeners(Dialog dialog, Note note,
-			RadioButton... radioButtons) {
-		OnClickListener actionChooserClickListener = new ActionChooserClickListener(
-				dialog, note);
+	private void attachRadioButtonListeners(Dialog dialog, Note note, RadioButton... radioButtons) {
+		OnClickListener actionChooserClickListener = new ActionChooserClickListener(dialog, note);
 		radioButtons[0].setOnClickListener(actionChooserClickListener);
 		radioButtons[1].setOnClickListener(actionChooserClickListener);
 		radioButtons[2].setOnClickListener(actionChooserClickListener);
@@ -161,13 +150,11 @@ public class NoteListActivity extends ListActivity {
 		public void onClick(View view) {
 			RadioButton button = (RadioButton) view;
 			if (button.getId() == R.id.action_edit_note) {
-				Intent intent = new Intent(NoteListActivity.this,
-						TextualNoteActivity.class);
+				Intent intent = new Intent(NoteListActivity.this, TextualNoteActivity.class);
 				intent.putExtra(Note.Extras.EXTRA_NOTE_ID, note.id);
 				startActivity(intent);
 			} else if (button.getId() == R.id.action_listen_voice_note) {
-				Intent intent = new Intent(NoteListActivity.this,
-						PlayVoiceNoteActivity.class);
+				Intent intent = new Intent(NoteListActivity.this, PlayVoiceNoteActivity.class);
 				intent.putExtra(Note.Extras.EXTRA_NOTE_ID, note.id);
 				startActivity(intent);
 			} else if (button.getId() == R.id.action_edit_comments) {
