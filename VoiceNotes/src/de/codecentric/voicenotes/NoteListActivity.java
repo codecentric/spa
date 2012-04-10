@@ -66,11 +66,28 @@ public class NoteListActivity extends ListActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		wrapper.deleteAll(Note.class);
-		Toast.makeText(getApplicationContext(), "Notes deleted", Toast.LENGTH_SHORT).show();
-		startActivity(getIntent());
-		finish();
-		return true;
+		boolean handled = false;
+
+		switch (item.getItemId()) {
+		case R.id.delete_all_btn: {
+			wrapper.deleteAll(Note.class);
+			Toast.makeText(getApplicationContext(), "Notes deleted", Toast.LENGTH_SHORT).show();
+			startActivity(getIntent());
+			finish();
+			break;
+		}
+
+		case R.id.app_ctx_menu_txtnote_btn: {
+			Intent intent = new Intent(this, TextualNoteActivity.class);
+			if (intent != null) {
+				startActivity(intent);
+				handled = true;
+			}
+			break;
+		}
+		}
+
+		return handled;
 	}
 
 	private class NoteListItemClickListener implements OnItemClickListener {
@@ -99,10 +116,11 @@ public class NoteListActivity extends ListActivity {
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View dialogView = inflater.inflate(R.layout.action_chooser_dialog, null);
 
-		RadioButton[] radioArray = new RadioButton[3];
+		RadioButton[] radioArray = new RadioButton[4];
 		radioArray[0] = (RadioButton) dialogView.findViewById(R.id.action_edit_note);
 		radioArray[1] = (RadioButton) dialogView.findViewById(R.id.action_listen_voice_note);
 		radioArray[2] = (RadioButton) dialogView.findViewById(R.id.action_edit_comments);
+		radioArray[3] = (RadioButton) dialogView.findViewById(R.id.action_delete_note);
 
 		fixRadioButtonsLayout(aNote, radioArray);
 		builder.setView(dialogView);
@@ -118,6 +136,7 @@ public class NoteListActivity extends ListActivity {
 		fixSingleRadioButtonLayout(radioButtons[0], scale);
 		fixSingleRadioButtonLayout(radioButtons[1], scale);
 		fixSingleRadioButtonLayout(radioButtons[2], scale);
+		fixSingleRadioButtonLayout(radioButtons[3], scale);
 
 		if (!aNote.hasRecording) {
 			radioButtons[1].setVisibility(View.INVISIBLE);
@@ -134,6 +153,7 @@ public class NoteListActivity extends ListActivity {
 		radioButtons[0].setOnClickListener(actionChooserClickListener);
 		radioButtons[1].setOnClickListener(actionChooserClickListener);
 		radioButtons[2].setOnClickListener(actionChooserClickListener);
+		radioButtons[3].setOnClickListener(actionChooserClickListener);
 	}
 
 	private class ActionChooserClickListener implements View.OnClickListener {
@@ -159,10 +179,20 @@ public class NoteListActivity extends ListActivity {
 				startActivity(intent);
 			} else if (button.getId() == R.id.action_edit_comments) {
 
+			} else if (button.getId() == R.id.action_delete_note) {
+				String msg = "";
+				try {
+					wrapper.delete(note.id, Note.class);
+					((NoteListAdapter) getListAdapter()).remove(note);
+					msg = "Note deleted";
+				} catch (Exception e) {
+					msg = "Error deleting note";
+				}
+
+				Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 			}
+
 			dialog.cancel();
 		}
-
 	}
-
 }

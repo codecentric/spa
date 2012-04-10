@@ -6,6 +6,7 @@
         <RadioButton android:id="@+id/action_edit_note" style="@style/choose_action_item" android:text="@string/edit_note" />
 		<RadioButton android:id="@+id/action_listen_voice_note" style="@style/choose_action_item" android:text="@string/listen_voice_note" />
 		<RadioButton android:id="@+id/action_edit_comments" style="@style/choose_action_item" android:text="@string/view_comments"  />
+		<RadioButton android:id="@+id/action_delete_note" style="@style/choose_action_item" android:text="@string/delete_note"  />
 	</RadioGroup>
 	
 </LinearLayout>

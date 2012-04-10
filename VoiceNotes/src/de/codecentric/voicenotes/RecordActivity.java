@@ -83,8 +83,7 @@ public class RecordActivity extends BaseActivity {
 		recProgressBar = (ProgressBar) findViewById(R.id.recProgress);
 
 		aNote = new Note();
-		wrapper = new EntityWrapper(
-				(PersistenceApplicationContext) getApplication());
+		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
 
 		maxTime = Integer.parseInt(getString(R.string.max_time_to_record));
 		recProgressHandler = new Handler();
@@ -104,11 +103,9 @@ public class RecordActivity extends BaseActivity {
 
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		doVibrateOnRec = vibrator != null
-				&& PreferenceHelper.getBooleanPreference(this,
-						getString(R.string.p_vibrate_on_rec));
+				&& PreferenceHelper.getBooleanPreference(this, getString(R.string.p_vibrate_on_rec));
 
-		playSounds = PreferenceHelper.getBooleanPreference(this,
-				getString(R.string.p_play_sounds));
+		playSounds = PreferenceHelper.getBooleanPreference(this, getString(R.string.p_play_sounds));
 		if (playSounds) {
 			startMediaPlayer = MediaPlayer.create(this, R.raw.beep);
 			stopMediaPlayer = MediaPlayer.create(this, R.raw.rec_over);
@@ -282,8 +279,7 @@ public class RecordActivity extends BaseActivity {
 				}
 			};
 
-			uiUpdater.postDelayed(updateUITask,
-					Constants.UI_POST_NOTIFICATION_DELAY);
+			uiUpdater.postDelayed(updateUITask, Constants.UI_POST_NOTIFICATION_DELAY);
 		}
 
 		/**
@@ -312,12 +308,10 @@ public class RecordActivity extends BaseActivity {
 		 * @return generated file name
 		 */
 		private String generateAudioFileName() {
-			String fileName = Environment.getExternalStorageDirectory()
-					.getAbsolutePath();
+			String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 			fileName += "/voicenote_" + System.currentTimeMillis() + ".3gp";
 			return fileName;
 		}
-
 	}
 
 }
