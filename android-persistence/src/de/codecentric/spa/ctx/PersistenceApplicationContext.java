@@ -59,12 +59,8 @@ public abstract class PersistenceApplicationContext extends Application {
 	 * 
 	 * @param cls
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void inspectClass(Class<?> cls) {
 		EntityScanner.scanClass(cls, true);
-		if (EntityScanner.isPersistentClass(cls)) {
-			entityWrapper.putEntityHelper(cls, new EntityHelper(this, cls));
-		}
 	}
 
 	/**

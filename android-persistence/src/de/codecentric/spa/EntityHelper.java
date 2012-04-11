@@ -55,7 +55,7 @@ public class EntityHelper<T> {
 	public EntityHelper(PersistenceApplicationContext ctx, Class<?> cls) {
 		context = ctx;
 		entityMData = ctx.getEntityMetaDataProvider().getMetaData(cls);
-		contentValuesPreparer = new ContentValuesPreparer(ctx, cls);
+		contentValuesPreparer = new ContentValuesPreparer(ctx);
 
 		SQLStatements sql = ctx.getSQLProvider().getSQL(cls);
 		selectSingleStmtSQL = sql.getSelectSingleSQL();
@@ -494,12 +494,10 @@ public class EntityHelper<T> {
 	 * 
 	 * @param entity
 	 */
-	@SuppressWarnings("unchecked")
 	private void deleteEntity(Object entity) {
-		EntityHelper<Class<?>> eh = context.getEntityHelper(entity.getClass());
-		Long idVal = eh.getIdentifierValue(entity);
-		String idColumn = eh.entityMData.getIdentifier().getColumnName();
-		String tableName = eh.entityMData.getTableName();
+		Long idVal = getIdentifierValue(entity);
+		String idColumn = entityMData.getIdentifier().getColumnName();
+		String tableName = entityMData.getTableName();
 		String where = idColumn + " = ?";
 		int count = context.getDatabaseHelper().getDatabase()
 				.delete(tableName, where, new String[] { String.valueOf(idVal) });

@@ -2,6 +2,7 @@ package de.codecentric.voicenotes.context;
 
 import android.app.Application;
 import android.database.sqlite.SQLiteOpenHelper;
+import de.codecentric.spa.EntityHelper;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.spa.metadata.EntityMetaData;
 import de.codecentric.spa.sql.SQLGenerator;
@@ -60,6 +61,10 @@ public class VoiceNotesApplicationContext extends PersistenceApplicationContext 
 						SQLStatements sql = SQLGenerator.generateSQL(metaData);
 						sqlProvider.addSQL(cls, sql);
 					}
+
+					// ... instantiate entity helpers for every persistent class
+					// ... when SQL statements are ready
+					entityWrapper.putEntityHelper(cls, new EntityHelper(this, cls));
 				}
 			}
 

@@ -19,11 +19,9 @@ import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
 public class ContentValuesPreparer {
 
 	private PersistenceApplicationContext context;
-	private Class<?> clazz;
 
-	public ContentValuesPreparer(PersistenceApplicationContext context, Class<?> cls) {
+	public ContentValuesPreparer(PersistenceApplicationContext context) {
 		this.context = context;
-		this.clazz = cls;
 	}
 
 	/**
@@ -147,7 +145,6 @@ public class ContentValuesPreparer {
 	 * @param values
 	 * @param object
 	 */
-	@SuppressWarnings("unchecked")
 	private void prepareRelationshipFieldValues(final ContentValues values, final Object object) {
 		// Go through relationship meta data of given entity's class...
 		List<RelationshipMetaData> rMFieldList = RelationshipMetaDataProvider.getInstance().getMetaDataByChild(
@@ -160,7 +157,7 @@ public class ContentValuesPreparer {
 				// use it's values.
 				Object parentEntity = eCache.read(parentClass);
 				if (parentEntity != null) {
-					EntityHelper entityHelper = context.getEntityHelper(clazz);
+					EntityHelper entityHelper = context.getEntityHelper(parentClass);
 					values.put(rmd.getForeignKeyColumnName(), entityHelper.getIdentifierValue(parentEntity));
 				}
 			}
