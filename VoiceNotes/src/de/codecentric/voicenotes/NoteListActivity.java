@@ -40,7 +40,7 @@ public class NoteListActivity extends ListActivity {
 		setContentView(R.layout.list_note_screen);
 
 		listView = (ListView) findViewById(android.R.id.list);
-		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
+		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
 	}
 
 	@Override

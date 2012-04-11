@@ -55,7 +55,7 @@ public class EntityHelper<T> {
 	public EntityHelper(PersistenceApplicationContext ctx, Class<?> cls) {
 		context = ctx;
 		entityMData = ctx.getEntityMetaDataProvider().getMetaData(cls);
-		contentValuesPreparer = new ContentValuesPreparer(this);
+		contentValuesPreparer = new ContentValuesPreparer(ctx, cls);
 
 		SQLStatements sql = ctx.getSQLProvider().getSQL(cls);
 		selectSingleStmtSQL = sql.getSelectSingleSQL();
@@ -111,6 +111,7 @@ public class EntityHelper<T> {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void readRelationColumnsForEntity(T entity, Class<?> cls) throws IllegalArgumentException,
 			IllegalAccessException {
 		// in case there are one-many or many-to-one relations read values from
@@ -119,31 +120,35 @@ public class EntityHelper<T> {
 		for (Field field : fields) {
 			if (field.getAnnotation(OneToMany.class) != null
 					&& field.getAnnotation(OneToMany.class).fetch().equals(FetchType.EAGER)) {
+
 				// Load "many" part of association. In this class it will be
 				// referred as child.
 				Type genericParameterTypes = field.getGenericType();
-				@SuppressWarnings("unchecked")
 				Class<T> childClass = (Class<T>) ((ParameterizedType) genericParameterTypes).getActualTypeArguments()[0];
-				EntityHelper<Class<?>> eh = new EntityHelper<Class<?>>(context, childClass);
+				EntityHelper eh = context.getEntityHelper(childClass);
 				String columnName = getColumnName(field);
 				Field primaryKeyField = getPrimaryKeyField(cls.getDeclaredFields());
+
 				// TODO Check is it possible to make this more efficient.
 				// This approach is necessarily because EntityHelper is
 				// different for child entity.
 				List<Class<?>> children = eh.findBy(" where " + columnName + "=" + primaryKeyField.get(entity));
 				field.set(entity, children);
+
 			} else if (field.getAnnotation(ManyToOne.class) != null
 					&& field.getAnnotation(ManyToOne.class).fetch().equals(FetchType.EAGER)) {
+
 				// Load "one" part of association. In this class it will be
 				// referred as parent.
 				Class<?> parentClass = field.getType();
 				String columnName = getColumnName(field);
 				String foreignKeyColumnValue = getForeignKeyValue(entity, columnName);
-				EntityHelper<Class<?>> ehParent = new EntityHelper<Class<?>>(context, parentClass);
+				EntityHelper ehParent = context.getEntityHelper(parentClass);
 				Object parent = ehParent.findById(Long.parseLong(foreignKeyColumnValue));
 				if (parent != null) {
 					field.set(entity, parent);
 				}
+
 			}
 		}
 	}
@@ -304,7 +309,7 @@ public class EntityHelper<T> {
 		db.beginTransaction();
 
 		try {
-			Long idVal = getIdentifierValue(object, new EntityHelper<Class<?>>(context, object.getClass()));
+			Long idVal = getIdentifierValue(object);
 
 			if (idVal != 0) { // update entity
 				String idColumn = entityMData.getIdentifier().getColumnName();
@@ -336,6 +341,7 @@ public class EntityHelper<T> {
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
+	@SuppressWarnings("rawtypes")
 	private void insertCascadingRelationColumns(Object entity, SQLiteDatabase db) throws IllegalArgumentException,
 			IllegalAccessException {
 		CascadeType[] acceptedCascadeTypes = { CascadeType.PERSIST, CascadeType.ALL };
@@ -351,7 +357,7 @@ public class EntityHelper<T> {
 				Class<?> childClass = (Class<?>) ((ParameterizedType) genericParameterTypes).getActualTypeArguments()[0];
 				@SuppressWarnings("unchecked")
 				List<Class<?>> children = (List<Class<?>>) field.get(entity);
-				EntityHelper<Class<?>> ehChild = new EntityHelper<Class<?>>(context, childClass);
+				EntityHelper ehChild = context.getEntityHelper(childClass);
 				for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
 					Object child = iterator.next();
 					Long rowId = db.insert(ehChild.entityMData.getTableName(), null,
@@ -365,7 +371,7 @@ public class EntityHelper<T> {
 				// this as default behavior .
 				Class<?> parentClass = (Class<?>) field.getGenericType();
 				Object parent = field.get(entity);
-				EntityHelper<Class<?>> ehParent = new EntityHelper<Class<?>>(context, parentClass);
+				EntityHelper ehParent = context.getEntityHelper(parentClass);
 				Field primaryKeyFieldChild = getPrimaryKeyField(parentClass.getDeclaredFields());
 				Object result = ehParent.findById(primaryKeyFieldChild.getLong(parent));
 				if (result == null) {
@@ -375,12 +381,12 @@ public class EntityHelper<T> {
 						setIdentifierValue(parent, rowId);
 						field.set(entity, parent);
 						eCache.cache(parent);
-						updateEntity(entity, db);
+						updateEntity(entity);
 					}
 				} else {
 					field.set(entity, parent);
 					eCache.cache(parent);
-					updateEntity(entity, db);
+					updateEntity(entity);
 				}
 			}
 		}
@@ -391,19 +397,19 @@ public class EntityHelper<T> {
 	 * Helper method to update given entity.
 	 * 
 	 * @param entity
-	 * @param db
 	 * @param field
 	 * @param parent
 	 * @throws IllegalAccessException
 	 */
-	private void updateEntity(Object entity, SQLiteDatabase db) throws IllegalAccessException {
-		EntityHelper<Class<?>> eh = new EntityHelper<Class<?>>(context, entity.getClass());
-		Long idVal = getIdentifierValue(entity, eh);
-		String idColumn = eh.entityMData.getIdentifier().getColumnName();
+	private void updateEntity(Object entity) throws IllegalAccessException {
+		Long idVal = getIdentifierValue(entity);
+		String idColumn = entityMData.getIdentifier().getColumnName();
 		String where = idColumn + " = ?";
-		int rowsAffected = db.update(eh.entityMData.getTableName(),
-				contentValuesPreparer.prepareValues(entity, eh.entityMData), where,
-				new String[] { String.valueOf(idVal) });
+		int rowsAffected = context
+				.getDatabaseHelper()
+				.getDatabase()
+				.update(entityMData.getTableName(), contentValuesPreparer.prepareValues(entity, entityMData), where,
+						new String[] { String.valueOf(idVal) });
 		if (rowsAffected == 0) {
 			throw new RuntimeException("No row to update!Database not consistent");
 		}
@@ -430,13 +436,13 @@ public class EntityHelper<T> {
 				List<Class<?>> children = (List<Class<?>>) field.get(object);
 				for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
 					Object child = iterator.next();
-					updateEntity(child, db);
+					updateEntity(child);
 				}
 			} else if (field.getAnnotation(ManyToOne.class) != null
 					&& (isProperCascadeType(field.getAnnotation(ManyToOne.class).cascade(), acceptedCascadeTypes))) {
 				// Take the parent from child and do the update
 				Object parent = field.get(object);
-				updateEntity(parent, db);
+				updateEntity(parent);
 			}
 
 		}
@@ -447,12 +453,10 @@ public class EntityHelper<T> {
 	 * CascadeType.ALL .
 	 * 
 	 * @param id
-	 * @param db
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
-	private void deleteCascadingRelationColumns(Long id, SQLiteDatabase db) throws IllegalArgumentException,
-			IllegalAccessException {
+	private void deleteCascadingRelationColumns(Long id) throws IllegalArgumentException, IllegalAccessException {
 		// in case id=-1, this will be indicator that deletion should be
 		// performed for all entries.
 		CascadeType[] acceptedCascadeTypes = { CascadeType.REMOVE, CascadeType.ALL };
@@ -468,7 +472,7 @@ public class EntityHelper<T> {
 					List<Class<?>> children = (List<Class<?>>) field.get(object);
 					for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
 						Object child = iterator.next();
-						deleteEntity(child, db);
+						deleteEntity(child);
 					}
 				} else {
 					// parent id=-1, which indicates that all entries from
@@ -477,7 +481,7 @@ public class EntityHelper<T> {
 					Type genericParameterTypes = field.getGenericType();
 					Class<?> childClass = (Class<?>) ((ParameterizedType) genericParameterTypes)
 							.getActualTypeArguments()[0];
-					EntityHelper<Class<?>> ehChild = new EntityHelper<Class<?>>(context, childClass);
+					EntityHelper ehChild = context.getEntityHelper(childClass);
 					ehChild.deleteAll();
 				}
 
@@ -489,15 +493,16 @@ public class EntityHelper<T> {
 	 * Delete given entity from database table.
 	 * 
 	 * @param entity
-	 * @param db
 	 */
-	private void deleteEntity(Object entity, SQLiteDatabase db) {
-		EntityHelper<Class<?>> eh = new EntityHelper<Class<?>>(context, entity.getClass());
-		Long idVal = getIdentifierValue(entity, eh);
+	@SuppressWarnings("unchecked")
+	private void deleteEntity(Object entity) {
+		EntityHelper<Class<?>> eh = context.getEntityHelper(entity.getClass());
+		Long idVal = eh.getIdentifierValue(entity);
 		String idColumn = eh.entityMData.getIdentifier().getColumnName();
 		String tableName = eh.entityMData.getTableName();
 		String where = idColumn + " = ?";
-		int count = db.delete(tableName, where, new String[] { String.valueOf(idVal) });
+		int count = context.getDatabaseHelper().getDatabase()
+				.delete(tableName, where, new String[] { String.valueOf(idVal) });
 		if (count == 0) {
 			throw new RuntimeException("No entry was deleted. Database not consistent!");
 		}
@@ -538,7 +543,7 @@ public class EntityHelper<T> {
 			String idColumn = entityMData.getIdentifier().getColumnName();
 			String where = idColumn + " = ?";
 			// first delete children, then parent
-			deleteCascadingRelationColumns(id, db);
+			deleteCascadingRelationColumns(id);
 			int count = db.delete(tableName, where, new String[] { String.valueOf(id) });
 
 			db.setTransactionSuccessful();
@@ -561,7 +566,7 @@ public class EntityHelper<T> {
 		try {
 			String tableName = entityMData.getTableName();
 			db.delete(tableName, null, new String[] {});
-			deleteCascadingRelationColumns(-1L, db);
+			deleteCascadingRelationColumns(-1L);
 			db.setTransactionSuccessful();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -615,14 +620,13 @@ public class EntityHelper<T> {
 	 * Method returns the value of the identifier field.
 	 * 
 	 * @param entity
-	 * @param eh
 	 * @return identifier value
 	 */
-	protected Long getIdentifierValue(final Object entity, EntityHelper<Class<?>> eh) {
+	protected Long getIdentifierValue(final Object entity) {
 		try {
 			Long idValue;
 
-			FieldMetaData identifier = eh.entityMData.getIdentifier();
+			FieldMetaData identifier = entityMData.getIdentifier();
 
 			// Try to find object in entity cache...
 			Object obj = EntityTransactionCache.getInstance().read(identifier.getDeclaringClass());

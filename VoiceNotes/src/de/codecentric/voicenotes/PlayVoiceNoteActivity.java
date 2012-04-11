@@ -46,7 +46,7 @@ public class PlayVoiceNoteActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.listen_audio_note_screen);
 
-		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplicationContext());
+		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
 		note = null;
 
 		isPlaying = false;

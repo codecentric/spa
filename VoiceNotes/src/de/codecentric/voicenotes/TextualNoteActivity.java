@@ -66,7 +66,7 @@ public class TextualNoteActivity extends BaseActivity {
 		setContentView(R.layout.textual_note_screen);
 
 		entity = new Note();
-		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplicationContext());
+		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
 
 		// check if activity is started in 'view/edit note' or 'create' mode
 		Bundle extras = getIntent().getExtras();

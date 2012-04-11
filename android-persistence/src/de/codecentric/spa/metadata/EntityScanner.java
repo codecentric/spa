@@ -191,7 +191,7 @@ public class EntityScanner {
 	 * @param cls
 	 * @return true if the class is annotated with {@link Entity} annotation.
 	 */
-	private static boolean isPersistentClass(Class<?> cls) {
+	public static boolean isPersistentClass(Class<?> cls) {
 		Entity e = cls.getAnnotation(Entity.class);
 		return e != null;
 	}

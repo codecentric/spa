@@ -83,7 +83,7 @@ public class RecordActivity extends BaseActivity {
 		recProgressBar = (ProgressBar) findViewById(R.id.recProgress);
 
 		aNote = new Note();
-		wrapper = new EntityWrapper((PersistenceApplicationContext) getApplication());
+		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
 
 		maxTime = Integer.parseInt(getString(R.string.max_time_to_record));
 		recProgressHandler = new Handler();

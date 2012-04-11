@@ -7,15 +7,15 @@ import java.util.Map;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 
 /**
- * Wrapper for {@link EntityHelper}. Contains list of all helpers that can be
- * used.
+ * Singleton wrapper for {@link EntityHelper}. Contains list of all helpers that
+ * can be used.
  */
 public class EntityWrapper {
 
-	// TODO Consider making this class singleton. Map should be filled during
-	// scanning phase, when persistent classes are discovered.
+	private static EntityWrapper INSTANCE;
+
 	private Map<Class<?>, EntityHelper<?>> entityHelperMap;
-	private PersistenceApplicationContext cont;
+	private PersistenceApplicationContext context;
 
 	/**
 	 * Constructor which require context object in order to properly initialize
@@ -24,28 +24,23 @@ public class EntityWrapper {
 	 * @param con
 	 *            PersistenceApplicationContext object
 	 */
-	public EntityWrapper(PersistenceApplicationContext context) {
-		cont = context;
-		entityHelperMap = new HashMap<Class<?>, EntityHelper<?>>(0);
+	private EntityWrapper(PersistenceApplicationContext context) {
+		this.context = context;
+		entityHelperMap = new HashMap<Class<?>, EntityHelper<?>>();
 	}
 
 	/**
-	 * Returns map which contains EntityClass-EntityHelper pairs.
+	 * Factory method.
 	 * 
-	 * @return map contains entity-helper pairs
+	 * @param context
+	 *            application persistence context
+	 * @return the singleton instance of this class
 	 */
-	public Map<Class<?>, EntityHelper<?>> getEntityHelperMap() {
-		return entityHelperMap;
-	}
-
-	/**
-	 * Set map with entity-helper pairs.
-	 * 
-	 * @param entityHelperMap
-	 *            map contains entity helpers.
-	 */
-	public void setEntityHelperMap(Map<Class<?>, EntityHelper<?>> entityHelperMap) {
-		this.entityHelperMap = entityHelperMap;
+	public static EntityWrapper getInstance(PersistenceApplicationContext context) {
+		if (INSTANCE == null) {
+			INSTANCE = new EntityWrapper(context);
+		}
+		return INSTANCE;
 	}
 
 	/**
@@ -79,7 +74,8 @@ public class EntityWrapper {
 	}
 
 	/**
-	 * Return entity helper for given entity class.
+	 * Return entity helper for given entity class or null if none is already
+	 * instantiated.
 	 * 
 	 * @param <T>
 	 *            entity type
@@ -89,15 +85,10 @@ public class EntityWrapper {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private <T> EntityHelper<T> getEntityHelper(Class<T> clazz) {
-		// Check if there is EntityHelper for this class, if not try to
-		// initialize it and add into map.
+	public <T> EntityHelper<T> getEntityHelper(Class<T> clazz) {
 		EntityHelper<T> entityHelper = null;
 		if (entityHelperMap.containsKey(clazz)) {
 			entityHelper = (EntityHelper<T>) entityHelperMap.get(clazz);
-		} else {
-			entityHelper = new EntityHelper<T>(cont, clazz);
-			entityHelperMap.put(clazz, entityHelper);
 		}
 		return entityHelper;
 	}

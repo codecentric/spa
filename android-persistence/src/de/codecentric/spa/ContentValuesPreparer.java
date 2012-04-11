@@ -18,14 +18,12 @@ import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
  */
 public class ContentValuesPreparer {
 
-	@SuppressWarnings("rawtypes")
-	private EntityHelper entityHelper;
 	private PersistenceApplicationContext context;
+	private Class<?> clazz;
 
-	@SuppressWarnings("rawtypes")
-	public ContentValuesPreparer(EntityHelper entityHelper) {
-		this.entityHelper = entityHelper;
-		this.context = entityHelper.getPersistenceApplicationContext();
+	public ContentValuesPreparer(PersistenceApplicationContext context, Class<?> cls) {
+		this.context = context;
+		this.clazz = cls;
 	}
 
 	/**
@@ -162,8 +160,8 @@ public class ContentValuesPreparer {
 				// use it's values.
 				Object parentEntity = eCache.read(parentClass);
 				if (parentEntity != null) {
-					values.put(rmd.getForeignKeyColumnName(), entityHelper.getIdentifierValue(parentEntity,
-							new EntityHelper<Class<?>>(context, parentEntity.getClass())));
+					EntityHelper entityHelper = context.getEntityHelper(clazz);
+					values.put(rmd.getForeignKeyColumnName(), entityHelper.getIdentifierValue(parentEntity));
 				}
 			}
 		}
