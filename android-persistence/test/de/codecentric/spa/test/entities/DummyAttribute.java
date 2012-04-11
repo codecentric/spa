@@ -9,7 +9,7 @@ import de.codecentric.spa.annotations.ManyToOne;
 public class DummyAttribute {
 
 	@Id
-	public long id;
+	public Long id;
 
 	public String dummyName;
 	public String dummyValue;

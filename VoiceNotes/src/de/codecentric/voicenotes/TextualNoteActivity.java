@@ -90,7 +90,7 @@ public class TextualNoteActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 
-		if (entity.id != 0) {
+		if (entity.id != 0L) {
 			// we will load existing note => present it's creation time
 			noteCreationTimeLbl.setVisibility(View.VISIBLE);
 		} else {
@@ -108,7 +108,7 @@ public class TextualNoteActivity extends BaseActivity {
 	protected void onResume() {
 		super.onResume();
 
-		if (entity.id != 0) {
+		if (entity.id != 0L) {
 			entity = wrapper.findById(entity.id, entity.getClass());
 			if (entity != null) {
 				presentTextualNoteData();
@@ -353,7 +353,7 @@ public class TextualNoteActivity extends BaseActivity {
 			entity.dueTime = null;
 		}
 
-		if (entity.id == 0) {
+		if (entity.id == 0L) {
 			entity.timeCreated = new Date();
 		}
 

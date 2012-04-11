@@ -4,7 +4,8 @@ import android.app.ListActivity;
 
 /**
  * Persistence list activity class - all list activities that do some
- * persistence jobs should subclass this class.
+ * persistence jobs and want to do it using directly {@link DatabaseHelper}
+ * should extend this class.
  */
 public class PersistenceListActivity extends ListActivity {
 
@@ -16,8 +17,7 @@ public class PersistenceListActivity extends ListActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		dbHelper = ((PersistenceApplicationContext) getApplication())
-				.getDatabaseHelper();
+		dbHelper = ((PersistenceApplicationContext) getApplication()).getDatabaseHelper();
 	}
 
 }

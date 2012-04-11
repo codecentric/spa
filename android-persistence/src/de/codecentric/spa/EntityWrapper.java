@@ -12,7 +12,7 @@ import de.codecentric.spa.ctx.PersistenceApplicationContext;
  */
 public class EntityWrapper {
 
-	// TODO Consider to make this class singleton. Map should be filled during
+	// TODO Consider making this class singleton. Map should be filled during
 	// scanning phase, when persistent classes are discovered.
 	private Map<Class<?>, EntityHelper<?>> entityHelperMap;
 	private PersistenceApplicationContext cont;
@@ -111,7 +111,7 @@ public class EntityWrapper {
 	 * @param clazz
 	 *            entity class
 	 */
-	public <T> void delete(long id, Class<T> clazz) {
+	public <T> void delete(Long id, Class<T> clazz) {
 		EntityHelper<T> entityHelper = getEntityHelper(clazz);
 		entityHelper.delete(id);
 	}
@@ -127,7 +127,7 @@ public class EntityWrapper {
 	 *            entity class
 	 * @return entity with given id
 	 */
-	public <T> T findById(long id, Class<T> clazz) {
+	public <T> T findById(Long id, Class<T> clazz) {
 		EntityHelper<T> entityHelper = getEntityHelper(clazz);
 		return entityHelper.findById(id);
 	}

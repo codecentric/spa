@@ -13,8 +13,8 @@ public class Note extends DataEntity {
 	public String title;
 	public String text;
 	public Date dueTime;
-	public boolean hasAlarm;
-	public boolean hasRecording;
+	public Boolean hasAlarm;
+	public Boolean hasRecording;
 	public String recordingPath;
 
 	public Note() {

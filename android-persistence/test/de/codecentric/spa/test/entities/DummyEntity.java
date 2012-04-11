@@ -10,13 +10,11 @@ import de.codecentric.spa.annotations.Transient;
 @Entity
 public class DummyEntity {
 
-	private static final long serialVersionUID = 6448964292369068146L;
-
 	@Id
-	public long id;
+	public Long id;
 
 	public String name;
-	public int someInt;
+	public Integer someInt;
 
 	@Transient
 	public String notPersisted;

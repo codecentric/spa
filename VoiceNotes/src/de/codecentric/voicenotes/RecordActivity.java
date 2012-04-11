@@ -253,7 +253,7 @@ public class RecordActivity extends BaseActivity {
 		 */
 		private boolean saveAudioNote() {
 			aNote.timeCreated = new Date();
-			aNote.hasRecording = true;
+			aNote.hasRecording = Boolean.TRUE;
 			aNote.recordingPath = recordingFileName;
 			wrapper.saveOrUpdate(aNote);
 			aNote = new Note();

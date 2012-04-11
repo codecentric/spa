@@ -8,18 +8,12 @@ import java.util.HashMap;
  * SQLiteTypeMapper class is used to map Java field types to appropriate SQLite
  * types.
  * 
+ * NOTE: Primitive types are not supported.
+ * 
  * This is how the types are mapped:
  * 
  * <ul>
  * <li>byte[] - TYPE_BLOB</li>
- * <li>byte - TYPE_INT</li>
- * <li>short - TYPE_INT</li>
- * <li>int - TYPE_INT</li>
- * <li>long - TYPE_INT</li>
- * <li>boolean - TYPE_INT</li>
- * <li>float - TYPE_REAL</li>
- * <li>double - TYPE_REAL</li>
- * <li>char - TYPE_TEXT</li>
  * <li>java.lang.String - TYPE_TEXT</li>
  * <li>java.lang.Byte - TYPE_INT</li>
  * <li>java.lang.Byte[] - NOT SUPPORTED</li>
@@ -45,42 +39,41 @@ public class SQLiteTypeMapper {
 	private static HashMap<String, String> typePairs;
 
 	static {
-		typePairs = new HashMap<String, String>(0);
-		typePairs.put(byte.class.getName(), TYPE_INT);
-		typePairs.put(Byte.class.getName(), TYPE_INT);
-		typePairs.put(short.class.getName(), TYPE_INT);
-		typePairs.put(Short.class.getName(), TYPE_INT);
-		typePairs.put(int.class.getName(), TYPE_INT);
-		typePairs.put(Integer.class.getName(), TYPE_INT);
-		typePairs.put(long.class.getName(), TYPE_INT);
-		typePairs.put(Long.class.getName(), TYPE_INT);
-		typePairs.put(boolean.class.getName(), TYPE_INT);
-		typePairs.put(Boolean.class.getName(), TYPE_INT);
+		typePairs = new HashMap<String, String>();
 
-		typePairs.put(float.class.getName(), TYPE_REAL);
+		typePairs.put(Byte.class.getName(), TYPE_INT);
+		typePairs.put(Short.class.getName(), TYPE_INT);
+		typePairs.put(Integer.class.getName(), TYPE_INT);
+		typePairs.put(Long.class.getName(), TYPE_INT);
+		typePairs.put(Boolean.class.getName(), TYPE_INT);
+		typePairs.put(Date.class.getName(), TYPE_INT);
+
 		typePairs.put(Float.class.getName(), TYPE_REAL);
-		typePairs.put(double.class.getName(), TYPE_REAL);
 		typePairs.put(Double.class.getName(), TYPE_REAL);
 
 		typePairs.put(String.class.getName(), TYPE_TEXT);
-		typePairs.put(char.class.getName(), TYPE_TEXT);
 		typePairs.put(Character.class.getName(), TYPE_TEXT);
 
 		typePairs.put(byte[].class.getName(), TYPE_BLOB);
-
-		typePairs.put(Date.class.getName(), TYPE_INT);
 	}
 
 	/**
-	 * Method reads the field's Java type and returns appropriate SQLite type or
-	 * null if type could not be resolved.
+	 * Method reads the field's Java type and returns appropriate SQLite type.
+	 * If the given field is of type that is not supported by the library, an
+	 * {@link UnsupportedTypeException} is thrown.
 	 * 
 	 * @param f
-	 * @return SQLite type that corresponds to the Java type of the input or
-	 *         null, if type could not be resolved
+	 * @return SQLite type that corresponds to the Java type of the input
+	 * @throws if
+	 *             type of the field is not supported, an
+	 *             {@link UnsupportedTypeException} is raised
 	 */
-	public static String mapFieldType(Field f) {
-		return typePairs.get(f.getType().getName());
+	public static String mapFieldType(Field f) throws UnsupportedTypeException {
+		String type = typePairs.get(f.getType().getName());
+		if (type == null) {
+			throw new UnsupportedTypeException("Unsupported type mapped: " + f.getType().getName());
+		}
+		return type;
 	}
 
 }

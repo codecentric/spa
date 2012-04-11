@@ -94,11 +94,7 @@ public class NoteListActivity extends ListActivity {
 
 		@Override
 		public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
-			Note note = noteList.get(pos);
-			if (note.hasRecording) {
-
-			}
-			createAndShowActionChooserDialog(note);
+			createAndShowActionChooserDialog(noteList.get(pos));
 		}
 
 	}

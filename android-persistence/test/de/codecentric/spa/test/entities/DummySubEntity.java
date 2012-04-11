@@ -13,9 +13,7 @@ import de.codecentric.spa.annotations.OneToOne;
 @Entity
 public class DummySubEntity extends DummyEntity {
 
-	private static final long serialVersionUID = -9025885843231630281L;
-
-	public double subFldDbl;
+	public Double subFldDbl;
 
 	@OneToMany
 	public List<DummyAttribute> attributes;

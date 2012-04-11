@@ -72,7 +72,7 @@ public class EntityHelper<T> {
 	 *         found
 	 * @throws RuntimeException
 	 */
-	public T findById(long id) throws RuntimeException {
+	public T findById(Long id) throws RuntimeException {
 		try {
 			Class<?> cls = entityMData.getDescribingClass();
 
@@ -193,7 +193,7 @@ public class EntityHelper<T> {
 						if (intVal != null) {
 							foreignKeyColumnValue = intVal.toString();
 						}
-					} else if (long.class.getName().equals(typeName)) {
+					} else if (Long.class.getName().equals(typeName)) {
 						Long longVal = c.getLong(i);
 						if (longVal != null) {
 							foreignKeyColumnValue = longVal.toString();
@@ -304,7 +304,7 @@ public class EntityHelper<T> {
 		db.beginTransaction();
 
 		try {
-			long idVal = getIdentifierValue(object, new EntityHelper<Class<?>>(context, object.getClass()));
+			Long idVal = getIdentifierValue(object, new EntityHelper<Class<?>>(context, object.getClass()));
 
 			if (idVal != 0) { // update entity
 				String idColumn = entityMData.getIdentifier().getColumnName();
@@ -313,7 +313,7 @@ public class EntityHelper<T> {
 						new String[] { String.valueOf(idVal) });
 				updateCascadingRelationColumns(object, db);
 			} else { // new one, insert it
-				long rowId = db.insert(entityMData.getTableName(), null,
+				Long rowId = db.insert(entityMData.getTableName(), null,
 						contentValuesPreparer.prepareValues(object, entityMData));
 				if (rowId != -1) {
 					setIdentifierValue(object, rowId);
@@ -354,7 +354,7 @@ public class EntityHelper<T> {
 				EntityHelper<Class<?>> ehChild = new EntityHelper<Class<?>>(context, childClass);
 				for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
 					Object child = iterator.next();
-					long rowId = db.insert(ehChild.entityMData.getTableName(), null,
+					Long rowId = db.insert(ehChild.entityMData.getTableName(), null,
 							contentValuesPreparer.prepareValues(child, ehChild.entityMData));
 					if (rowId != -1) {
 						setIdentifierValue(child, rowId);
@@ -369,7 +369,7 @@ public class EntityHelper<T> {
 				Field primaryKeyFieldChild = getPrimaryKeyField(parentClass.getDeclaredFields());
 				Object result = ehParent.findById(primaryKeyFieldChild.getLong(parent));
 				if (result == null) {
-					long rowId = db.insert(ehParent.entityMData.getTableName(), null,
+					Long rowId = db.insert(ehParent.entityMData.getTableName(), null,
 							contentValuesPreparer.prepareValues(parent, entityMData));
 					if (rowId != -1) {
 						setIdentifierValue(parent, rowId);
@@ -398,7 +398,7 @@ public class EntityHelper<T> {
 	 */
 	private void updateEntity(Object entity, SQLiteDatabase db) throws IllegalAccessException {
 		EntityHelper<Class<?>> eh = new EntityHelper<Class<?>>(context, entity.getClass());
-		long idVal = getIdentifierValue(entity, eh);
+		Long idVal = getIdentifierValue(entity, eh);
 		String idColumn = eh.entityMData.getIdentifier().getColumnName();
 		String where = idColumn + " = ?";
 		int rowsAffected = db.update(eh.entityMData.getTableName(),
@@ -451,7 +451,7 @@ public class EntityHelper<T> {
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
-	private void deleteCascadingRelationColumns(long id, SQLiteDatabase db) throws IllegalArgumentException,
+	private void deleteCascadingRelationColumns(Long id, SQLiteDatabase db) throws IllegalArgumentException,
 			IllegalAccessException {
 		// in case id=-1, this will be indicator that deletion should be
 		// performed for all entries.
@@ -493,7 +493,7 @@ public class EntityHelper<T> {
 	 */
 	private void deleteEntity(Object entity, SQLiteDatabase db) {
 		EntityHelper<Class<?>> eh = new EntityHelper<Class<?>>(context, entity.getClass());
-		long idVal = getIdentifierValue(entity, eh);
+		Long idVal = getIdentifierValue(entity, eh);
 		String idColumn = eh.entityMData.getIdentifier().getColumnName();
 		String tableName = eh.entityMData.getTableName();
 		String where = idColumn + " = ?";
@@ -529,7 +529,7 @@ public class EntityHelper<T> {
 	 *            identifier value
 	 * @return true if only one entity is deleted, otherwise false
 	 */
-	public boolean delete(long id) {
+	public boolean delete(Long id) {
 		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 		db.beginTransaction();
 
@@ -561,7 +561,7 @@ public class EntityHelper<T> {
 		try {
 			String tableName = entityMData.getTableName();
 			db.delete(tableName, null, new String[] {});
-			deleteCascadingRelationColumns(-1, db);
+			deleteCascadingRelationColumns(-1L, db);
 			db.setTransactionSuccessful();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -598,7 +598,7 @@ public class EntityHelper<T> {
 	 * @param id
 	 *            identifier value
 	 */
-	protected void setIdentifierValue(final Object entity, long id) {
+	protected void setIdentifierValue(final Object entity, Long id) {
 		try {
 			FieldMetaData identifier = entityMData.getIdentifier();
 
@@ -618,7 +618,7 @@ public class EntityHelper<T> {
 	 * @param eh
 	 * @return identifier value
 	 */
-	protected long getIdentifierValue(final Object entity, EntityHelper<Class<?>> eh) {
+	protected Long getIdentifierValue(final Object entity, EntityHelper<Class<?>> eh) {
 		try {
 			Long idValue;
 
@@ -718,79 +718,59 @@ public class EntityHelper<T> {
 	 * @throws IllegalAccessException
 	 */
 	private void setColumnValue(final Cursor c, final Object data, int idx, Field fld) throws IllegalAccessException {
+		// process the null value
+		if (c.isNull(idx)) {
+			fld.set(data, null);
+			return;
+		}
+
 		String typeName = fld.getType().getName();
 		if (byte[].class.getName().equals(typeName)) {
 
-			byte[] bArr = c.getBlob(idx);
-			if (bArr != null) {
-				fld.set(data, bArr);
-			}
+			fld.set(data, c.getBlob(idx));
 
-		} else if (double.class.getName().equals(typeName) || Double.class.getName().equals(typeName)) {
+		} else if (Double.class.getName().equals(typeName)) {
 
-			Double d = c.getDouble(idx);
-			if (d != null) {
-				fld.set(data, d);
-			}
+			fld.set(data, c.getDouble(idx));
 
-		} else if (float.class.getName().equals(typeName) || Float.class.getName().equals(typeName)) {
+		} else if (Float.class.getName().equals(typeName)) {
 
-			Float f = c.getFloat(idx);
-			if (f != null) {
-				fld.set(data, f);
-			}
+			fld.set(data, c.getFloat(idx));
 
-		} else if (int.class.getName().equals(typeName) || Integer.class.getName().equals(typeName)) {
+		} else if (Integer.class.getName().equals(typeName)) {
 
-			Integer i = c.getInt(idx);
-			if (i != null) {
-				fld.set(data, i);
-			}
+			fld.set(data, c.getInt(idx));
 
-		} else if (byte.class.getName().equals(typeName) || Byte.class.getName().equals(typeName)) {
+		} else if (Byte.class.getName().equals(typeName)) {
 
-			Byte b = (byte) c.getInt(idx);
-			if (b != null) {
-				fld.set(data, b);
-			}
+			fld.set(data, c.getInt(idx));
 
-		} else if (long.class.getName().equals(typeName) || Long.class.getName().equals(typeName)) {
+		} else if (Long.class.getName().equals(typeName)) {
 
-			Long l = c.getLong(idx);
-			if (l != null) {
-				fld.set(data, l);
-			}
+			fld.set(data, c.getLong(idx));
 
-		} else if (short.class.getName().equals(typeName) || Short.class.getName().equals(typeName)) {
+		} else if (Short.class.getName().equals(typeName)) {
 
-			Short s = c.getShort(idx);
-			if (s != null) {
-				fld.set(data, s);
-			}
+			fld.set(data, c.getShort(idx));
 
 		} else if (String.class.getName().equals(typeName)) {
 
-			String s = c.getString(idx);
-			if (s != null) {
-				fld.set(data, s);
-			}
+			fld.set(data, c.getString(idx));
 
-		} else if (char.class.getName().equals(typeName) || Character.class.getName().equals(typeName)) {
+		} else if (Character.class.getName().equals(typeName)) {
 
 			String s = c.getString(idx);
-			if (s != null && s.length() > 0) {
+			if (s.length() > 0) {
 				fld.set(data, s.charAt(0));
 			}
 
-		} else if (boolean.class.getName().equals(typeName) || Boolean.class.getName().equals(typeName)) {
+		} else if (Boolean.class.getName().equals(typeName)) {
 
 			fld.set(data, c.getInt(idx) == 1 ? true : false);
 
 		} else if (Date.class.getName().equals(typeName)) {
 
-			long l = c.getLong(idx);
-			Date d = l != 0 ? new Date(c.getLong(idx)) : null;
-			fld.set(data, d);
+			fld.set(data, new Date(c.getLong(idx)));
 
 		}
 	}

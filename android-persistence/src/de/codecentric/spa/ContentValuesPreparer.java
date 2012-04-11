@@ -99,7 +99,7 @@ public class ContentValuesPreparer {
 			throws Exception {
 		String typeName = dataFld.getType().getName();
 
-		if (boolean.class.getName().equals(typeName) || Boolean.class.getName().equals(typeName)) {
+		if (Boolean.class.getName().equals(typeName)) {
 
 			prepareBooleanValue(values, object, mFld, dataFld);
 
@@ -111,27 +111,27 @@ public class ContentValuesPreparer {
 
 			// TODO
 
-		} else if (double.class.getName().equals(typeName) || Double.class.getName().equals(typeName)) {
+		} else if (Double.class.getName().equals(typeName)) {
 
 			prepareDoubleValue(values, object, mFld, dataFld);
 
-		} else if (float.class.getName().equals(typeName) || Float.class.getName().equals(typeName)) {
+		} else if (Float.class.getName().equals(typeName)) {
 
 			prepareFloatValue(values, object, mFld, dataFld);
 
-		} else if (int.class.getName().equals(typeName) || Integer.class.getName().equals(typeName)) {
+		} else if (Integer.class.getName().equals(typeName)) {
 
 			prepareIntegerValue(values, object, mFld, dataFld);
 
-		} else if (long.class.getName().equals(typeName) || Long.class.getName().equals(typeName)) {
+		} else if (Long.class.getName().equals(typeName)) {
 
 			prepareLongValue(values, object, mFld, dataFld);
 
-		} else if (short.class.getName().equals(typeName) || Short.class.getName().equals(typeName)) {
+		} else if (Short.class.getName().equals(typeName)) {
 
 			prepareShortValue(values, object, mFld, dataFld);
 
-		} else if (byte.class.getName().equals(typeName) || Byte.class.getName().equals(typeName)) {
+		} else if (Byte.class.getName().equals(typeName)) {
 
 			prepareByteValue(values, object, mFld, dataFld);
 
@@ -169,62 +169,100 @@ public class ContentValuesPreparer {
 		}
 	}
 
+	/**
+	 * Method checks if given value is null and, if it is, puts the null value
+	 * in the given values map. If given value is null, method will return true
+	 * which should signal that value is already placed in the map and should be
+	 * skipped by any of methods like
+	 * {@link #prepareBooleanValue(ContentValues, Object, FieldMetaData, Field)}
+	 * , {@link #prepareDateValue(ContentValues, Object, FieldMetaData, Field)},
+	 * ...
+	 * 
+	 * @param values
+	 *            value map
+	 * @param mFld
+	 *            meta field describing the field which value is given
+	 * @param value
+	 *            object value
+	 * @return true if given value is null, otherwise is null
+	 */
+	private boolean processNullValue(final ContentValues values, FieldMetaData mFld, Object value) {
+		if (value == null) {
+			values.putNull(mFld.getColumnName());
+		}
+		return value == null;
+	}
+
 	private void prepareBooleanValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		Boolean value = (Boolean) dataFld.get(object);
-		if (value != null) {
+		if (!processNullValue(values, mFld, value)) {
 			values.put(mFld.getColumnName(), value ? 1 : 0);
-		} else {
-			values.put(mFld.getColumnName(), 0);
 		}
 	}
 
 	private void prepareDateValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		Date value = (Date) dataFld.get(object);
-		values.put(mFld.getColumnName(), value != null ? value.getTime() : null);
+		if (!processNullValue(values, mFld, value)) {
+			values.put(mFld.getColumnName(), value.getTime());
+		}
 	}
 
 	private void prepareDoubleValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		Double value = (Double) dataFld.get(object);
-		values.put(mFld.getColumnName(), value != null ? value : null);
+		if (!processNullValue(values, mFld, value)) {
+			values.put(mFld.getColumnName(), value);
+		}
 	}
 
 	private void prepareFloatValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		Float value = (Float) dataFld.get(object);
-		values.put(mFld.getColumnName(), value != null ? value : null);
+		if (!processNullValue(values, mFld, value)) {
+			values.put(mFld.getColumnName(), value);
+		}
 	}
 
 	private void prepareIntegerValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		Integer value = (Integer) dataFld.get(object);
-		values.put(mFld.getColumnName(), value != null ? value : null);
+		if (!processNullValue(values, mFld, value)) {
+			values.put(mFld.getColumnName(), value);
+		}
 	}
 
 	private void prepareLongValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		Long value = (Long) dataFld.get(object);
-		values.put(mFld.getColumnName(), value != null ? value : null);
+		if (!processNullValue(values, mFld, value)) {
+			values.put(mFld.getColumnName(), value);
+		}
 	}
 
 	private void prepareShortValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		Short value = (Short) dataFld.get(object);
-		values.put(mFld.getColumnName(), value != null ? value : null);
+		if (!processNullValue(values, mFld, value)) {
+			values.put(mFld.getColumnName(), value);
+		}
 	}
 
 	private void prepareByteValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		Byte value = (Byte) dataFld.get(object);
-		values.put(mFld.getColumnName(), value != null ? value : null);
+		if (!processNullValue(values, mFld, value)) {
+			values.put(mFld.getColumnName(), value);
+		}
 	}
 
 	private void prepareStringValue(final ContentValues values, final Object object, FieldMetaData mFld, Field dataFld)
 			throws Exception {
 		String value = (String) dataFld.get(object);
-		values.put(mFld.getColumnName(), value != null ? value : null);
+		if (!processNullValue(values, mFld, value)) {
+			values.put(mFld.getColumnName(), value);
+		}
 	}
 
 }

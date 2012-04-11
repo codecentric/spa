@@ -3,6 +3,9 @@ package de.codecentric.spa.metadata;
 import de.codecentric.spa.annotations.CascadeType;
 import de.codecentric.spa.annotations.FetchType;
 
+/**
+ * Class describing the relationship between two objects.
+ */
 public class RelationshipInfo {
 
 	private CascadeType[] cascade;

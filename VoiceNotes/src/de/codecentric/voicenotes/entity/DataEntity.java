@@ -11,7 +11,7 @@ import de.codecentric.spa.annotations.Id;
 public abstract class DataEntity {
 
 	@Id
-	public long id;
+	public Long id;
 
 	public Date timeCreated;
 
@@ -19,7 +19,7 @@ public abstract class DataEntity {
 	 * Initializes an id property to zero value.
 	 */
 	public DataEntity() {
-		this.id = 0;
+		this.id = 0L;
 	}
 
 }
