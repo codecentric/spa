@@ -10,8 +10,8 @@
 	<packaging>pom</packaging>
 	
 	<modules>
-		<module>../android-persistence</module>
-		<module>../android-persistence-entities</module>
+		<module>../spa</module>
+		<module>../spa-entities</module>
 	</modules>
 	
 	<properties>
