@@ -252,8 +252,6 @@ public class EntityHelper<T> {
 			Class<?> cls = entityMData.getDescribingClass();
 			List<T> list = new ArrayList<T>();
 
-			System.out.println(selectAllStmtSQL + condition);
-
 			Cursor c = context.getDatabaseHelper().getDatabase()
 					.rawQuery(selectAllStmtSQL + condition, new String[] {});
 			while (c.moveToNext()) {
@@ -389,7 +387,7 @@ public class EntityHelper<T> {
 				Object parent = field.get(entity);
 				EntityHelper ehParent = context.getEntityHelper(parentClass);
 				Field primaryKeyFieldChild = getPrimaryKeyField(parentClass.getDeclaredFields());
-				Object result = ehParent.findById(primaryKeyFieldChild.getLong(parent));
+				Object result = ehParent.findById((Long) primaryKeyFieldChild.get(parent));
 				if (result == null) {
 					Long rowId = db.insert(ehParent.entityMData.getTableName(), null,
 							contentValuesPreparer.prepareValues(parent, entityMData));
