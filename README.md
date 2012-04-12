@@ -13,3 +13,4 @@ VoiceNotes is small application that can be used as example how SPA library shou
   - create *EntityHelper* instance for each scanned class
   - instantiate your database helper class
 - use *PersistenceApplicationContext#getEntityWrapper* to obtain created *EntityWrapper* instance and exploit its features
+- note: Do not use primitive types. They are not supported.
