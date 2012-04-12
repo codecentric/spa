@@ -30,8 +30,5 @@
     <string name="vibrate_on_rec_desc">Vibrate device on recording actions</string>
     <string name="p_bind_location">bind_location</string>
     <string name="bind_location">Bind location</string>
-    <string name="bind_location_desc">Pair note with user\'s location</string>
-    
-    <string name="delete_all">Delete All</string>    
-    
+    <string name="bind_location_desc">Pair note with user\'s location</string>    
 </resources>

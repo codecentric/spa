@@ -20,6 +20,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
+import de.codecentric.voicenotes.entity.Comment;
 import de.codecentric.voicenotes.entity.Note;
 import de.codecentric.voicenotes.layout.NoteListAdapter;
 
@@ -135,7 +136,7 @@ public class NoteListActivity extends ListActivity {
 		fixSingleRadioButtonLayout(radioButtons[3], scale);
 
 		if (!aNote.hasRecording) {
-			radioButtons[1].setVisibility(View.INVISIBLE);
+			radioButtons[1].setVisibility(View.GONE);
 		}
 	}
 
@@ -174,7 +175,9 @@ public class NoteListActivity extends ListActivity {
 				intent.putExtra(Note.Extras.EXTRA_NOTE_ID, note.id);
 				startActivity(intent);
 			} else if (button.getId() == R.id.action_edit_comments) {
-
+				Intent intent = new Intent(NoteListActivity.this, CommentListActivity.class);
+				intent.putExtra(Comment.Extras.EXTRA_NOTE_ID, note.id);
+				startActivity(intent);
 			} else if (button.getId() == R.id.action_delete_note) {
 				String msg = "";
 				try {

@@ -21,6 +21,7 @@ import de.codecentric.spa.ctx.PersistenceActivity;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.voicenotes.context.Constants;
 import de.codecentric.voicenotes.context.PreferenceHelper;
+import de.codecentric.voicenotes.entity.Comment;
 import de.codecentric.voicenotes.entity.Note;
 
 /**
@@ -83,12 +84,34 @@ public class RecordActivity extends BaseActivity {
 		recProgressBar = (ProgressBar) findViewById(R.id.recProgress);
 
 		aNote = new Note();
-		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
+		wrapper = ((PersistenceApplicationContext) getApplication())
+				.getEntityWrapper();
 
+		String s=getString(R.string.max_time_to_record);
 		maxTime = Integer.parseInt(getString(R.string.max_time_to_record));
 		recProgressHandler = new Handler();
 		uiUpdater = new Handler();
 		isRecording = false;
+
+		// test data
+		int notes = 2;
+		int comments = 3;
+		for (int i = 0; i < notes; i++) {
+			Note n = new Note();
+			n.title = "Title " + i;
+			n.text = "Some text in note.";
+			n.hasAlarm = false;
+			n.hasRecording = false;
+			n.dueTime = new Date();
+
+			for (int j = 0; j < comments; j++) {
+				Comment c = new Comment();
+				c.text = "This is a comment.";
+				n.comments.add(c);
+			}
+
+			wrapper.saveOrUpdate(n);
+		}
 	}
 
 	@Override
@@ -103,9 +126,11 @@ public class RecordActivity extends BaseActivity {
 
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		doVibrateOnRec = vibrator != null
-				&& PreferenceHelper.getBooleanPreference(this, getString(R.string.p_vibrate_on_rec));
+				&& PreferenceHelper.getBooleanPreference(this,
+						getString(R.string.p_vibrate_on_rec));
 
-		playSounds = PreferenceHelper.getBooleanPreference(this, getString(R.string.p_play_sounds));
+		playSounds = PreferenceHelper.getBooleanPreference(this,
+				getString(R.string.p_play_sounds));
 		if (playSounds) {
 			startMediaPlayer = MediaPlayer.create(this, R.raw.beep);
 			stopMediaPlayer = MediaPlayer.create(this, R.raw.rec_over);
@@ -279,7 +304,8 @@ public class RecordActivity extends BaseActivity {
 				}
 			};
 
-			uiUpdater.postDelayed(updateUITask, Constants.UI_POST_NOTIFICATION_DELAY);
+			uiUpdater.postDelayed(updateUITask,
+					Constants.UI_POST_NOTIFICATION_DELAY);
 		}
 
 		/**
@@ -308,7 +334,8 @@ public class RecordActivity extends BaseActivity {
 		 * @return generated file name
 		 */
 		private String generateAudioFileName() {
-			String fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+			String fileName = Environment.getExternalStorageDirectory()
+					.getAbsolutePath();
 			fileName += "/voicenote_" + System.currentTimeMillis() + ".3gp";
 			return fileName;
 		}

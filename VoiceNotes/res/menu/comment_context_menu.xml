@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<item android:id="@+id/app_ctx_menu_txtcomment_btn" android:title="@string/menu_txtcomment_title"
+		android:icon="@drawable/ic_menu_txt_note" />
+	
+	<item android:id="@+id/delete_all_comments_btn" android:title="@string/delete_all"
+		android:icon="@drawable/ic_menu_agenda" />
+	
+</menu>

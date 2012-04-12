@@ -3,4 +3,6 @@
     <string name="menu_preferences_title">Preferences</string>
     <string name="menu_txtnote_title">New textual note</string>
     <string name="menu_listnotes_title">List notes</string>
+    <string name="delete_all">Delete All</string>
+    <string name="menu_txtcomment_title">New comment</string>
 </resources>

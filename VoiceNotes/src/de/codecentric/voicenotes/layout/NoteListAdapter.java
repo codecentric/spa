@@ -28,7 +28,7 @@ public class NoteListAdapter extends ArrayAdapter<Note> {
 		v.setTag(note.id); // quick hack to have entity id in list item
 
 		if (note.hasRecording) {
-			v.findViewById(R.id.sound_marker).setVisibility(View.VISIBLE);
+			v.findViewById(R.id.sound_marker).setVisibility(View.GONE);
 		}
 
 		String itemTitle = note.title;
