@@ -65,10 +65,17 @@ public class EntityWrapper {
 		entityHelperMap.remove(clazz);
 	}
 
-	public <T> void saveOrUpdate(T entity) {
-		// TODO consider returning boolean here in order to know if everything
-		// went fine
-		@SuppressWarnings("unchecked")
+	/**
+	 * Method persists given entity.
+	 * 
+	 * If it was a case of inserting new row in the database, an identifier
+	 * value will be set on a given entity after calling this method.
+	 * 
+	 * @param entity
+	 *            entity to persist
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> void saveOrUpdate(final T entity) {
 		EntityHelper<T> entityHelper = (EntityHelper<T>) getEntityHelper(entity.getClass());
 		entityHelper.saveOrUpdate(entity);
 	}

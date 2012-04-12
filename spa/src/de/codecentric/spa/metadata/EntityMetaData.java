@@ -52,9 +52,9 @@ public class EntityMetaData {
 	}
 
 	/**
-	 * Method returns a name of the field of the class described by this object
-	 * that is represented with given column in corresponding database table.
-	 * Null value will be return if there is no corresponding field.
+	 * Method returns a name of the field (of the class described by this
+	 * object) that is represented with given column in corresponding database
+	 * table. Null value will be returned if there is no corresponding field.
 	 * 
 	 * Link between field name and column is established by
 	 * {@link EntityMetaData#addPersistentField(FieldMetaData)} method.
@@ -66,6 +66,33 @@ public class EntityMetaData {
 	 */
 	public String getFieldNameForColumn(String columnName) {
 		return fieldColumnLinks.get(columnName);
+	}
+
+	/**
+	 * Method returns a name of the database table column corresponding to the
+	 * field with a given name (of the class described by this object). Null
+	 * value will be returned if there is no corresponding column.
+	 * 
+	 * Link between field name and column is established by
+	 * {@link EntityMetaData#addPersistentField(FieldMetaData)} method.
+	 * 
+	 * @param fieldName
+	 *            a name of the field in the class described by this object
+	 * @return database table column corresponding to the given field
+	 */
+	public String getColumnNameForField(String fieldName) {
+		String columnName = null;
+
+		if (persistentFields != null && persistentFields.size() > 0) {
+			for (FieldMetaData fmd : persistentFields) {
+				if (fieldName.equals(fmd.getFieldName())) {
+					columnName = fmd.getColumnName();
+					break;
+				}
+			}
+		}
+
+		return columnName;
 	}
 
 	/**

@@ -5,8 +5,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.codecentric.spa.metadata.EntityMetaData;
-import de.codecentric.spa.metadata.FieldMetaData;
 import de.codecentric.spa.sql.SQLiteTypeMapper;
 import de.codecentric.spa.test.entities.DummySubEntity;
 
@@ -23,6 +21,7 @@ public class EntityMetaDataTest {
 	public void testMetaData() {
 		Assert.assertEquals(DummySubEntity.class, metaData.getDescribingClass());
 		Assert.assertEquals(null, metaData.getFieldNameForColumn("sub_fld_dbl"));
+		Assert.assertEquals(null, metaData.getColumnNameForField("subFldDbl"));
 		Assert.assertNull(metaData.getIdentifier());
 		Assert.assertNull(metaData.getPersistentField("subFldDbl"));
 		Assert.assertEquals(0, metaData.getPersistentFields().size());
@@ -43,8 +42,8 @@ public class EntityMetaDataTest {
 		id.setFieldName("id");
 		metaData.setIdentifier(id);
 
-		Assert.assertEquals("subFldDbl",
-				metaData.getFieldNameForColumn("sub_fld_dbl"));
+		Assert.assertEquals("subFldDbl", metaData.getFieldNameForColumn("sub_fld_dbl"));
+		Assert.assertEquals("sub_fld_dbl", metaData.getColumnNameForField("subFldDbl"));
 		Assert.assertNotNull(metaData.getPersistentField("subFldDbl"));
 		Assert.assertEquals(1, metaData.getPersistentFields().size());
 
