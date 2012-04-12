@@ -21,6 +21,7 @@ import de.codecentric.spa.metadata.EntityMetaData;
 import de.codecentric.spa.metadata.EntityMetaDataProvider;
 import de.codecentric.spa.metadata.EntityScanner.StringUtils;
 import de.codecentric.spa.metadata.FieldMetaData;
+import de.codecentric.spa.metadata.RelationshipMetaData;
 import de.codecentric.spa.sql.ConditionBuilder;
 import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 
@@ -126,7 +127,9 @@ public class EntityHelper<T> {
 				Type genericParameterTypes = field.getGenericType();
 				Class<T> childClass = (Class<T>) ((ParameterizedType) genericParameterTypes).getActualTypeArguments()[0];
 				EntityHelper eh = context.getEntityHelper(childClass);
-				String columnName = getColumnName(field);
+				RelationshipMetaData md = context.getRelationshipMetaDataProvider().getMetaDataByChildAndField(
+						childClass, field.getName());
+				String columnName = md.getForeignKeyColumnName();
 				Field primaryKeyField = getPrimaryKeyField(cls.getDeclaredFields());
 
 				// TODO Check is it possible to make this more efficient.
@@ -217,12 +220,23 @@ public class EntityHelper<T> {
 	 * @return
 	 */
 	private Field getPrimaryKeyField(Field[] declaredFields) {
+		Field identifier = null;
+
 		for (Field field : declaredFields) {
 			if (field.getAnnotation(Id.class) != null) {
-				return field;
+				identifier = field;
+				break;
 			}
 		}
-		return null;
+
+		if (identifier == null) {
+			Class<?> superClass = entityMData.getDescribingClass().getSuperclass();
+			if (superClass != null) {
+				identifier = getPrimaryKeyField(superClass.getDeclaredFields());
+			}
+		}
+
+		return identifier;
 	}
 
 	/**
@@ -237,6 +251,8 @@ public class EntityHelper<T> {
 		try {
 			Class<?> cls = entityMData.getDescribingClass();
 			List<T> list = new ArrayList<T>();
+
+			System.out.println(selectAllStmtSQL + condition);
 
 			Cursor c = context.getDatabaseHelper().getDatabase()
 					.rawQuery(selectAllStmtSQL + condition, new String[] {});
