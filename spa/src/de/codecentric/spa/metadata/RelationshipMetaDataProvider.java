@@ -66,8 +66,7 @@ public class RelationshipMetaDataProvider {
 	 * @return list of {@link RelationshipMetaData}
 	 */
 	public List<RelationshipMetaData> getMetaDataByChild(Class<?> cls) {
-		List<RelationshipMetaData> result = new ArrayList<RelationshipMetaData>(
-				0);
+		List<RelationshipMetaData> result = new ArrayList<RelationshipMetaData>(0);
 
 		Collection<List<RelationshipMetaData>> meta = metaDataMap.values();
 		if (meta != null && !meta.isEmpty()) {
@@ -77,6 +76,37 @@ public class RelationshipMetaDataProvider {
 				for (RelationshipMetaData rmd : rMetaDataList) {
 					if (cls.equals(rmd.getChildClass())) {
 						result.add(rmd);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Method returns {@link RelationshipMetaData} describing relationship
+	 * between entity classes. Null value will be returned if there is no
+	 * relationship on specified field.
+	 * 
+	 * @param cls
+	 *            class which database table is child of the relationships
+	 * @param fieldName
+	 *            mapping field name
+	 * @return {@link RelationshipMetaData}
+	 */
+	public RelationshipMetaData getMetaDataByChildAndField(Class<?> cls, String fieldName) {
+		RelationshipMetaData result = null;
+
+		Collection<List<RelationshipMetaData>> meta = metaDataMap.values();
+		if (meta != null && !meta.isEmpty()) {
+			Iterator<List<RelationshipMetaData>> i = meta.iterator();
+			for (; i.hasNext();) {
+				List<RelationshipMetaData> rMetaDataList = i.next();
+				for (RelationshipMetaData rmd : rMetaDataList) {
+					if (cls.equals(rmd.getChildClass()) && rmd.getFieldName().equals(fieldName)) {
+						result = rmd;
+						break;
 					}
 				}
 			}
