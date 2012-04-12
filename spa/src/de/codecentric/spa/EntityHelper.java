@@ -240,6 +240,7 @@ public class EntityHelper<T> {
 
 			Cursor c = context.getDatabaseHelper().getDatabase()
 					.rawQuery(selectAllStmtSQL + condition, new String[] {});
+			System.out.println(selectAllStmtSQL + condition);
 			while (c.moveToNext()) {
 				@SuppressWarnings("unchecked")
 				T entity = (T) cls.newInstance();

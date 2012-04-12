@@ -17,6 +17,9 @@
     <string name="view_comments">View comments</string>
     <string name="delete_note">Delete Note</string>
     
+    <string name="edit_comment">Edit Comment</string>
+    <string name="delete_comment">Delete Comment</string>
+    
     <string name="play_explanation">Press button to start playback.</string>
     <string name="stop_explanation">Playing. Press button to stop.</string>
     
