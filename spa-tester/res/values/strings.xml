@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">spa-tester</string>
+    <string name="choose_action">Choose action</string>
+    
+    <string name="one_to_many_btn_text">OneToMany</string>
+    <string name="one_to_many_case_one">New state, new cities</string>
+    <string name="one_to_many_case_two">New state, existing cities</string>
+
+</resources>

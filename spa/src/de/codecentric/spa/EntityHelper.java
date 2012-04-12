@@ -330,7 +330,7 @@ public class EntityHelper<T> {
 				String where = idColumn + " = ?";
 				db.update(entityMData.getTableName(), contentValuesPreparer.prepareValues(object, entityMData), where,
 						new String[] { String.valueOf(idVal) });
-				updateCascadingRelationColumns(object, db);
+				saveOrUpdateCascadingRelationColumns(object, db);
 			} else { // new one, insert it
 				Long rowId = db.insert(entityMData.getTableName(), null,
 						contentValuesPreparer.prepareValues(object, entityMData));
@@ -430,15 +430,16 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Cascade update in case entity is annotated using CascadeType.REFRESH or
-	 * CascadeType.ALL.
+	 * Cascade save or update in case entity is annotated using
+	 * CascadeType.REFRESH or CascadeType.ALL.
 	 * 
 	 * @param object
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
-	private void updateCascadingRelationColumns(Object object, SQLiteDatabase db) throws IllegalArgumentException,
-			IllegalAccessException {
+	@SuppressWarnings("unchecked")
+	private void saveOrUpdateCascadingRelationColumns(Object object, SQLiteDatabase db)
+			throws IllegalArgumentException, IllegalAccessException {
 		CascadeType[] acceptedCascadeTypes = { CascadeType.REFRESH, CascadeType.ALL };
 		Class<?> cls = entityMData.getDescribingClass();
 		Field[] fields = cls.getDeclaredFields();
@@ -446,7 +447,6 @@ public class EntityHelper<T> {
 			if (field.getAnnotation(OneToMany.class) != null
 					&& (isProperCascadeType(field.getAnnotation(OneToMany.class).cascade(), acceptedCascadeTypes))) {
 				// Take all children and do the update for each of them
-				@SuppressWarnings("unchecked")
 				List<Class<?>> children = (List<Class<?>>) field.get(object);
 				for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
 					Object child = iterator.next();
@@ -484,9 +484,11 @@ public class EntityHelper<T> {
 					Object object = findById(id);
 					@SuppressWarnings("unchecked")
 					List<Class<?>> children = (List<Class<?>>) field.get(object);
-					for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
-						Object child = iterator.next();
-						deleteEntity(child);
+					if (children != null) {
+						for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
+							Object child = iterator.next();
+							context.getEntityHelper(child.getClass()).deleteEntity(child);
+						}
 					}
 				} else {
 					// parent id=-1, which indicates that all entries from
@@ -518,7 +520,6 @@ public class EntityHelper<T> {
 		if (count == 0) {
 			throw new RuntimeException("No entry was deleted. Database not consistent!");
 		}
-
 	}
 
 	/**
