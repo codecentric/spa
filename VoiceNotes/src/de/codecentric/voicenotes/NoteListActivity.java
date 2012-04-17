@@ -176,7 +176,7 @@ public class NoteListActivity extends ListActivity {
 				startActivity(intent);
 			} else if (button.getId() == R.id.action_edit_comments) {
 				Intent intent = new Intent(NoteListActivity.this, CommentListActivity.class);
-				intent.putExtra(Comment.Extras.EXTRA_NOTE_ID, note.id);
+				intent.putExtra(Comment.Extras.EXTRA_COMMENT_ID, note.id);
 				startActivity(intent);
 			} else if (button.getId() == R.id.action_delete_note) {
 				String msg = "";

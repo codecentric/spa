@@ -19,6 +19,7 @@ import android.widget.TextView;
 import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.ctx.PersistenceActivity;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
+import de.codecentric.spa.metadata.EntityMetaDataProvider;
 import de.codecentric.voicenotes.context.Constants;
 import de.codecentric.voicenotes.context.PreferenceHelper;
 import de.codecentric.voicenotes.entity.Comment;
@@ -87,11 +88,16 @@ public class RecordActivity extends BaseActivity {
 		wrapper = ((PersistenceApplicationContext) getApplication())
 				.getEntityWrapper();
 
-		String s=getString(R.string.max_time_to_record);
+		String s = getString(R.string.max_time_to_record);
 		maxTime = Integer.parseInt(getString(R.string.max_time_to_record));
 		recProgressHandler = new Handler();
 		uiUpdater = new Handler();
 		isRecording = false;
+
+		// todelete
+		EntityMetaDataProvider e = ((PersistenceApplicationContext) getApplication())
+				.getEntityMetaDataProvider();
+		System.out.println("");
 
 		// test data
 		int notes = 2;
@@ -103,10 +109,11 @@ public class RecordActivity extends BaseActivity {
 			n.hasAlarm = false;
 			n.hasRecording = false;
 			n.dueTime = new Date();
+			n.timeCreated = new Date();
 
 			for (int j = 0; j < comments; j++) {
 				Comment c = new Comment();
-				c.text = "This is a comment.";
+				c.text = "This is a comment of " + n.title + ".";
 				n.comments.add(c);
 			}
 

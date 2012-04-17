@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="textual_comment_text">Text:</string>	
+	<string name="comment_saved_ok">Comment saved</string>
+	<string name="txt_comment_empty_text">Text of comment must not be empty.</string>
+	<string name="comment_savefailed">Error saving comment</string>	
+</resources>

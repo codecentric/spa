@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/root_layout" android:id="@+id/scroll_view">
+
+	<LinearLayout style="@style/root_layout.with_margins">
+
+		<TextView style="@style/default_label" android:text="@string/textual_comment_text" />
+		<EditText android:id="@+id/comment_text_txt" style="@style/default_input.multiline"
+			android:maxLength="300" />
+
+		<TextView android:id="@+id/comment_creation_time_lbl" style="@style/default_label" />
+		<TextView style="@style/line_break" />
+
+		<Button android:id="@+id/saveBtn" style="@style/default_button.image"
+			android:layout_gravity="right" android:text="@string/action_save"
+			android:drawableLeft="@drawable/save" />
+
+	</LinearLayout>
+
+</ScrollView>

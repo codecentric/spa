@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/root_layout" android:fitsSystemWindows="true">
+
+    <RadioGroup android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <RadioButton android:id="@+id/action_edit_comment" style="@style/choose_action_item" android:text="@string/edit_comment" />
+		<RadioButton android:id="@+id/action_delete_comment" style="@style/choose_action_item" android:text="@string/delete_comment"  />
+	</RadioGroup>
+	
+</LinearLayout>
