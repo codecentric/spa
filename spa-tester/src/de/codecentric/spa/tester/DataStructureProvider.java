@@ -18,12 +18,6 @@ public class DataStructureProvider {
 		cities.add(new City("city 4", 451887));
 		state.cities = cities;
 
-		// String newName = "new state name";
-		// state.name = newName;
-		// wrapper.saveOrUpdate(state);
-		// Assert.assertTrue(newName.equals(wrapper.findById(state.id,
-		// State.class)));
-
 		return state;
 	}
 

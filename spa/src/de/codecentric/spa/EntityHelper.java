@@ -244,18 +244,18 @@ public class EntityHelper<T> {
 	 * 
 	 * @param condition
 	 *            a 'where' clause built before calling this method with
-	 *            {@link ConditionBuilder}.
+	 *            {@link ConditionBuilder} (should include 'where' word)
 	 * @return list of objects or empty list if nothing is found
 	 */
+	@SuppressWarnings("unchecked")
 	public List<T> findBy(String condition) throws RuntimeException {
 		try {
 			Class<?> cls = entityMData.getDescribingClass();
 			List<T> list = new ArrayList<T>();
 
 			Cursor c = context.getDatabaseHelper().getDatabase()
-					.rawQuery(selectAllStmtSQL + condition, new String[] {});
+					.rawQuery(selectAllStmtSQL + " " + condition, new String[] {});
 			while (c.moveToNext()) {
-				@SuppressWarnings("unchecked")
 				T entity = (T) cls.newInstance();
 
 				int columnCount = c.getColumnCount();
@@ -321,6 +321,43 @@ public class EntityHelper<T> {
 	public void saveOrUpdate(final T object) throws RuntimeException {
 		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 		db.beginTransaction();
+		try {
+			doSaveOrUpdate(object);
+			db.setTransactionSuccessful();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			db.endTransaction();
+		}
+
+		// try {
+		// Long idVal = getIdentifierValue(object);
+		//
+		// if (idVal != 0) { // update entity
+		// String idColumn = entityMData.getIdentifier().getColumnName();
+		// String where = idColumn + " = ?";
+		// db.update(entityMData.getTableName(),
+		// contentValuesPreparer.prepareValues(object, entityMData), where,
+		// new String[] { String.valueOf(idVal) });
+		// saveOrUpdateCascadingRelationColumns(object, db);
+		// } else { // new one, insert it
+		// Long rowId = db.insert(entityMData.getTableName(), null,
+		// contentValuesPreparer.prepareValues(object, entityMData));
+		// if (rowId != -1) {
+		// setIdentifierValue(object, rowId);
+		// insertCascadingRelationColumns(object, db);
+		// }
+		// }
+		// db.setTransactionSuccessful();
+		// } catch (Exception e) {
+		// throw new RuntimeException(e);
+		// } finally {
+		// db.endTransaction();
+		// }
+	}
+
+	private void doSaveOrUpdate(final T object) throws RuntimeException {
+		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 
 		try {
 			Long idVal = getIdentifierValue(object);
@@ -339,11 +376,8 @@ public class EntityHelper<T> {
 					insertCascadingRelationColumns(object, db);
 				}
 			}
-			db.setTransactionSuccessful();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		} finally {
-			db.endTransaction();
 		}
 	}
 
@@ -382,7 +416,7 @@ public class EntityHelper<T> {
 				}
 			} else if (field.getAnnotation(ManyToOne.class) != null) {
 				// In case there is no CascadeType.PERSIST defined we will force
-				// this as default behavior .
+				// this as default behavior.
 				Class<?> parentClass = (Class<?>) field.getGenericType();
 				Object parent = field.get(entity);
 				EntityHelper ehParent = context.getEntityHelper(parentClass);
@@ -395,12 +429,12 @@ public class EntityHelper<T> {
 						setIdentifierValue(parent, rowId);
 						field.set(entity, parent);
 						eCache.cache(parent);
-						updateEntity(entity);
+						saveOrUpdateEntity(entity);
 					}
 				} else {
 					field.set(entity, parent);
 					eCache.cache(parent);
-					updateEntity(entity);
+					saveOrUpdateEntity(entity);
 				}
 			}
 		}
@@ -415,17 +449,29 @@ public class EntityHelper<T> {
 	 * @param parent
 	 * @throws IllegalAccessException
 	 */
-	private void updateEntity(Object entity) throws IllegalAccessException {
+	private void saveOrUpdateEntity(Object entity) throws IllegalAccessException {
+		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 		Long idVal = getIdentifierValue(entity);
-		String idColumn = entityMData.getIdentifier().getColumnName();
-		String where = idColumn + " = ?";
-		int rowsAffected = context
-				.getDatabaseHelper()
-				.getDatabase()
-				.update(entityMData.getTableName(), contentValuesPreparer.prepareValues(entity, entityMData), where,
-						new String[] { String.valueOf(idVal) });
-		if (rowsAffected == 0) {
-			throw new RuntimeException("No row to update!Database not consistent");
+
+		if (idVal != 0) { // update entity
+			String idColumn = entityMData.getIdentifier().getColumnName();
+			String where = idColumn + " = ?";
+			int rowsAffected = context
+					.getDatabaseHelper()
+					.getDatabase()
+					.update(entityMData.getTableName(), contentValuesPreparer.prepareValues(entity, entityMData),
+							where, new String[] { String.valueOf(idVal) });
+			if (rowsAffected == 0) {
+				throw new RuntimeException("No row to update! Database not consistent, problematic table: "
+						+ entityMData.getTableName() + ", row identifier: " + idVal);
+			}
+		} else { // new one, insert it
+			Long rowId = db.insert(entityMData.getTableName(), null,
+					contentValuesPreparer.prepareValues(entity, entityMData));
+			if (rowId != -1) {
+				setIdentifierValue(entity, rowId);
+				insertCascadingRelationColumns(entity, db);
+			}
 		}
 	}
 
@@ -442,6 +488,8 @@ public class EntityHelper<T> {
 			throws IllegalArgumentException, IllegalAccessException {
 		CascadeType[] acceptedCascadeTypes = { CascadeType.REFRESH, CascadeType.ALL };
 		Class<?> cls = entityMData.getDescribingClass();
+		EntityTransactionCache eCache = EntityTransactionCache.getInstance();
+		eCache.cache(object);
 		Field[] fields = cls.getDeclaredFields();
 		for (Field field : fields) {
 			if (field.getAnnotation(OneToMany.class) != null
@@ -450,16 +498,19 @@ public class EntityHelper<T> {
 				List<Class<?>> children = (List<Class<?>>) field.get(object);
 				for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
 					Object child = iterator.next();
-					updateEntity(child);
+					EntityHelper childEntityHelper = context.getEntityHelper(child.getClass());
+					childEntityHelper.saveOrUpdateEntity(child);
+					// childEntityHelper.doSaveOrUpdate(child);
+
 				}
 			} else if (field.getAnnotation(ManyToOne.class) != null
 					&& (isProperCascadeType(field.getAnnotation(ManyToOne.class).cascade(), acceptedCascadeTypes))) {
 				// Take the parent from child and do the update
 				Object parent = field.get(object);
-				updateEntity(parent);
+				saveOrUpdateEntity(parent);
 			}
-
 		}
+		eCache.clear();
 	}
 
 	/**

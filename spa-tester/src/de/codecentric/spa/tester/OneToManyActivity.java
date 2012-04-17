@@ -1,5 +1,7 @@
 package de.codecentric.spa.tester;
 
+import java.util.Date;
+
 import junit.framework.Assert;
 import android.app.Activity;
 import android.os.Bundle;
@@ -37,14 +39,19 @@ public class OneToManyActivity extends Activity {
 		executeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// create new state with its structure
-				State state = DataStructureProvider.getOneToManyForSave();
+				if (executionText.getText().length() != 0) {
+					logMessage("\n");
+				}
+				logMessage("Starting new test...\n");
 
 				// check database state, it should be empty
 				Assert.assertTrue(wrapper.listAll(State.class).size() == 0);
 				logMessage("Table 'state' is empty.\n");
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 0);
 				logMessage("Table 'city' is empty.\n");
+
+				// create new state with its structure
+				State state = DataStructureProvider.getOneToManyForSave();
 
 				// save state structure
 				logMessage("Saving 'state' instance.\n");
@@ -56,16 +63,20 @@ public class OneToManyActivity extends Activity {
 				Assert.assertTrue(wrapper.listAll(State.class).size() == 1);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 4);
 
-				// // modify structure
-				// logMessage("Modifying 'state' structure, adding new city.\n");
-				// City newCity = new City("new city", 123456);
-				// state.cities.add(newCity);
-				// logMessage("Saving modified 'state' structure.\n");
-				// wrapper.saveOrUpdate(state);
-				// logMessage("Saved modified 'state' structure.\n");
-				//
-				// // check database structure
-				// Assert.assertTrue(wrapper.listAll(City.class).size() == 5);
+				// modify structure
+				logMessage("Modifying 'state' structure, adding new city.\n");
+				City newCity = new City("new city", 123456);
+				state.name = "new state name";
+				state.lastUpdated = new Date();
+				state.cities.add(newCity);
+				logMessage("Saving modified 'state' structure.\n");
+				wrapper.saveOrUpdate(state);
+				logMessage("Saved modified 'state' structure.\n" + state.toString());
+
+				// check database structure
+				logMessage("Listing cities for state with id = " + state.id + "\n");
+				Assert.assertTrue(wrapper.findBy("where cities_fk = " + state.id, City.class).size() == 5);
+				Assert.assertTrue(wrapper.listAll(City.class).size() == 5);
 
 				// delete given structure
 				logMessage("Deleting state (and substructure) with id: " + state.id + "\n");
