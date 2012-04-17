@@ -8,6 +8,8 @@ import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 
 public class SpaTesterApplicationContext extends PersistenceApplicationContext {
 
+	private static int identationLevel = 0;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -46,6 +48,39 @@ public class SpaTesterApplicationContext extends PersistenceApplicationContext {
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static void resetIdentationLevel() {
+		identationLevel = 0;
+	}
+
+	public static String increaseIdentationLevel() {
+		String identPrefix = "";
+		identationLevel++;
+		for (int i = 0; i < identationLevel; i++) {
+			identPrefix += "\t";
+		}
+		return identPrefix;
+	}
+
+	public static String decreaseIdentationLevel() {
+		String identPrefix = "";
+		identationLevel--;
+		if (identationLevel < 0) {
+			identationLevel = 0;
+		}
+		for (int i = 0; i < identationLevel; i++) {
+			identPrefix += "\t";
+		}
+		return identPrefix;
+	}
+
+	public static String getIdentationPrefix() {
+		String identPrefix = "";
+		for (int i = 0; i < identationLevel; i++) {
+			identPrefix += "\t";
+		}
+		return identPrefix;
 	}
 
 }
