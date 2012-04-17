@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.voicenotes.entity.Comment;
@@ -24,27 +25,34 @@ public class CommentActivity extends BaseActivity {
 	private Comment entity;
 	private EntityWrapper wrapper;
 
-	private TextView noteCreationTimeLbl;
-	private EditText noteTextTxt;
+	private TextView commentCreationTimeLbl;
+	private EditText commentTextTxt;
 	private Button saveBtn;
+	private Note note;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.textual_note_screen);
+		setContentView(R.layout.comment_screen);
 
+		Bundle extras = getIntent().getExtras();
 		entity = new Comment();
 		wrapper = ((PersistenceApplicationContext) getApplication())
 				.getEntityWrapper();
+		note = wrapper.findById(extras.getLong(Note.Extras.EXTRA_NOTE_ID),
+				Note.class);
 
 		// check if activity is started in 'view/edit note' or 'create' mode
-		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			entity.id = extras.getLong(Comment.Extras.EXTRA_NOTE_ID);
+			entity.id = extras.getLong(Comment.Extras.EXTRA_COMMENT_ID);
+			entity = wrapper.findById(entity.id, Comment.class);
+			if (entity == null) {
+				entity = new Comment();
+			}
 		}
 
-		noteCreationTimeLbl = (TextView) findViewById(R.id.note_creation_time_lbl);
-		noteTextTxt = (EditText) findViewById(R.id.comment_text_txt);
+		commentCreationTimeLbl = (TextView) findViewById(R.id.comment_creation_time_lbl);
+		commentTextTxt = (EditText) findViewById(R.id.comment_text_txt);
 		saveBtn = (Button) findViewById(R.id.saveBtn);
 	}
 
@@ -54,9 +62,10 @@ public class CommentActivity extends BaseActivity {
 
 		if (entity.id != 0L) {
 			// we will load existing note => present it's creation time
-			noteCreationTimeLbl.setVisibility(View.VISIBLE);
+			commentCreationTimeLbl.setVisibility(View.VISIBLE);
+			commentTextTxt.setText(entity.text);
 		} else {
-			noteCreationTimeLbl.setVisibility(View.GONE);
+			commentCreationTimeLbl.setVisibility(View.GONE);
 		}
 
 		saveBtn.setOnClickListener(new SaveCommentClickListener());
@@ -70,14 +79,14 @@ public class CommentActivity extends BaseActivity {
 	private Dialog createValidationDialog() {
 		Dialog d = null;
 
-		String text = noteTextTxt.getText().toString();
+		String text = commentTextTxt.getText().toString();
 
 		if ("".equals(text)) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
 			if ("".equals(text)) {
 				builder.setMessage(R.string.txt_comment_empty_text);
-				noteTextTxt.requestFocus();
+				commentTextTxt.requestFocus();
 			}
 
 			builder.setPositiveButton(android.R.string.ok,
@@ -99,6 +108,7 @@ public class CommentActivity extends BaseActivity {
 		@Override
 		public void onClick(View v) {
 			saveCommentAndFinish();
+			finish();
 		}
 
 	}
@@ -109,11 +119,21 @@ public class CommentActivity extends BaseActivity {
 	private void saveCommentAndFinish() {
 		if (saveCommentNote()) {
 			issueSuccessNotification();
+		}else{
+			issueFailNotification();
 		}
 	}
 
 	private void issueSuccessNotification() {
-		// TODO: toast message
+		Toast.makeText(getApplicationContext(), R.string.comment_saved_ok,
+				Toast.LENGTH_SHORT).show();
+		finish();
+	}
+	
+	private void issueFailNotification() {
+		Toast.makeText(getApplicationContext(), R.string.comment_savefailed,
+				Toast.LENGTH_SHORT).show();
+		finish();
 	}
 
 	/**
@@ -127,13 +147,18 @@ public class CommentActivity extends BaseActivity {
 			return false;
 		}
 
-		entity.text = noteTextTxt.getText().toString();
+		entity.text = commentTextTxt.getText().toString();
 
 		if (entity.id == 0L) {
 			entity.timeCreated = new Date();
 		}
 
-		wrapper.saveOrUpdate(entity);
-		return true;
+		note.comments.add(entity);
+		try {
+			wrapper.saveOrUpdate(entity);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}		
 	}
 }

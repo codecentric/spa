@@ -22,12 +22,14 @@ import android.widget.Toast;
 import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.voicenotes.entity.Comment;
+import de.codecentric.voicenotes.entity.Note;
 
 public class CommentListActivity extends ListActivity {
 
 	private ListView listView;
 	private EntityWrapper wrapper;
 	private List<Comment> commentList;
+	private Note note;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,15 +40,18 @@ public class CommentListActivity extends ListActivity {
 				.getEntityWrapper();
 
 		Long noteId = getIntent().getExtras().getLong(
-				Comment.Extras.EXTRA_NOTE_ID);
+				Comment.Extras.EXTRA_COMMENT_ID);
+
+		note = wrapper.findById(noteId, Note.class);
+		commentList = note.comments;
 
 		// commentList = wrapper.findBy(" where "
 		// + ((PersistenceApplicationContext) getApplication())
 		// .getEntityMetaDataProvider().getMetaData(Note.class)
 		// .getColumnNameForField("comments") + "=" + noteId,
 		// Comment.class);
-		commentList = wrapper.findBy(" where comments_fk = " + noteId,
-				Comment.class);
+		// commentList = wrapper.findBy(" where comments_fk = " + noteId,
+		// Comment.class);
 		setListAdapter(new ArrayAdapter<Comment>(this,
 				R.layout.list_comment_screen, commentList));
 
@@ -59,7 +64,8 @@ public class CommentListActivity extends ListActivity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Comment comment = commentList.get(position);
-				AlertDialog.Builder builder = new AlertDialog.Builder(CommentListActivity.this);
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						CommentListActivity.this);
 				builder.setTitle(R.string.choose_action);
 
 				LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -87,7 +93,7 @@ public class CommentListActivity extends ListActivity {
 		OnClickListener actionChooserClickListener = new ActionChooserClickListener(
 				dialog, comment);
 		radioButtons[0].setOnClickListener(actionChooserClickListener);
-		radioButtons[1].setOnClickListener(actionChooserClickListener);		
+		radioButtons[1].setOnClickListener(actionChooserClickListener);
 	}
 
 	private void fixRadioButtonsLayout(Comment comment,
@@ -113,10 +119,11 @@ public class CommentListActivity extends ListActivity {
 			this.comment = comment;
 		}
 
+		// comment context menu
 		@Override
 		public void onClick(View view) {
 			RadioButton button = (RadioButton) view;
-			
+
 			if (button.getId() == R.id.action_delete_comment) {
 				String msg = "";
 				try {
@@ -127,9 +134,18 @@ public class CommentListActivity extends ListActivity {
 					msg = "Error deleting comment";
 				}
 
-				Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT)
+						.show();
+			} else if (button.getId() == R.id.action_edit_comment) {
+				Intent intent = new Intent(CommentListActivity.this,
+						CommentActivity.class);
+				intent.putExtra(Note.Extras.EXTRA_NOTE_ID, note.id);
+				intent.putExtra(Comment.Extras.EXTRA_COMMENT_ID, comment.id);
+				if (intent != null) {
+					startActivity(intent);
+				}
 			}
-			
+
 			dialog.cancel();
 		}
 	}
@@ -140,6 +156,7 @@ public class CommentListActivity extends ListActivity {
 		return true;
 	}
 
+	// phone's menu
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		boolean handled = false;
@@ -156,9 +173,10 @@ public class CommentListActivity extends ListActivity {
 			break;
 		}
 
-		case R.id.app_ctx_menu_txtnote_btn: {
-			Intent intent = new Intent(this, TextualNoteActivity.class);
+		case R.id.app_ctx_menu_txtcomment_btn: {
+			Intent intent = new Intent(this, CommentActivity.class);
 			if (intent != null) {
+				intent.putExtra(Note.Extras.EXTRA_NOTE_ID, note.id);
 				startActivity(intent);
 				handled = true;
 			}

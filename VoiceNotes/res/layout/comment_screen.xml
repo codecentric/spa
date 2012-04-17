@@ -8,6 +8,7 @@
 		<EditText android:id="@+id/comment_text_txt" style="@style/default_input.multiline"
 			android:maxLength="300" />
 
+		<TextView android:id="@+id/comment_creation_time_lbl" style="@style/default_label" />
 		<TextView style="@style/line_break" />
 
 		<Button android:id="@+id/saveBtn" style="@style/default_button.image"

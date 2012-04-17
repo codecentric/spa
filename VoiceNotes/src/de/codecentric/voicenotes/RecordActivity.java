@@ -109,6 +109,7 @@ public class RecordActivity extends BaseActivity {
 			n.hasAlarm = false;
 			n.hasRecording = false;
 			n.dueTime = new Date();
+			n.timeCreated = new Date();
 
 			for (int j = 0; j < comments; j++) {
 				Comment c = new Comment();

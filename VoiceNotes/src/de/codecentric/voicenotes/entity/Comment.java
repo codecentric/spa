@@ -7,6 +7,10 @@ public class Comment extends DataEntity {
 
 	public String text;
 
+	public Comment() {
+		super();
+	}
+
 	@Override
 	public String toString() {
 		return text;
@@ -17,7 +21,7 @@ public class Comment extends DataEntity {
 	 */
 	public static class Extras {
 
-		public static final String EXTRA_NOTE_ID = "commentId";
+		public static final String EXTRA_COMMENT_ID = "commentId";
 
 	}
 }

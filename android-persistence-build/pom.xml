@@ -9,10 +9,10 @@
 	<description>Simple persistence library for Android build project</description>
 	<packaging>pom</packaging>
 	
-	<modules>
+	<!--<modules>
 		<module>../spa</module>
 		<module>../spa-entities</module>
-	</modules>
+	</modules> -->
 	
 	<properties>
 		<maven.compiler.source>1.6</maven.compiler.source>
