@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="root_layout">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">fill_parent</item>
+		<item name="android:orientation">vertical</item>
+	</style>
+	<style name="choose_action_item">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textSize">16sp</item>
+	</style>
+	<style name="line_break">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">5dp</item>
+	</style>
+	<style name="line_break.big">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">10dp</item>
+	</style>
+	<style name="default_button">
+		<item name="android:layout_width">160dp</item>
+		<item name="android:layout_height">wrap_content</item>
+	</style>
+</resources>
