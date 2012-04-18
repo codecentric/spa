@@ -107,7 +107,7 @@ public class EntityHelper<T> {
 	 * 
 	 * @param condition
 	 *            a 'where' clause built before calling this method with
-	 *            {@link ConditionBuilder} (should include 'where' word)
+	 *            {@link ConditionBuilder} (should not include 'where' word)
 	 * @return list of objects or empty list if nothing is found
 	 */
 	@SuppressWarnings("unchecked")
@@ -116,8 +116,12 @@ public class EntityHelper<T> {
 			Class<?> cls = entityMData.getDescribingClass();
 			List<T> list = new ArrayList<T>();
 
-			Cursor c = context.getDatabaseHelper().getDatabase()
-					.rawQuery(selectAllStmtSQL + " " + condition, new String[] {});
+			String query = selectAllStmtSQL;
+			if (condition != null && !condition.isEmpty()) {
+				query += " WHERE " + condition;
+			}
+
+			Cursor c = context.getDatabaseHelper().getDatabase().rawQuery(query, new String[] {});
 			while (c.moveToNext()) {
 				T entity = (T) cls.newInstance();
 				int columnCount = c.getColumnCount();
@@ -169,7 +173,7 @@ public class EntityHelper<T> {
 				// TODO Check is it possible to make this more efficient.
 				// This approach is necessarily because EntityHelper is
 				// different for child entity.
-				List<Class<?>> children = eh.findBy(" where " + columnName + "=" + primaryKeyField.get(entity));
+				List<Class<?>> children = eh.findBy(columnName + "=" + primaryKeyField.get(entity));
 				field.set(entity, children);
 
 			} else if (field.getAnnotation(ManyToOne.class) != null) {

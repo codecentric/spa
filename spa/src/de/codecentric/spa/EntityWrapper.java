@@ -175,7 +175,7 @@ public class EntityWrapper {
 	 * @param <T>
 	 *            type of entity
 	 * @param condition
-	 *            condition for search (should include 'where' word)
+	 *            condition for search (should not include 'where' word)
 	 * @param clazz
 	 *            entity class
 	 * @return list of entries
