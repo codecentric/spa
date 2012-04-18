@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
+import de.codecentric.spa.metadata.RelationshipMetaData;
 import de.codecentric.spa.tester.context.SpaTesterApplicationContext;
 import de.codecentric.spa.tester.entity.City;
 import de.codecentric.spa.tester.entity.State;
@@ -63,6 +64,15 @@ public class OneToManyActivity extends Activity {
 				Assert.assertTrue(wrapper.listAll(State.class).size() == 1);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 4);
 
+				State persisted = wrapper.findById(state.id, State.class);
+				Assert.assertNotNull(persisted);
+				Assert.assertNull(persisted.cities);
+
+				RelationshipMetaData rMetaData = ((PersistenceApplicationContext) getApplication())
+						.getRelationshipMetaDataProvider().getMetaDataByField(State.class, "cities");
+				String condition = "where " + rMetaData.getForeignKeyColumnName() + " = " + state.id;
+				Assert.assertEquals(4, wrapper.findBy(condition, City.class).size());
+
 				// modify structure
 				logMessage("Modifying 'state' structure, adding new city.\n");
 				City newCity = new City("new city", 123456);
@@ -77,6 +87,7 @@ public class OneToManyActivity extends Activity {
 				logMessage("Listing cities for state with id = " + state.id + "\n");
 				Assert.assertTrue(wrapper.findBy("where cities_fk = " + state.id, City.class).size() == 5);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 5);
+				Assert.assertEquals(5, wrapper.findBy(condition, City.class).size());
 
 				// delete given structure
 				logMessage("Deleting state (and substructure) with id: " + state.id + "\n");

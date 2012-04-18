@@ -11,16 +11,6 @@ public class RelationshipMetaData {
 
 	private RelationshipType relationshipType;
 
-	private RelationshipInfo relationshipInfo;
-
-	public RelationshipInfo getRelationshipInfo() {
-		return relationshipInfo;
-	}
-
-	public void setRelationshipInfo(RelationshipInfo relationshipInfo) {
-		this.relationshipInfo = relationshipInfo;
-	}
-
 	private String fieldName;
 
 	private String foreignKeyColumnName;

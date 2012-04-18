@@ -1,11 +1,8 @@
 package de.codecentric.spa.entity;
 
-import de.codecentric.spa.annotations.CascadeType;
 import de.codecentric.spa.annotations.Column;
-import de.codecentric.spa.annotations.FetchType;
 import de.codecentric.spa.annotations.Id;
 import de.codecentric.spa.annotations.ManyToOne;
-
 
 @de.codecentric.spa.annotations.Entity
 public class Child {
@@ -17,7 +14,7 @@ public class Child {
 
 	public String value;
 
-	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@ManyToOne
 	@Column(name = "parent_id")
 	public Parent parent;
 
