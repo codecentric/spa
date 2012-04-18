@@ -482,7 +482,7 @@ public class EntityHelper<T> {
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private void deleteCascadingRelationColumns(Long id) throws IllegalArgumentException, IllegalAccessException {
 		// id=-1 will be indicator that deletion should be performed for all
 		// entries.
@@ -492,14 +492,10 @@ public class EntityHelper<T> {
 			if (field.getAnnotation(OneToMany.class) != null) {
 				if (id != -1) {
 					// delete only children for parent with given id
-					Object object = findById(id);
-					List<Class<?>> children = (List<Class<?>>) field.get(object);
-					if (children != null) {
-						for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
-							Object child = iterator.next();
-							context.getEntityHelper(child.getClass()).deleteEntity(child);
-						}
-					}
+					RelationshipMetaData rMetaData = context.getRelationshipMetaDataProvider().getMetaDataByField(cls,
+							field.getName());
+					EntityHelper eh = context.getEntityHelper(rMetaData.getChildClass());
+					eh.deleteBy(rMetaData.getForeignKeyColumnName() + " = " + id);
 				} else {
 					// parent id=-1, which indicates that all entries from
 					// parent table will be deleted, so we have to
@@ -512,23 +508,6 @@ public class EntityHelper<T> {
 				}
 
 			}
-		}
-	}
-
-	/**
-	 * Delete given entity from database table.
-	 * 
-	 * @param entity
-	 */
-	private void deleteEntity(Object entity) {
-		Long idVal = getIdentifierValue(entity);
-		String idColumn = entityMData.getIdentifier().getColumnName();
-		String tableName = entityMData.getTableName();
-		String where = idColumn + " = ?";
-		int count = context.getDatabaseHelper().getDatabase()
-				.delete(tableName, where, new String[] { String.valueOf(idVal) });
-		if (count == 0) {
-			throw new RuntimeException("No entry was deleted. Database not consistent!");
 		}
 	}
 
@@ -593,6 +572,30 @@ public class EntityHelper<T> {
 			db.setTransactionSuccessful();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		} finally {
+			db.endTransaction();
+		}
+	}
+
+	/**
+	 * Method deletes database rows using given where clause.
+	 * 
+	 * @param where
+	 *            a where clause (should not contain 'where' word)
+	 * @return number of deleted rows
+	 */
+	public int deleteBy(String where) {
+		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
+		db.beginTransaction();
+
+		try {
+			db.execSQL(getPersistenceApplicationContext().getSQLProvider().getSQL(entityMData.getDescribingClass())
+					.getDeleteAllSQL()
+					+ " WHERE " + where);
+			db.setTransactionSuccessful();
+			return listAll().size();
+		} catch (Exception e) {
+			throw new RuntimeException();
 		} finally {
 			db.endTransaction();
 		}
