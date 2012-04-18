@@ -70,7 +70,7 @@ public class OneToManyActivity extends Activity {
 
 				RelationshipMetaData rMetaData = ((PersistenceApplicationContext) getApplication())
 						.getRelationshipMetaDataProvider().getMetaDataByField(State.class, "cities");
-				String condition = "where " + rMetaData.getForeignKeyColumnName() + " = " + state.id;
+				String condition = rMetaData.getForeignKeyColumnName() + " = " + state.id;
 				Assert.assertEquals(4, wrapper.findBy(condition, City.class).size());
 
 				// modify structure
@@ -85,7 +85,7 @@ public class OneToManyActivity extends Activity {
 
 				// check database structure
 				logMessage("Listing cities for state with id = " + state.id + "\n");
-				Assert.assertTrue(wrapper.findBy("where cities_fk = " + state.id, City.class).size() == 5);
+				Assert.assertTrue(wrapper.findBy("cities_fk = " + state.id, City.class).size() == 5);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 5);
 				Assert.assertEquals(5, wrapper.findBy(condition, City.class).size());
 
