@@ -21,7 +21,7 @@ public class Note extends DataEntity {
 	public Boolean hasAlarm;
 	public Boolean hasRecording;
 	public String recordingPath;
-	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
 	public List<Comment> comments = new ArrayList<Comment>();
 
 	public Note() {
