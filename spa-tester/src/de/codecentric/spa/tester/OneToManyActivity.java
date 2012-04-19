@@ -88,6 +88,13 @@ public class OneToManyActivity extends Activity {
 				Assert.assertTrue(wrapper.findBy("cities_fk = " + state.id, City.class).size() == 5);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 5);
 				Assert.assertEquals(5, wrapper.findBy(condition, City.class).size());
+				logMessage("Listing cities for state with id = " + state.id + " went as expected.\n");
+
+				// do some deleting
+				logMessage("Deleting cities with id <= 2.\n");
+				wrapper.deleteBy("id <= 2", City.class);
+				Assert.assertTrue(wrapper.listAll(City.class).size() == 3);
+				logMessage("Deleting cities with id <= 2 went as expected.\n");
 
 				// delete given structure
 				logMessage("Deleting state (and substructure) with id: " + state.id + "\n");
