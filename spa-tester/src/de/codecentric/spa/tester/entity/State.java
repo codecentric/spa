@@ -3,9 +3,7 @@ package de.codecentric.spa.tester.entity;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import de.codecentric.spa.annotations.CascadeType;
 import de.codecentric.spa.annotations.Entity;
-import de.codecentric.spa.annotations.FetchType;
 import de.codecentric.spa.annotations.OneToMany;
 import de.codecentric.spa.tester.context.SpaTesterApplicationContext;
 
@@ -15,7 +13,7 @@ public class State extends DataEntity {
 	public String name;
 	public Double bdp;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany
 	public List<City> cities;
 
 	public State() {

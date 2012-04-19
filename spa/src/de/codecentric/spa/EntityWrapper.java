@@ -144,6 +144,18 @@ public class EntityWrapper {
 	}
 
 	/**
+	 * Method deletes database rows using given where clause.
+	 * 
+	 * @param where
+	 *            a where clause (should not contain 'where' word)
+	 * @return number of deleted rows
+	 */
+	public <T> int deleteBy(String where, Class<T> clazz) {
+		EntityHelper<T> entityHelper = getEntityHelper(clazz);
+		return entityHelper.deleteBy(where);
+	}
+
+	/**
 	 * List all entries of given class.
 	 * 
 	 * @param <T>
@@ -163,7 +175,7 @@ public class EntityWrapper {
 	 * @param <T>
 	 *            type of entity
 	 * @param condition
-	 *            condition for search (should include 'where' word)
+	 *            condition for search (should not include 'where' word)
 	 * @param clazz
 	 *            entity class
 	 * @return list of entries

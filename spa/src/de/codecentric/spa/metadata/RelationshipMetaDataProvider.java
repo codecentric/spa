@@ -50,11 +50,38 @@ public class RelationshipMetaDataProvider {
 	 * relationships between entity classes.
 	 * 
 	 * @param cls
-	 *            class which database table is parent of the relationships
+	 *            class which is parent of the relationships
 	 * @return list of {@link RelationshipMetaData}
 	 */
 	public List<RelationshipMetaData> getMetaData(Class<?> cls) {
 		return metaDataMap.get(cls);
+	}
+
+	/**
+	 * Method returns {@link RelationshipMetaData} describing relationship
+	 * between entity classes. Null value will be returned if there is no
+	 * relationship on specified field.
+	 * 
+	 * @param cls
+	 *            class which is parent of the relationships
+	 * @param fieldName
+	 *            mapping field name
+	 * @return {@link RelationshipMetaData}
+	 */
+	public RelationshipMetaData getMetaDataByField(Class<?> cls, String fieldName) {
+		RelationshipMetaData result = null;
+
+		List<RelationshipMetaData> metaData = metaDataMap.get(cls);
+		if (metaData != null && !metaData.isEmpty()) {
+			for (RelationshipMetaData meta : metaData) {
+				if (meta.getFieldName().equals(fieldName)) {
+					result = meta;
+					break;
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**

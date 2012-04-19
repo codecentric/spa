@@ -33,10 +33,8 @@ public class FieldScanner {
 			return false;
 		}
 
-		return f.getAnnotation(OneToOne.class) != null
-				|| f.getAnnotation(OneToMany.class) != null
-				|| f.getAnnotation(ManyToOne.class) != null
-				|| f.getAnnotation(ManyToMany.class) != null;
+		return f.getAnnotation(OneToOne.class) != null || f.getAnnotation(OneToMany.class) != null
+				|| f.getAnnotation(ManyToOne.class) != null || f.getAnnotation(ManyToMany.class) != null;
 	}
 
 	/**
@@ -125,14 +123,8 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(cls
-					.getSimpleName() + "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(cls.getSimpleName() + "_fk"));
 		}
-
-		RelationshipInfo relationshipInfo = new RelationshipInfo();
-		relationshipInfo.setFetch(f.getAnnotation(OneToOne.class).fetch());
-		relationshipInfo.setCascade(f.getAnnotation(OneToOne.class).cascade());
-		result.setRelationshipInfo(relationshipInfo);
 
 		RelationshipMetaDataProvider.getInstance().addMetaData(cls, result);
 	}
@@ -157,17 +149,10 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName()
-					+ "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName() + "_fk"));
 		}
 
-		RelationshipInfo relationshipInfo = new RelationshipInfo();
-		relationshipInfo.setFetch(f.getAnnotation(OneToMany.class).fetch());
-		relationshipInfo.setCascade(f.getAnnotation(OneToMany.class).cascade());
-		result.setRelationshipInfo(relationshipInfo);
-
-		Class<?> relationshipClass = (Class<?>) ((ParameterizedType) f
-				.getGenericType()).getActualTypeArguments()[0];
+		Class<?> relationshipClass = (Class<?>) ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0];
 		result.setChildClass(relationshipClass);
 
 		RelationshipMetaDataProvider.getInstance().addMetaData(cls, result);
@@ -194,14 +179,8 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName()
-					+ "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName() + "_fk"));
 		}
-
-		RelationshipInfo relationshipInfo = new RelationshipInfo();
-		relationshipInfo.setFetch(f.getAnnotation(ManyToOne.class).fetch());
-		relationshipInfo.setCascade(f.getAnnotation(ManyToOne.class).cascade());
-		result.setRelationshipInfo(relationshipInfo);
 
 		RelationshipMetaDataProvider.getInstance().addMetaData(cls, result);
 	}

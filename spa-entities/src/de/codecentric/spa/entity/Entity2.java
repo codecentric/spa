@@ -2,9 +2,7 @@ package de.codecentric.spa.entity;
 
 import java.util.List;
 
-import de.codecentric.spa.annotations.CascadeType;
 import de.codecentric.spa.annotations.Column;
-import de.codecentric.spa.annotations.FetchType;
 import de.codecentric.spa.annotations.Id;
 import de.codecentric.spa.annotations.OneToMany;
 import de.codecentric.spa.annotations.OneToOne;
@@ -17,7 +15,7 @@ public class Entity2 {
 
 	public String entityTwoName;
 
-	@OneToMany(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
+	@OneToMany
 	@Column(name = "entity2_id")
 	public List<EntityAttribute> attributes;
 
