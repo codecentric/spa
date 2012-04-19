@@ -13,4 +13,8 @@ VoiceNotes is small application that can be used as example how SPA library shou
   - create *EntityHelper* instance for each scanned class
   - instantiate your database helper class
 - use *PersistenceApplicationContext#getEntityWrapper* to obtain created *EntityWrapper* instance and exploit its features
-- note: Do not use primitive types. They are not supported.
+- usages notes:
+  - Do not use primitive types. They are not supported.
+  - Loading is done lazily, user will have to load any relationship objects manually (hopefully not in the future...)
+  - Persisting is done eagerly, everything attached to the object being persisted, will be persisted also. No synchronization will be done (no deletion of missing objects or anything of that kind), only persisting what is present on the object.
+  - Deletion is done eagerly, when deleting parent object, all of its children will be deleted too.
