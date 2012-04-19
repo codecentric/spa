@@ -19,6 +19,7 @@ public class Note extends DataEntity {
 	public Boolean hasAlarm;
 	public Boolean hasRecording;
 	public String recordingPath;
+
 	@OneToMany
 	public List<Comment> comments = new ArrayList<Comment>();
 

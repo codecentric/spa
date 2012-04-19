@@ -94,11 +94,7 @@ public class RecordActivity extends BaseActivity {
 		uiUpdater = new Handler();
 		isRecording = false;
 
-		// todelete
-		EntityMetaDataProvider e = ((PersistenceApplicationContext) getApplication())
-				.getEntityMetaDataProvider();
-		System.out.println("");
-
+		if(true)return;
 		// test data
 		int notes = 2;
 		int comments = 3;
