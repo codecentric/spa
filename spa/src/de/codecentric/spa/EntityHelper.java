@@ -118,7 +118,7 @@ public class EntityHelper<T> {
 			List<T> list = new ArrayList<T>();
 
 			String query = selectAllStmtSQL;
-			if (condition != null && !condition.isEmpty()) {
+			if (condition != null && !condition.trim().equals("")) {
 				query += " WHERE " + condition;
 			}
 
