@@ -16,5 +16,8 @@ VoiceNotes is small application that can be used as example how SPA library shou
 - usages notes:
   - Do not use primitive types. They are not supported.
   - Loading is done lazily, user will have to load any relationship objects manually (hopefully not in the future...)
-  - Persisting is done eagerly, everything attached to the object being persisted, will be persisted also. No synchronization will be done (no deletion of missing objects or anything of that kind), only persisting what is present on the object.
-  - Deletion is done eagerly, when deleting parent object, all of its children will be deleted too.
+  - Persisting is done eagerly, everything attached to the object being persisted, will be persisted also. No synchronization will be done (no deletion of missing objects or anything of that kind), only persisting of what is present on the object is done.
+  - Deletion is done eagerly meaning when deleting object, its children will be deleted too (not only those attached to the object, but all currently in database). So,
+	- when deleting an object, row in database table corresponding to a field annotated with @OneToOne is deleted too
+	- when deleting an object, all rows in database table corresponding to a field annotated with @OneToMany are deleted too
+	- when deleting an object, fields annotated with @ManyToOne are not processed during cascading deletion
