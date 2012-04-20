@@ -15,6 +15,7 @@ import de.codecentric.spa.annotations.Column;
 import de.codecentric.spa.annotations.Id;
 import de.codecentric.spa.annotations.ManyToOne;
 import de.codecentric.spa.annotations.OneToMany;
+import de.codecentric.spa.annotations.OneToOne;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.spa.metadata.EntityMetaData;
 import de.codecentric.spa.metadata.EntityMetaDataProvider;
@@ -420,6 +421,10 @@ public class EntityHelper<T> {
 				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getParentClass());
 				childEntityHelper.doSaveOrUpdate(parent);
 
+			} else if(field.getAnnotation(OneToOne.class)!=null) {
+				Object child=field.get(entity);
+				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getChildClass());
+				childEntityHelper.doSaveOrUpdate(child); 
 			}
 		}
 	}

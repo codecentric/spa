@@ -11,12 +11,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
-import de.codecentric.spa.metadata.RelationshipMetaData;
 import de.codecentric.spa.tester.context.SpaTesterApplicationContext;
 import de.codecentric.spa.tester.entity.City;
 import de.codecentric.spa.tester.entity.State;
 
-public class OneToManyActivity extends Activity {
+/**
+ * OneToOneActivity is used to test different database operations over data-structures containing fields with ONE-TO-ONE
+ * relationship.
+ */
+public class OneToOneActivity extends Activity {
 
 	private Button executeButton;
 	private TextView executionText;
@@ -26,10 +29,10 @@ public class OneToManyActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.one_to_many);
+		setContentView(R.layout.one_to_one);
 
-		executeButton = (Button) findViewById(R.id.executeBtn);
-		executionText = (TextView) findViewById(R.id.executionText);
+		executeButton = (Button) findViewById(R.id.executeOneToOneBtn);
+		executionText = (TextView) findViewById(R.id.executionOneToOneText);
 
 		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
 	}
@@ -66,35 +69,35 @@ public class OneToManyActivity extends Activity {
 
 				State persisted = wrapper.findById(state.id, State.class);
 				Assert.assertNotNull(persisted);
-				Assert.assertNull(persisted.cities);
-
-				RelationshipMetaData rMetaData = ((PersistenceApplicationContext) getApplication())
-						.getRelationshipMetaDataProvider().getMetaDataByField(State.class, "cities");
-				String condition = rMetaData.getForeignKeyColumnName() + " = " + state.id;
-				Assert.assertEquals(5, wrapper.findBy(condition, City.class).size());
+				Assert.assertNull(persisted.capitol);
 
 				// modify structure
-				logMessage("Modifying 'state' structure, adding new city.\n");
-				City newCity = new City("new city", 123456);
+				logMessage("Modifying 'state' structure, deleting and adding new capitol city, change state name, last updated...\n");
+				
+				// delete capitol city from state
+				wrapper.deleteBy("name = 'state_capitol_city'", City.class);
+				City newCity = new City("new capitol city", 123456);
 				state.name = "new state name";
 				state.lastUpdated = new Date();
-				state.cities.add(newCity);
-				logMessage("Saving modified 'state' structure.\n");
+				state.capitol = newCity;
+				logMessage("Saving modified 'state' structure...\n");
 				wrapper.saveOrUpdate(state);
-				logMessage("Saved modified 'state' structure.\n" + state.toString());
+				logMessage("Saved modified 'state' structure:\n" + state.toString());
 
-				// check database structure
-				logMessage("Listing cities for state with id = " + state.id + "\n");
-				Assert.assertTrue(wrapper.findBy("cities_fk = " + state.id, City.class).size() == 6);
-				Assert.assertTrue(wrapper.listAll(City.class).size() == 6);
-				Assert.assertEquals(6, wrapper.findBy(condition, City.class).size());
-				logMessage("Listing cities for state with id = " + state.id + " went as expected.\n");
+				// modify structure
+				logMessage("Modifying 'state' structure, change capitol city name and population\n");
+				state.lastUpdated = new Date();
+				state.capitol.name = "changed_capitol_name";
+				state.capitol.population = 1001;
+				logMessage("Saving modified 'state' structure...\n");
+				wrapper.saveOrUpdate(state);
+				logMessage("Saved modified 'state' structure:\n" + state.toString());
 
 				// do some deleting
-				logMessage("Deleting cities with id <= 2.\n");
-				wrapper.deleteBy("id <= 2", City.class);
+				logMessage("Deleting capitol city.\n");
+				wrapper.delete(state.capitol.id, City.class);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 4);
-				logMessage("Deleting cities with id <= 2 went as expected.\n");
+				logMessage("Deleting capitol city went as expected.\n");
 
 				// delete given structure
 				logMessage("Deleting state (and substructure) with id: " + state.id + "\n");
@@ -107,7 +110,7 @@ public class OneToManyActivity extends Activity {
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 0);
 				logMessage("Table 'city' is empty.\n");
 
-				Toast.makeText(OneToManyActivity.this, "Test passed", 1000).show();
+				Toast.makeText(OneToOneActivity.this, "Test passed", 1000).show();
 				SpaTesterApplicationContext.resetIdentationLevel();
 			}
 		});

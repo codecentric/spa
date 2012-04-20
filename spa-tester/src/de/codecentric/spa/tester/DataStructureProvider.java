@@ -17,6 +17,8 @@ public class DataStructureProvider {
 		cities.add(new City("city 3", 12422));
 		cities.add(new City("city 4", 451887));
 		state.cities = cities;
+		
+		state.capitol = new City("state_capitol_city", 10000);
 
 		return state;
 	}
