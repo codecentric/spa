@@ -123,7 +123,7 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(cls.getSimpleName() + "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(cls.getSimpleName() + "_" + f.getName() + "_fk"));
 		}
 
 		RelationshipMetaDataProvider.getInstance().addMetaData(cls, result);
@@ -149,7 +149,7 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName() + "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(cls.getSimpleName() + "_" + f.getName() + "_fk"));
 		}
 
 		Class<?> relationshipClass = (Class<?>) ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0];
@@ -179,7 +179,7 @@ public class FieldScanner {
 		if (c != null) {
 			result.setForeignKeyColumnName(c.name());
 		} else {
-			result.setForeignKeyColumnName(StringUtils.uncamelize(f.getName() + "_fk"));
+			result.setForeignKeyColumnName(StringUtils.uncamelize(cls.getSimpleName() + "_" + f.getName() + "_fk"));
 		}
 
 		RelationshipMetaDataProvider.getInstance().addMetaData(cls, result);

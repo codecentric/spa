@@ -85,7 +85,7 @@ public class OneToManyActivity extends Activity {
 
 				// check database structure
 				logMessage("Listing cities for state with id = " + state.id + "\n");
-				Assert.assertTrue(wrapper.findBy("cities_fk = " + state.id, City.class).size() == 6);
+				Assert.assertTrue(wrapper.findBy(condition, City.class).size() == 6);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 6);
 				Assert.assertEquals(6, wrapper.findBy(condition, City.class).size());
 				logMessage("Listing cities for state with id = " + state.id + " went as expected.\n");
