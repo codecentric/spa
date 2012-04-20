@@ -21,3 +21,9 @@ VoiceNotes is small application that can be used as example how SPA library shou
 	- when deleting an object, row in database table corresponding to a field annotated with @OneToOne is deleted too
 	- when deleting an object, all rows in database table corresponding to a field annotated with @OneToMany are deleted too
 	- when deleting an object, fields annotated with @ManyToOne are not processed during cascading deletion
+
+## Relationship mapping
+- Only unidirectional supported until now...
+	- @OneToOne annotation: class containing field annotated with this annotation is the 'parent' of the relationship. Database table corresponding to the 'child' side of the relationship will contain foreign key referencing 'parent' table. *(Should we turn this around?)*
+	- @OneToMany annotation: class containg field annotated with this annotation is the 'parent' of the relationship. Database table corresponding to the 'child' side of the relationship will contain foreign key referencing 'parent' table.
+	- @ManyToOne annotation: class containing field annotated with this annotation is the 'child' of the relationship. Database table corresponding to it will contain foreign key referencing 'parent' table.

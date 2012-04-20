@@ -10,12 +10,12 @@ import java.util.List;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import de.codecentric.spa.annotations.CascadeType;
 import de.codecentric.spa.annotations.Column;
 import de.codecentric.spa.annotations.Id;
 import de.codecentric.spa.annotations.ManyToOne;
 import de.codecentric.spa.annotations.OneToMany;
+import de.codecentric.spa.annotations.OneToOne;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.spa.metadata.EntityMetaData;
 import de.codecentric.spa.metadata.EntityMetaDataProvider;
@@ -119,7 +119,7 @@ public class EntityHelper<T> {
 			List<T> list = new ArrayList<T>();
 
 			String query = selectAllStmtSQL;
-			if (condition != null && !condition.isEmpty()) {
+			if (condition != null && !condition.trim().equals("")) {
 				query += " WHERE " + condition;
 			}
 
@@ -300,9 +300,6 @@ public class EntityHelper<T> {
 				for (int i = 0; i < columnCount; i++) {
 					String colName = c.getColumnName(i);
 					FieldMetaData mFld = resolveMetaField(entityMData, colName);
-					if (mFld == null) {
-						Log.i("Test", colName + " " + c.getInt(i));
-					}
 					readColumn(c, entity, i, mFld);
 				}
 				list.add(entity);
@@ -413,7 +410,13 @@ public class EntityHelper<T> {
 		for (Field field : fields) {
 			RelationshipMetaData rMetaData = rMetaDataProvider.getMetaDataByField(cls, field.getName());
 
-			if (field.getAnnotation(OneToMany.class) != null) {
+			if (field.getAnnotation(OneToOne.class) != null) {
+
+				Object child = field.get(entity);
+				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getChildClass());
+				childEntityHelper.doSaveOrUpdate(child, true);
+
+			} else if (field.getAnnotation(OneToMany.class) != null) {
 
 				// take "many" part of relationship and persist it
 				List<Class<?>> children = (List<Class<?>>) field.get(entity);

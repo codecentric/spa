@@ -4,6 +4,7 @@
     <string name="app_name">spa-tester</string>
     <string name="choose_action">Choose action</string>
     
+    <string name="one_to_one_btn_text">OneToOne</string>
     <string name="one_to_many_btn_text">OneToMany</string>
     <string name="many_to_one_btn_text">ManyToOne</string>
     <string name="execute">Execute</string>

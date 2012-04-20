@@ -380,19 +380,18 @@ public class SQLGenerator {
 				// Skip ONE_TO_ONE relationship since it's persistent fields
 				// will be processed as persistent fields of
 				// parent of the relationship.
-				if (!RelationshipType.ONE_TO_ONE.equals(rmd
-						.getRelationshipType())) {
-					EntityMetaData parentMetaData = EntityMetaDataProvider
-							.getInstance().getMetaData(rmd.getParentClass());
-					if (parentMetaData != null) {
-						sb.append(", ").append(rmd.getForeignKeyColumnName());
-						if (forStructure) {
-							sb.append(' ')
-                              .append(parentMetaData.getIdentifier()
-                                                    .getColumnType());
-						}
+				// if (!RelationshipType.ONE_TO_ONE.equals(rmd
+				// .getRelationshipType())) {
+				EntityMetaData parentMetaData = EntityMetaDataProvider
+						.getInstance().getMetaData(rmd.getParentClass());
+				if (parentMetaData != null) {
+					sb.append(", ").append(rmd.getForeignKeyColumnName());
+					if (forStructure) {
+						sb.append(' ').append(
+								parentMetaData.getIdentifier().getColumnType());
 					}
 				}
+				// }
 			}
 
 		}

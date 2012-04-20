@@ -63,7 +63,8 @@ public class EntityScanner {
 				}
 
 				// Check the relationship meta data related to this class.
-				List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaData(cls);
+				List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider
+						.getInstance().getMetaData(cls);
 				if (rMetaDataList != null && !rMetaDataList.isEmpty()) {
 
 					// Scan all relationship classes implicitly.
@@ -76,7 +77,9 @@ public class EntityScanner {
 							toScan = rmd.getChildClass();
 						}
 						if (entityMetaDataProvider.getMetaData(toScan) == null) {
-							scanClass(toScan, !RelationshipType.ONE_TO_ONE.equals(rType));
+							// scanClass(toScan,
+							// !RelationshipType.ONE_TO_ONE.equals(rType));
+							scanClass(toScan, true);
 						}
 					}
 
@@ -89,10 +92,13 @@ public class EntityScanner {
 						// between one-to-one relation in eager and lazy mode.
 						// In both cases
 						// there is EAGER strategy.
-						if (RelationshipType.ONE_TO_ONE.equals(rmd.getRelationshipType())) {
-							EntityMetaData child = entityMetaDataProvider.getMetaData(rmd.getChildClass());
-							result.getPersistentFields().addAll(child.getPersistentFields());
-						}
+						// if
+						// (RelationshipType.ONE_TO_ONE.equals(rmd.getRelationshipType()))
+						// {
+						// EntityMetaData child =
+						// entityMetaDataProvider.getMetaData(rmd.getChildClass());
+						// result.getPersistentFields().addAll(child.getPersistentFields());
+						// }
 					}
 				}
 			}

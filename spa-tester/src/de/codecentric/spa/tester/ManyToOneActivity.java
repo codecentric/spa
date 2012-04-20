@@ -53,7 +53,7 @@ public class ManyToOneActivity extends Activity {
 				logMessage("Table 'city' is empty.\n");
 
 				// create new state with its structure
-				State state = DataStructureProvider.getDataForOneToMany();
+				State state = DataStructureProvider.getDataStructure();
 
 				// save state structure
 				logMessage("Saving 'state' instance.\n");

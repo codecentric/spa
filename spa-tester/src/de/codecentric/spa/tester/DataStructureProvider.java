@@ -9,7 +9,7 @@ import de.codecentric.spa.tester.entity.State;
 
 public class DataStructureProvider {
 
-	public static State getDataForOneToMany() {
+	public static State getDataStructure() {
 		State state = new State("some state", 120.34, new Government("Monarchy"));
 
 		List<City> cities = new ArrayList<City>();
@@ -18,6 +18,8 @@ public class DataStructureProvider {
 		cities.add(new City("city 3", 12422));
 		cities.add(new City("city 4", 451887));
 		state.cities = cities;
+		
+		state.capitol = new City("state_capitol_city", 10000);
 
 		return state;
 	}
