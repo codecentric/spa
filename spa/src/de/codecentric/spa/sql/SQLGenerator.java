@@ -7,8 +7,8 @@ import de.codecentric.spa.metadata.EntityMetaDataProvider;
 import de.codecentric.spa.metadata.EntityScanner;
 import de.codecentric.spa.metadata.FieldMetaData;
 import de.codecentric.spa.metadata.RelationshipMetaData;
-import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
 import de.codecentric.spa.metadata.RelationshipMetaData.RelationshipType;
+import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
 
 /**
  * SQLGenerator is class that generates basic SQL statements (such as 'select',
@@ -21,7 +21,7 @@ public class SQLGenerator {
 	 * Method generates the basic SQL statements (in a form of
 	 * {@link SQLStatements}) for a table described with given
 	 * {@link EntityMetaData} parameter.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return {@link SQLStatements}
@@ -30,6 +30,7 @@ public class SQLGenerator {
 		SQLStatements sql = new SQLStatements();
 
 		sql.setCreateTableSQL(generateCreateTableSQL(metaData));
+		System.out.println(sql.getCreateTableSQL());
 		sql.setDropTableSQL(generateDropTableSQL(metaData));
 		sql.setInsertSQL(generateInsertSQL(metaData));
 		sql.setUpdateSQL(generateUpdateSQL(metaData));
@@ -44,10 +45,10 @@ public class SQLGenerator {
 	/**
 	 * Method generated SQL statement used to insert values into the database
 	 * table.
-	 *
+	 * 
 	 * Statement is generated based on {@link EntityMetaData} parameter. If meta
 	 * data does not contain table name, method will return empty string.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return 'insert' SQL statement
@@ -58,8 +59,7 @@ public class SQLGenerator {
 		String tableName = metaData.getTableName();
 		if (tableName != null && !"".equals(tableName)) {
 			sb.append("INSERT INTO ").append(tableName).append(" (");
-			List<FieldMetaData> fldMetaDataList = metaData
-					.getPersistentFields();
+			List<FieldMetaData> fldMetaDataList = metaData.getPersistentFields();
 
 			StringBuilder paramSb = new StringBuilder();
 			if (fldMetaDataList != null && !fldMetaDataList.isEmpty()) {
@@ -78,16 +78,15 @@ public class SQLGenerator {
 
 			// Iterate through the relationship meta data in order to append
 			// those columns too.
-			List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider
-					.getInstance().getMetaDataByChild(
-							metaData.getDescribingClass());
+			List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaDataByChild(
+					metaData.getDescribingClass());
 			if (rMetaDataList != null && !rMetaDataList.isEmpty()) {
 
 				for (RelationshipMetaData rmd : rMetaDataList) {
 					// Do not skip ONE_TO_ONE relationship because its value has
 					// to be filled also.
-					EntityMetaData parentMetaData = EntityMetaDataProvider
-							.getInstance().getMetaData(rmd.getParentClass());
+					EntityMetaData parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(
+							rmd.getParentClass());
 					if (parentMetaData != null) {
 						sb.append(", ").append(rmd.getForeignKeyColumnName());
 						paramSb.append(", ?");
@@ -106,10 +105,10 @@ public class SQLGenerator {
 	 * Method generated SQL statement used to update values of database table.
 	 * Method assumes that {@link EntityMetaData#getIdentifier()} will return
 	 * not null value. If it does, null SQL statement is returned.
-	 *
+	 * 
 	 * Statement is generated based on {@link EntityMetaData} parameter. If meta
 	 * data does not contain table name, method will return empty string.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return 'update' SQL statement
@@ -125,8 +124,7 @@ public class SQLGenerator {
 		if (tableName != null && !"".equals(tableName)) {
 			sb.append("UPDATE ").append(tableName).append(" SET ");
 
-			List<FieldMetaData> fldMetaDataList = metaData
-					.getPersistentFields();
+			List<FieldMetaData> fldMetaDataList = metaData.getPersistentFields();
 			if (fldMetaDataList != null && !fldMetaDataList.isEmpty()) {
 
 				for (int i = 0; i < fldMetaDataList.size(); i++) {
@@ -138,11 +136,8 @@ public class SQLGenerator {
 					}
 				}
 			}
-			appendRelationshipColumnsForUpdate(sb,
-					metaData.getDescribingClass());
-			sb.append(" WHERE ")
-              .append(metaData.getIdentifier().getColumnName())
-              .append(" = ?");
+			appendRelationshipColumnsForUpdate(sb, metaData.getDescribingClass());
+			sb.append(" WHERE ").append(metaData.getIdentifier().getColumnName()).append(" = ?");
 		}
 
 		return sb.toString();
@@ -152,12 +147,12 @@ public class SQLGenerator {
 	 * Method generated SQL statement used to select single record from database
 	 * table. Method assumes that {@link EntityMetaData#getIdentifier()} will
 	 * return not null value. If it does null SQL statement is returned.
-	 *
+	 * 
 	 * Statement is generated based on {@link EntityMetaData} parameter. Record
 	 * is identified using table identifier field, returned by
 	 * {@link EntityMetaData#getIdentifier()}. If meta data does not contain
 	 * table name, method will return empty string.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return 'select single' SQL statement
@@ -178,8 +173,7 @@ public class SQLGenerator {
 				sb.append(idFld.getColumnName());
 			}
 
-			List<FieldMetaData> fldMetaDataList = metaData
-					.getPersistentFields();
+			List<FieldMetaData> fldMetaDataList = metaData.getPersistentFields();
 			if (fldMetaDataList != null && !fldMetaDataList.isEmpty()) {
 				if (idFld != null) {
 					sb.append(", ");
@@ -197,9 +191,7 @@ public class SQLGenerator {
 			}
 			appendRelationshipColumns(sb, metaData.getDescribingClass(), false);
 			sb.append(" FROM ").append(tableName);
-			sb.append(" WHERE ")
-              .append(metaData.getIdentifier().getColumnName())
-              .append(" = ?");
+			sb.append(" WHERE ").append(metaData.getIdentifier().getColumnName()).append(" = ?");
 		}
 
 		return sb.toString();
@@ -208,10 +200,10 @@ public class SQLGenerator {
 	/**
 	 * Method generated SQL statement used to select all records from database
 	 * table.
-	 *
+	 * 
 	 * Statement is generated based on {@link EntityMetaData} parameter. If meta
 	 * data does not contain table name, method will return empty string.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return 'select all' SQL statement
@@ -228,8 +220,7 @@ public class SQLGenerator {
 				sb.append(idFld.getColumnName());
 			}
 
-			List<FieldMetaData> fldMetaDataList = metaData
-					.getPersistentFields();
+			List<FieldMetaData> fldMetaDataList = metaData.getPersistentFields();
 			if (fldMetaDataList != null && !fldMetaDataList.isEmpty()) {
 				if (idFld != null) {
 					sb.append(", ");
@@ -256,12 +247,12 @@ public class SQLGenerator {
 	 * Method generated SQL statement used to delete record from database table.
 	 * Method assumes that {@link EntityMetaData#getIdentifier()} will return
 	 * not null value. If it does null SQL statement is returned.
-	 *
+	 * 
 	 * Statement is generated based on {@link EntityMetaData} parameter. Record
 	 * is identified using table identifier field, returned by
 	 * {@link EntityMetaData#getIdentifier()}. If meta data does not contain
 	 * table name, method will return empty string.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return 'delete single record' SQL statement
@@ -275,11 +266,8 @@ public class SQLGenerator {
 
 		String tableName = metaData.getTableName();
 		if (tableName != null && !"".equals(tableName)) {
-			sb.append("DELETE FROM ")
-              .append(tableName)
-              .append(" WHERE ")
-              .append(metaData.getIdentifier().getColumnName())
-              .append(" = ?");
+			sb.append("DELETE FROM ").append(tableName).append(" WHERE ")
+					.append(metaData.getIdentifier().getColumnName()).append(" = ?");
 		}
 
 		return sb.toString();
@@ -288,10 +276,10 @@ public class SQLGenerator {
 	/**
 	 * Method generated SQL statement used to delete all records from database
 	 * table.
-	 *
+	 * 
 	 * Statement is generated based on {@link EntityMetaData} parameter. If meta
 	 * data does not contain table name, method will return empty string.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return 'delete all records' SQL statement
@@ -310,10 +298,10 @@ public class SQLGenerator {
 	/**
 	 * Method generates SQL statement used to create database table described
 	 * with given {@link EntityMetaData} parameter.
-	 *
+	 * 
 	 * If meta data does not contain table name, method will return empty
 	 * string.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return 'create table' SQL statement
@@ -327,23 +315,17 @@ public class SQLGenerator {
 
 			FieldMetaData idFld = metaData.getIdentifier();
 			if (idFld != null) {
-				sb.append(idFld.getColumnName())
-                  .append(' ')
-                  .append(idFld.getColumnType())
-                  .append(" PRIMARY KEY");
+				sb.append(idFld.getColumnName()).append(' ').append(idFld.getColumnType()).append(" PRIMARY KEY");
 			}
 
-			List<FieldMetaData> fldMetaDataList = metaData
-					.getPersistentFields();
+			List<FieldMetaData> fldMetaDataList = metaData.getPersistentFields();
 			if (fldMetaDataList != null && !fldMetaDataList.isEmpty()) {
 				if (idFld != null) {
 					sb.append(", ");
 				}
 				for (int i = 0; i < fldMetaDataList.size(); i++) {
 					FieldMetaData fldMData = fldMetaDataList.get(i);
-					sb.append(fldMData.getColumnName())
-                      .append(' ')
-                      .append(fldMData.getColumnType());
+					sb.append(fldMData.getColumnName()).append(' ').append(fldMData.getColumnType());
 					if (i < fldMetaDataList.size() - 1) {
 						sb.append(", ");
 					}
@@ -361,7 +343,7 @@ public class SQLGenerator {
 	/**
 	 * Method appends to the buffer SQL describing relationship (columns and
 	 * their types) that specified class has.
-	 *
+	 * 
 	 * @param sb
 	 *            string buffer
 	 * @param cls
@@ -370,10 +352,8 @@ public class SQLGenerator {
 	 *            parameter should be true if types are needed (for create
 	 *            statement, for example), otherwise false
 	 */
-	private static void appendRelationshipColumns(final StringBuilder sb,
-			Class<?> cls, boolean forStructure) {
-		List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider
-				.getInstance().getMetaDataByChild(cls);
+	private static void appendRelationshipColumns(final StringBuilder sb, Class<?> cls, boolean forStructure) {
+		List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaDataByChild(cls);
 		if (rMetaDataList != null && !rMetaDataList.isEmpty()) {
 
 			for (RelationshipMetaData rmd : rMetaDataList) {
@@ -382,13 +362,11 @@ public class SQLGenerator {
 				// parent of the relationship.
 				// if (!RelationshipType.ONE_TO_ONE.equals(rmd
 				// .getRelationshipType())) {
-				EntityMetaData parentMetaData = EntityMetaDataProvider
-						.getInstance().getMetaData(rmd.getParentClass());
+				EntityMetaData parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(rmd.getParentClass());
 				if (parentMetaData != null) {
 					sb.append(", ").append(rmd.getForeignKeyColumnName());
 					if (forStructure) {
-						sb.append(' ').append(
-								parentMetaData.getIdentifier().getColumnType());
+						sb.append(' ').append(parentMetaData.getIdentifier().getColumnType());
 					}
 				}
 				// }
@@ -400,30 +378,25 @@ public class SQLGenerator {
 	/**
 	 * Method appends to the buffer SQL describing relationship that specified
 	 * class has.
-	 *
+	 * 
 	 * @param sb
 	 *            string buffer
 	 * @param cls
 	 *            describing class, class which SQL is being generated
 	 */
-	private static void appendRelationshipColumnsForUpdate(
-			final StringBuilder sb, Class<?> cls) {
-		List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider
-				.getInstance().getMetaDataByChild(cls);
+	private static void appendRelationshipColumnsForUpdate(final StringBuilder sb, Class<?> cls) {
+		List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaDataByChild(cls);
 		if (rMetaDataList != null && !rMetaDataList.isEmpty()) {
 
 			for (RelationshipMetaData rmd : rMetaDataList) {
 				// Skip ONE_TO_ONE relationship since it's persistent fields
 				// will be processed as persistent fields of
 				// parent of the relationship.
-				if (!RelationshipType.ONE_TO_ONE.equals(rmd
-						.getRelationshipType())) {
-					EntityMetaData parentMetaData = EntityMetaDataProvider
-							.getInstance().getMetaData(rmd.getParentClass());
+				if (!RelationshipType.ONE_TO_ONE.equals(rmd.getRelationshipType())) {
+					EntityMetaData parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(
+							rmd.getParentClass());
 					if (parentMetaData != null) {
-						sb.append(", ")
-                          .append(rmd.getForeignKeyColumnName())
-                          .append(" = ?");
+						sb.append(", ").append(rmd.getForeignKeyColumnName()).append(" = ?");
 					}
 				}
 			}
@@ -434,10 +407,10 @@ public class SQLGenerator {
 	/**
 	 * Method generates SQL statement used to drop database table described with
 	 * given {@link EntityMetaData} parameter.
-	 *
+	 * 
 	 * If meta data does not contain table name, method will return empty
 	 * string.
-	 *
+	 * 
 	 * @param metaData
 	 *            table descriptor
 	 * @return 'drop table' SQL statement
@@ -485,7 +458,7 @@ public class SQLGenerator {
 
 		/**
 		 * Returns 'create table' SQL statement
-		 *
+		 * 
 		 * @return 'create table' SQL statement
 		 */
 		public String getCreateTableSQL() {
@@ -494,7 +467,7 @@ public class SQLGenerator {
 
 		/**
 		 * Sets the 'create table' SQL statement
-		 *
+		 * 
 		 * @param createTableSQL
 		 *            statement to set
 		 */
@@ -504,7 +477,7 @@ public class SQLGenerator {
 
 		/**
 		 * Returns 'drop table' SQL statement
-		 *
+		 * 
 		 * @return 'drop table' SQL statement
 		 */
 		public String getDropTableSQL() {
@@ -513,7 +486,7 @@ public class SQLGenerator {
 
 		/**
 		 * Sets the 'drop table' SQL statement
-		 *
+		 * 
 		 * @param dropTableSQL
 		 *            statement to set
 		 */
@@ -523,7 +496,7 @@ public class SQLGenerator {
 
 		/**
 		 * Returns 'insert' SQL statement
-		 *
+		 * 
 		 * @return 'insert' SQL statement
 		 */
 		public String getInsertSQL() {
@@ -532,7 +505,7 @@ public class SQLGenerator {
 
 		/**
 		 * Sets the 'insert' SQL statement
-		 *
+		 * 
 		 * @param insertSQL
 		 *            statement to set
 		 */
@@ -542,7 +515,7 @@ public class SQLGenerator {
 
 		/**
 		 * Returns 'update' SQL statement
-		 *
+		 * 
 		 * @return 'update' SQL statement
 		 */
 		public String getUpdateSQL() {
@@ -551,7 +524,7 @@ public class SQLGenerator {
 
 		/**
 		 * Sets the 'update' SQL statement
-		 *
+		 * 
 		 * @param updateSQL
 		 *            statement to set
 		 */
@@ -561,7 +534,7 @@ public class SQLGenerator {
 
 		/**
 		 * Returns 'select single' SQL statement
-		 *
+		 * 
 		 * @return 'select single' SQL statement
 		 */
 		public String getSelectSingleSQL() {
@@ -570,7 +543,7 @@ public class SQLGenerator {
 
 		/**
 		 * Sets the 'select single' SQL statement
-		 *
+		 * 
 		 * @param selectSingleSQL
 		 *            statement to set
 		 */
@@ -580,7 +553,7 @@ public class SQLGenerator {
 
 		/**
 		 * Returns 'select all' SQL statement
-		 *
+		 * 
 		 * @return 'select all' SQL statement
 		 */
 		public String getSelectAllSQL() {
@@ -589,7 +562,7 @@ public class SQLGenerator {
 
 		/**
 		 * Sets the 'select all' SQL statement
-		 *
+		 * 
 		 * @param selectAllSQL
 		 *            statement to set
 		 */
@@ -599,7 +572,7 @@ public class SQLGenerator {
 
 		/**
 		 * Returns 'delete single' SQL statement
-		 *
+		 * 
 		 * @return 'delete single' SQL statement
 		 */
 		public String getDeleteSingleSQL() {
@@ -608,7 +581,7 @@ public class SQLGenerator {
 
 		/**
 		 * Sets the 'delete single' SQL statement
-		 *
+		 * 
 		 * @param deleteSingleSQL
 		 *            statement to set
 		 */
@@ -618,7 +591,7 @@ public class SQLGenerator {
 
 		/**
 		 * Returns 'delete all' SQL statement
-		 *
+		 * 
 		 * @return 'delete all' SQL statement
 		 */
 		public String getDeleteAllSQL() {
@@ -627,7 +600,7 @@ public class SQLGenerator {
 
 		/**
 		 * Sets the 'delete all' SQL statement
-		 *
+		 * 
 		 * @param deleteAllSQL
 		 *            statement to set
 		 */
