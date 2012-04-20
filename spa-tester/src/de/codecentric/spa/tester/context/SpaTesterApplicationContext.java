@@ -16,7 +16,7 @@ public class SpaTesterApplicationContext extends PersistenceApplicationContext {
 
 		try {
 			String[] clsNames = new String[] { "de.codecentric.spa.tester.entity.State",
-					"de.codecentric.spa.tester.entity.City" };
+					"de.codecentric.spa.tester.entity.City", "de.codecentric.spa.tester.entity.Government" };
 
 			// first do the scan...
 			if (clsNames != null && clsNames.length != 0) {

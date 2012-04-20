@@ -12,6 +12,7 @@ import de.codecentric.spa.ctx.PersistenceApplicationContext;
 public class MainActivity extends Activity {
 
 	private Button oneToManyButton;
+	private Button manyToOneButton;
 
 	private EntityWrapper wrapper;
 
@@ -21,6 +22,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.main);
 
 		oneToManyButton = (Button) findViewById(R.id.oneToManyBtn);
+		manyToOneButton = (Button) findViewById(R.id.manyToOneBtn);
 
 		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
 	}
@@ -33,6 +35,13 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View view) {
 				startActivity(new Intent(MainActivity.this, OneToManyActivity.class));
+			}
+		});
+
+		manyToOneButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				startActivity(new Intent(MainActivity.this, ManyToOneActivity.class));
 			}
 		});
 	}

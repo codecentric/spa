@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import de.codecentric.spa.annotations.Entity;
+import de.codecentric.spa.annotations.ManyToOne;
 import de.codecentric.spa.annotations.OneToMany;
 import de.codecentric.spa.tester.context.SpaTesterApplicationContext;
 
@@ -16,14 +17,18 @@ public class State extends DataEntity {
 	@OneToMany
 	public List<City> cities;
 
+	@ManyToOne
+	public Government government;
+
 	public State() {
 		super();
 	}
 
-	public State(String name, Double bdp) {
+	public State(String name, Double bdp, Government government) {
 		super();
 		this.name = name;
 		this.bdp = bdp;
+		this.government = government;
 	}
 
 	@Override
@@ -41,6 +46,15 @@ public class State extends DataEntity {
 		toString.append(prefix + "name: " + name + "\n");
 		toString.append(prefix + "bdp: " + bdp + "\n");
 
+		toString.append(prefix + "government:\n");
+		if (government != null) {
+			prefix = SpaTesterApplicationContext.increaseIdentationLevel();
+			toString.append(government.toString());
+			SpaTesterApplicationContext.decreaseIdentationLevel();
+		} else {
+			toString.append("null\n");
+		}
+
 		toString.append(prefix + "cities:\n");
 		if (cities != null) {
 			prefix = SpaTesterApplicationContext.increaseIdentationLevel();
@@ -49,12 +63,11 @@ public class State extends DataEntity {
 			}
 			SpaTesterApplicationContext.decreaseIdentationLevel();
 		} else {
-			toString.append("null");
+			toString.append("null\n");
 		}
 
 		SpaTesterApplicationContext.decreaseIdentationLevel();
 
 		return toString.toString();
 	}
-
 }

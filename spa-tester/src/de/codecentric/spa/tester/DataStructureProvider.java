@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.codecentric.spa.tester.entity.City;
+import de.codecentric.spa.tester.entity.Government;
 import de.codecentric.spa.tester.entity.State;
 
 public class DataStructureProvider {
 
-	public static State getOneToManyForSave() {
-		State state = new State("some state", 120.34);
+	public static State getDataForOneToMany() {
+		State state = new State("some state", 120.34, new Government("Monarchy"));
 
 		List<City> cities = new ArrayList<City>();
 		cities.add(new City("city 1", 459830));

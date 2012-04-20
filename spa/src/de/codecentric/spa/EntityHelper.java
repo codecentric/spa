@@ -10,6 +10,7 @@ import java.util.List;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import de.codecentric.spa.annotations.CascadeType;
 import de.codecentric.spa.annotations.Column;
 import de.codecentric.spa.annotations.Id;
@@ -299,6 +300,9 @@ public class EntityHelper<T> {
 				for (int i = 0; i < columnCount; i++) {
 					String colName = c.getColumnName(i);
 					FieldMetaData mFld = resolveMetaField(entityMData, colName);
+					if (mFld == null) {
+						Log.i("Test", colName + " " + c.getInt(i));
+					}
 					readColumn(c, entity, i, mFld);
 				}
 				list.add(entity);
@@ -326,7 +330,7 @@ public class EntityHelper<T> {
 		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 		db.beginTransaction();
 		try {
-			doSaveOrUpdate(object);
+			doSaveOrUpdate(object, true);
 			db.setTransactionSuccessful();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -345,8 +349,10 @@ public class EntityHelper<T> {
 	 * children must be done explicitly.
 	 * 
 	 * @param object
+	 * @param cascade
+	 *            if true, relationship objects will be persisted, otherwise not
 	 */
-	private void doSaveOrUpdate(final T object) {
+	private void doSaveOrUpdate(final T object, boolean cascade) {
 		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 		EntityTransactionCache eCache = EntityTransactionCache.getInstance();
 
@@ -367,18 +373,22 @@ public class EntityHelper<T> {
 				// persisting its relationship rows
 				eCache.cache(object);
 
-				saveRelationshipObjects(object);
+				if (cascade) {
+					saveRelationshipObjects(object);
+				}
 			} else { // new one, insert it
 				Long rowId = db.insert(entityMData.getTableName(), null,
 						contentValuesPreparer.prepareValues(object, entityMData));
 				if (rowId != -1) {
+					setIdentifierValue(object, rowId);
+
 					// cache parent object in order to be able to use it later
-					// for
-					// persisting its relationship rows
+					// for persisting its relationship rows
 					eCache.cache(object);
 
-					setIdentifierValue(object, rowId);
-					saveRelationshipObjects(object);
+					if (cascade) {
+						saveRelationshipObjects(object);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -405,20 +415,23 @@ public class EntityHelper<T> {
 
 			if (field.getAnnotation(OneToMany.class) != null) {
 
-				// take "many" part of relation and persist
+				// take "many" part of relationship and persist it
 				List<Class<?>> children = (List<Class<?>>) field.get(entity);
 				for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
 					Object child = iterator.next();
 					EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getChildClass());
-					childEntityHelper.doSaveOrUpdate(child);
+					childEntityHelper.doSaveOrUpdate(child, true);
 				}
 
 			} else if (field.getAnnotation(ManyToOne.class) != null) {
 
-				// Take the parent from child and do the update
+				// take "one" part of relationship and persist it
 				Object parent = field.get(entity);
 				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getParentClass());
-				childEntityHelper.doSaveOrUpdate(parent);
+				childEntityHelper.doSaveOrUpdate(parent, true);
+
+				// take "many" part of relationship and update it - no cascading
+				doSaveOrUpdate(entity, false);
 
 			}
 		}
@@ -543,6 +556,9 @@ public class EntityHelper<T> {
 					eh.deleteAll();
 				}
 			}
+			// In case of ManyToOne we are not deleting the "one" side of the
+			// relationship - it is the parent of the relationship, we should
+			// delete parent if we are deleting its children.
 		}
 	}
 
