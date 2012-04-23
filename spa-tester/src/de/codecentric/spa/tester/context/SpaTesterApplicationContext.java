@@ -10,6 +10,7 @@ public class SpaTesterApplicationContext extends PersistenceApplicationContext {
 
 	private static int identationLevel = 0;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void onCreate() {
 		super.onCreate();
