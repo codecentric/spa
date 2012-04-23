@@ -30,7 +30,6 @@ public class SQLGenerator {
 		SQLStatements sql = new SQLStatements();
 
 		sql.setCreateTableSQL(generateCreateTableSQL(metaData));
-		System.out.println(sql.getCreateTableSQL());
 		sql.setDropTableSQL(generateDropTableSQL(metaData));
 		sql.setInsertSQL(generateInsertSQL(metaData));
 		sql.setUpdateSQL(generateUpdateSQL(metaData));
@@ -357,11 +356,6 @@ public class SQLGenerator {
 		if (rMetaDataList != null && !rMetaDataList.isEmpty()) {
 
 			for (RelationshipMetaData rmd : rMetaDataList) {
-				// Skip ONE_TO_ONE relationship since it's persistent fields
-				// will be processed as persistent fields of
-				// parent of the relationship.
-				// if (!RelationshipType.ONE_TO_ONE.equals(rmd
-				// .getRelationshipType())) {
 				EntityMetaData parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(rmd.getParentClass());
 				if (parentMetaData != null) {
 					sb.append(", ").append(rmd.getForeignKeyColumnName());
@@ -369,7 +363,6 @@ public class SQLGenerator {
 						sb.append(' ').append(parentMetaData.getIdentifier().getColumnType());
 					}
 				}
-				// }
 			}
 
 		}

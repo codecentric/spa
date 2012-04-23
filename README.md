@@ -24,6 +24,6 @@ VoiceNotes is small application that can be used as example how SPA library shou
 
 ## Relationship mapping
 - Only unidirectional supported until now...
-	- @OneToOne annotation: class containing field annotated with this annotation is the 'parent' of the relationship. Database table corresponding to the 'child' side of the relationship will contain foreign key referencing 'parent' table. *(Should we turn this around?)*
-	- @OneToMany annotation: class containg field annotated with this annotation is the 'parent' of the relationship. Database table corresponding to the 'child' side of the relationship will contain foreign key referencing 'parent' table.
-	- @ManyToOne annotation: class containing field annotated with this annotation is the 'child' of the relationship. Database table corresponding to it will contain foreign key referencing 'parent' table.
+	- @OneToOne annotation: database table corresponding to the declaring class of a field annotated with this annotation contains foreign key column referencing the other side of the relationship.
+	- @OneToMany annotation: database table corresponding to the class of a field annonatated with this annotation contains foreign key column referencing database table corresponding to the declaring class of that field.
+	- @ManyToOne annotation: database table corresponding to the declaring class of a field annotated with this annotation contains foreign key column referencing the other side of the relationship.

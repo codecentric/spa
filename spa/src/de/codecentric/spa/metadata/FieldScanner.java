@@ -113,9 +113,10 @@ public class FieldScanner {
 	private static void scanOneToOne(Field f) {
 		RelationshipMetaData result = new RelationshipMetaData();
 
-		Class<?> cls = f.getDeclaringClass();
+		Class<?> cls = f.getType();
 		result.setParentClass(cls);
-		result.setChildClass(f.getType());
+		Class<?> declaringCls = f.getDeclaringClass();
+		result.setChildClass(declaringCls);
 		result.setRelationshipType(RelationshipType.ONE_TO_ONE);
 		result.setFieldName(f.getName());
 
@@ -126,7 +127,7 @@ public class FieldScanner {
 			result.setForeignKeyColumnName(StringUtils.uncamelize(cls.getSimpleName() + "_" + f.getName() + "_fk"));
 		}
 
-		RelationshipMetaDataProvider.getInstance().addMetaData(cls, result);
+		RelationshipMetaDataProvider.getInstance().addMetaData(declaringCls, result);
 	}
 
 	/**

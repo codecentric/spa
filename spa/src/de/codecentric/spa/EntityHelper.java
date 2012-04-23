@@ -413,7 +413,7 @@ public class EntityHelper<T> {
 			if (field.getAnnotation(OneToOne.class) != null) {
 
 				Object child = field.get(entity);
-				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getChildClass());
+				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getParentClass());
 				childEntityHelper.doSaveOrUpdate(child, true);
 
 			} else if (field.getAnnotation(OneToMany.class) != null) {
