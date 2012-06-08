@@ -70,8 +70,8 @@ public class ManyToOneActivity extends Activity {
 				Assert.assertNotNull(persisted);
 				Assert.assertNull(persisted.government);
 
-				RelationshipMetaData rMetaData = ((PersistenceApplicationContext) getApplication())
-						.getRelationshipMetaDataProvider().getMetaDataByField(State.class, "government");
+				RelationshipMetaData rMetaData = ((PersistenceApplicationContext) getApplication()).getRelationshipMetaDataProvider().getMetaDataByField(
+						State.class, "government");
 				String condition = rMetaData.getForeignKeyColumnName() + " = " + state.government.id;
 				Assert.assertEquals(1, wrapper.findBy(condition, State.class).size());
 
@@ -114,7 +114,10 @@ public class ManyToOneActivity extends Activity {
 				// check database structure, it should be empty again
 				Assert.assertTrue(wrapper.listAll(State.class).size() == 0);
 				logMessage("Table 'state' is empty.\n");
-				Assert.assertTrue(wrapper.listAll(City.class).size() == 0);
+				// Table city should not be empty - it is the parent side
+				// of one-to-one, it is not deleted when a state is deleted.
+				Assert.assertTrue(wrapper.listAll(City.class).size() != 0);
+				wrapper.deleteAll(City.class);
 				logMessage("Table 'city' is empty.\n");
 				// Table government should not be empty - it is the parent side
 				// of many-to-one, it is not deleted when a state is deleted.

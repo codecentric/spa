@@ -7,8 +7,7 @@ import java.util.Map;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 
 /**
- * Singleton wrapper for {@link EntityHelper}. Contains list of all helpers that
- * can be used.
+ * Singleton wrapper for {@link EntityHelper}. Contains list of all helpers that can be used.
  */
 public class EntityWrapper {
 
@@ -18,8 +17,7 @@ public class EntityWrapper {
 	private PersistenceApplicationContext context;
 
 	/**
-	 * Constructor which require context object in order to properly initialize
-	 * entity helper classes.
+	 * Constructor which require context object in order to properly initialize entity helper classes.
 	 * 
 	 * @param con
 	 *            PersistenceApplicationContext object
@@ -68,8 +66,7 @@ public class EntityWrapper {
 	/**
 	 * Method persists given entity.
 	 * 
-	 * If it was a case of inserting new row in the database, an identifier
-	 * value will be set on a given entity after calling this method.
+	 * If it was a case of inserting new row in the database, an identifier value will be set on a given entity after calling this method.
 	 * 
 	 * @param entity
 	 *            entity to persist
@@ -81,8 +78,7 @@ public class EntityWrapper {
 	}
 
 	/**
-	 * Return entity helper for given entity class or null if none is already
-	 * instantiated.
+	 * Return entity helper for given entity class or null if none is already instantiated.
 	 * 
 	 * @param <T>
 	 *            entity type
@@ -131,6 +127,27 @@ public class EntityWrapper {
 	}
 
 	/**
+	 * Find all entries which comply to the given condition.
+	 * 
+	 * @param <T>
+	 *            type of entity
+	 * @param condition
+	 *            condition for search (should not include 'where' word)
+	 * @param clazz
+	 *            entity class
+	 * @return list of entries
+	 */
+	public <T> List<T> findBy(String condition, Class<T> clazz) {
+		EntityHelper<T> entityHelper = getEntityHelper(clazz);
+		return entityHelper.findBy(condition);
+	}
+
+	public <T> T executeSelect(String sql, Class<T> clazz) {
+		EntityHelper<T> entityHelper = getEntityHelper(clazz);
+		return entityHelper.executeSelect(sql);
+	}
+
+	/**
 	 * Delete all entries of given class.
 	 * 
 	 * @param <T>
@@ -168,19 +185,4 @@ public class EntityWrapper {
 		return entityHelper.listAll();
 	}
 
-	/**
-	 * Find all entries which comply to the given condition.
-	 * 
-	 * @param <T>
-	 *            type of entity
-	 * @param condition
-	 *            condition for search (should not include 'where' word)
-	 * @param clazz
-	 *            entity class
-	 * @return list of entries
-	 */
-	public <T> List<T> findBy(String condition, Class<T> clazz) {
-		EntityHelper<T> entityHelper = getEntityHelper(clazz);
-		return entityHelper.findBy(condition);
-	}
 }

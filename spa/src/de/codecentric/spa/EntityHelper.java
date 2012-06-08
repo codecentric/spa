@@ -27,8 +27,7 @@ import de.codecentric.spa.sql.ConditionBuilder;
 import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 
 /**
- * Entity helper class - it provides methods for basic operations with database
- * table.
+ * Entity helper class - it provides methods for basic operations with database table.
  * 
  * @param <T>
  */
@@ -42,17 +41,13 @@ public class EntityHelper<T> {
 	private String selectSingleStmtSQL;
 
 	/**
-	 * Constructor - during the construction of instance {@link EntityMetaData}
-	 * is retrieved from {@link EntityMetaDataProvider} used in given
-	 * {@link PersistenceApplicationContext}. All further operations are
-	 * performed on class and database table described with that
-	 * {@link EntityMetaData}.
+	 * Constructor - during the construction of instance {@link EntityMetaData} is retrieved from {@link EntityMetaDataProvider} used in given
+	 * {@link PersistenceApplicationContext}. All further operations are performed on class and database table described with that {@link EntityMetaData}.
 	 * 
 	 * @param ctx
 	 *            Application context in use
 	 * @param cls
-	 *            Class to be bound for this helper. Should be the same as
-	 *            parameterized class.
+	 *            Class to be bound for this helper. Should be the same as parameterized class.
 	 */
 	public EntityHelper(PersistenceApplicationContext ctx, Class<?> cls) {
 		context = ctx;
@@ -65,16 +60,13 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method returns single entity representing single row in database table or
-	 * null if not found.
+	 * Method returns single entity representing single row in database table or null if not found.
 	 * 
-	 * NOTE: method works based on lazy loading logic - it will not load any
-	 * relationship data.
+	 * NOTE: method works based on lazy loading logic - it will not load any relationship data.
 	 * 
 	 * @param id
 	 *            identifier value
-	 * @return entity representing single row in database table or null if not
-	 *         found
+	 * @return entity representing single row in database table or null if not found
 	 */
 	@SuppressWarnings("unchecked")
 	public T findById(Long id) {
@@ -82,8 +74,7 @@ public class EntityHelper<T> {
 			Class<?> cls = entityMData.getDescribingClass();
 			T entity = (T) cls.newInstance();
 
-			Cursor c = context.getDatabaseHelper().getDatabase()
-					.rawQuery(selectSingleStmtSQL, new String[] { String.valueOf(id) });
+			Cursor c = context.getDatabaseHelper().getDatabase().rawQuery(selectSingleStmtSQL, new String[] { String.valueOf(id) });
 			if (c.moveToFirst()) {
 				int columnCount = c.getColumnCount();
 				for (int i = 0; i < columnCount; i++) {
@@ -104,12 +95,10 @@ public class EntityHelper<T> {
 	/**
 	 * Method returns a list of objects that fulfill given condition.
 	 * 
-	 * NOTE: method works based on lazy loading logic - it will not load any
-	 * relationship data.
+	 * NOTE: method works based on lazy loading logic - it will not load any relationship data.
 	 * 
 	 * @param condition
-	 *            a 'where' clause built before calling this method with
-	 *            {@link ConditionBuilder} (should not include 'where' word)
+	 *            a 'where' clause built before calling this method with {@link ConditionBuilder} (should not include 'where' word)
 	 * @return list of objects or empty list if nothing is found
 	 */
 	@SuppressWarnings("unchecked")
@@ -141,10 +130,33 @@ public class EntityHelper<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public T executeSelect(String sql) {
+		try {
+			Class<?> cls = entityMData.getDescribingClass();
+			T entity = (T) cls.newInstance();
+
+			Cursor c = context.getDatabaseHelper().getDatabase().rawQuery(sql, null);
+			if (c.moveToFirst()) {
+				int columnCount = c.getColumnCount();
+				for (int i = 0; i < columnCount; i++) {
+					String colName = c.getColumnName(i);
+					FieldMetaData mFld = resolveMetaField(entityMData, colName);
+					readColumn(c, entity, i, mFld);
+				}
+			} else {
+				entity = null;
+			}
+			c.close();
+			return entity;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
-	 * Read fields annotated using OneToMany or ManyToOne annotation. For each
-	 * fetch children eagerly if field is annotated using FetchType.EAGER . In
-	 * other case just skip field.
+	 * Read fields annotated using OneToMany or ManyToOne annotation. For each fetch children eagerly if field is annotated using FetchType.EAGER . In other
+	 * case just skip field.
 	 * 
 	 * @param entity
 	 *            parent entity which holds child collection
@@ -163,11 +175,9 @@ public class EntityHelper<T> {
 					// Load "many" part of association. In this class it will be
 					// referred as child.
 					Type genericParameterTypes = field.getGenericType();
-					Class<T> childClass = (Class<T>) ((ParameterizedType) genericParameterTypes)
-							.getActualTypeArguments()[0];
+					Class<T> childClass = (Class<T>) ((ParameterizedType) genericParameterTypes).getActualTypeArguments()[0];
 					EntityHelper eh = context.getEntityHelper(childClass);
-					RelationshipMetaData md = context.getRelationshipMetaDataProvider().getMetaDataByChildAndField(
-							childClass, field.getName());
+					RelationshipMetaData md = context.getRelationshipMetaDataProvider().getMetaDataByChildAndField(childClass, field.getName());
 					String columnName = md.getForeignKeyColumnName();
 					Field primaryKeyField = getPrimaryKeyField(cls.getDeclaredFields());
 
@@ -214,8 +224,7 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Get foreign key value for entity. This method is used for many-to-one
-	 * relations, to be able to obtain "one" part of relation.
+	 * Get foreign key value for entity. This method is used for many-to-one relations, to be able to obtain "one" part of relation.
 	 * 
 	 * @param entity
 	 * @param columnNameParent
@@ -230,8 +239,7 @@ public class EntityHelper<T> {
 		Field primaryFieldChild = getPrimaryKeyField(allChildFields);
 		String typeName = primaryFieldChild.getType().getName();
 
-		Cursor c = context.getDatabaseHelper().getDatabase()
-				.rawQuery(selectSingleStmtSQL, new String[] { String.valueOf(primaryFieldChild.get(entity)) });
+		Cursor c = context.getDatabaseHelper().getDatabase().rawQuery(selectSingleStmtSQL, new String[] { String.valueOf(primaryFieldChild.get(entity)) });
 		if (c.moveToFirst()) {
 			int columnCount = c.getColumnCount();
 			for (int i = 0; i < columnCount; i++) {
@@ -281,11 +289,9 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method returns list of all entities persisted in database table or empty
-	 * list if nothing is found.
+	 * Method returns list of all entities persisted in database table or empty list if nothing is found.
 	 * 
-	 * @return list of all entities persisted in database table or empty list if
-	 *         nothing is found
+	 * @return list of all entities persisted in database table or empty list if nothing is found
 	 * @throws RuntimeException
 	 */
 	@SuppressWarnings("unchecked")
@@ -312,13 +318,10 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method saves or updates the record in database table representing given
-	 * entity.
+	 * Method saves or updates the record in database table representing given entity.
 	 * 
-	 * Currently persisting is done eagerly, meaning persisting the object
-	 * itself and all of its children that are currently bound to it. Only
-	 * persisting will be done through call of this method, deleting any of its
-	 * children must be done explicitly.
+	 * Currently persisting is done eagerly, meaning persisting the object itself and all of its children that are currently bound to it. Only persisting will
+	 * be done through call of this method, deleting any of its children must be done explicitly.
 	 * 
 	 * @param object
 	 *            entity to save or update
@@ -327,7 +330,7 @@ public class EntityHelper<T> {
 		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 		db.beginTransaction();
 		try {
-			doSaveOrUpdate(object, true);
+			doSaveOrUpdate(object, null, true);
 			db.setTransactionSuccessful();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -340,16 +343,20 @@ public class EntityHelper<T> {
 	/**
 	 * Method persists given object.
 	 * 
-	 * Currently persisting is done eagerly, meaning persisting the object
-	 * itself and all of its children that are currently bound to it. Only
-	 * persisting will be done through call of this method, deleting any of its
-	 * children must be done explicitly.
+	 * Currently persisting is done eagerly, meaning persisting the object itself and all of its children that are currently bound to it. Only persisting will
+	 * be done through call of this method, deleting any of its children must be done explicitly.
 	 * 
 	 * @param object
+	 * @param fieldName
+	 *            field defining the relationship containing given object; if this parameter is null, object will be treated as root of the relationship
 	 * @param cascade
 	 *            if true, relationship objects will be persisted, otherwise not
 	 */
-	private void doSaveOrUpdate(final T object, boolean cascade) {
+	private void doSaveOrUpdate(final T object, String fieldName, boolean cascade) {
+		if (object == null) {
+			return;
+		}
+
 		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 		EntityTransactionCache eCache = EntityTransactionCache.getInstance();
 
@@ -358,12 +365,11 @@ public class EntityHelper<T> {
 			if (idVal != 0) { // update entity
 				String idColumn = entityMData.getIdentifier().getColumnName();
 				String where = idColumn + " = ?";
-				int rowsAffected = db.update(entityMData.getTableName(),
-						contentValuesPreparer.prepareValues(object, entityMData), where,
+				int rowsAffected = db.update(entityMData.getTableName(), contentValuesPreparer.prepareValues(object, entityMData, fieldName), where,
 						new String[] { String.valueOf(idVal) });
 				if (rowsAffected == 0) {
-					throw new RuntimeException("No row to update! Database not consistent, problematic table: "
-							+ entityMData.getTableName() + ", row identifier: " + idVal);
+					throw new RuntimeException("No row to update! Database not consistent, problematic table: " + entityMData.getTableName()
+							+ ", row identifier: " + idVal);
 				}
 
 				// cache parent object in order to be able to use it later for
@@ -374,8 +380,7 @@ public class EntityHelper<T> {
 					saveRelationshipObjects(object);
 				}
 			} else { // new one, insert it
-				Long rowId = db.insert(entityMData.getTableName(), null,
-						contentValuesPreparer.prepareValues(object, entityMData));
+				Long rowId = db.insert(entityMData.getTableName(), null, contentValuesPreparer.prepareValues(object, entityMData, fieldName));
 				if (rowId != -1) {
 					setIdentifierValue(object, rowId);
 
@@ -394,8 +399,7 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method saves or updates all relationship objects found on given entity
-	 * object.
+	 * Method saves or updates all relationship objects found on given entity object.
 	 * 
 	 * @param entity
 	 * @throws IllegalAccessException
@@ -413,17 +417,19 @@ public class EntityHelper<T> {
 			if (field.getAnnotation(OneToOne.class) != null) {
 
 				Object child = field.get(entity);
-				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getParentClass());
-				childEntityHelper.doSaveOrUpdate(child, true);
+				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getChildClass());
+				childEntityHelper.doSaveOrUpdate(child, field.getName(), true);
 
 			} else if (field.getAnnotation(OneToMany.class) != null) {
 
 				// take "many" part of relationship and persist it
 				List<Class<?>> children = (List<Class<?>>) field.get(entity);
-				for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
-					Object child = iterator.next();
-					EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getChildClass());
-					childEntityHelper.doSaveOrUpdate(child, true);
+				if (children != null && !children.isEmpty()) {
+					for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
+						Object child = iterator.next();
+						EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getChildClass());
+						childEntityHelper.doSaveOrUpdate(child, field.getName(), true);
+					}
 				}
 
 			} else if (field.getAnnotation(ManyToOne.class) != null) {
@@ -431,10 +437,10 @@ public class EntityHelper<T> {
 				// take "one" part of relationship and persist it
 				Object parent = field.get(entity);
 				EntityHelper childEntityHelper = context.getEntityHelper(rMetaData.getParentClass());
-				childEntityHelper.doSaveOrUpdate(parent, true);
+				childEntityHelper.doSaveOrUpdate(parent, null, true);
 
 				// take "many" part of relationship and update it - no cascading
-				doSaveOrUpdate(entity, false);
+				doSaveOrUpdate(entity, field.getName(), false);
 
 			}
 		}
@@ -459,8 +465,7 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method deletes the entity with given id. This includes cascading deletion
-	 * of its relationship child-rows.
+	 * Method deletes the entity with given id. This includes cascading deletion of its relationship child-rows.
 	 * 
 	 * @param id
 	 *            identifier value
@@ -489,9 +494,7 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method deletes all database rows from table for which entity helper
-	 * instance is responsible. This includes cascading deletion of relationship
-	 * child-rows.
+	 * Method deletes all database rows from table for which entity helper instance is responsible. This includes cascading deletion of relationship child-rows.
 	 */
 	public void deleteAll() {
 		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
@@ -511,9 +514,8 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method deletes database rows fulfilling given 'where' clause from table
-	 * for which entity helper instance is responsible. This includes cascading
-	 * deletion of relationship child-rows.
+	 * Method deletes database rows fulfilling given 'where' clause from table for which entity helper instance is responsible. This includes cascading deletion
+	 * of relationship child-rows.
 	 * 
 	 * @param where
 	 *            a where clause (should not contain 'where' word)
@@ -545,8 +547,7 @@ public class EntityHelper<T> {
 		for (Field field : fields) {
 			if (field.getAnnotation(OneToMany.class) != null) {
 
-				RelationshipMetaData rMetaData = context.getRelationshipMetaDataProvider().getMetaDataByField(cls,
-						field.getName());
+				RelationshipMetaData rMetaData = context.getRelationshipMetaDataProvider().getMetaDataByField(cls, field.getName());
 				EntityHelper eh = context.getEntityHelper(rMetaData.getChildClass());
 
 				if (id != -1) {
@@ -560,7 +561,7 @@ public class EntityHelper<T> {
 				}
 			}
 			// In case of ManyToOne we are not deleting the "one" side of the
-			// relationship - it is the parent of the relationship, we should
+			// relationship - it is the parent of the relationship, we should not
 			// delete parent if we are deleting its children.
 		}
 	}
@@ -568,8 +569,7 @@ public class EntityHelper<T> {
 	/**
 	 * Method should close used cursors and statements.
 	 * 
-	 * It does nothing in this implementation, but is present in order to
-	 * provide extending capabilities.
+	 * It does nothing in this implementation, but is present in order to provide extending capabilities.
 	 */
 	public void close() {
 		// nothing to do
@@ -578,8 +578,7 @@ public class EntityHelper<T> {
 	/**
 	 * Method should compile used SQL statements.
 	 * 
-	 * It does nothing in this implementation, but is present in order to
-	 * provide extending capabilities.
+	 * It does nothing in this implementation, but is present in order to provide extending capabilities.
 	 */
 	public void compileSQLStatements() {
 		// nothing to do
@@ -644,9 +643,7 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method reads cursor column at specific index into the entity data
-	 * parameter and sets that value as value of data field described with mFld
-	 * parameter.
+	 * Method reads cursor column at specific index into the entity data parameter and sets that value as value of data field described with mFld parameter.
 	 * 
 	 * @param c
 	 *            database cursor
@@ -769,9 +766,8 @@ public class EntityHelper<T> {
 	}
 
 	/**
-	 * Method returns {@link FieldMetaData} that is paired with given column of
-	 * database table described with given {@link EntityMetaData}. If field is
-	 * not found, null value is returned.
+	 * Method returns {@link FieldMetaData} that is paired with given column of database table described with given {@link EntityMetaData}. If field is not
+	 * found, null value is returned.
 	 * 
 	 * @param mData
 	 *            meta data describing entity and corresponding database table

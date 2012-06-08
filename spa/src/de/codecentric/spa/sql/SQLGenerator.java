@@ -7,20 +7,16 @@ import de.codecentric.spa.metadata.EntityMetaDataProvider;
 import de.codecentric.spa.metadata.EntityScanner;
 import de.codecentric.spa.metadata.FieldMetaData;
 import de.codecentric.spa.metadata.RelationshipMetaData;
-import de.codecentric.spa.metadata.RelationshipMetaData.RelationshipType;
 import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
 
 /**
- * SQLGenerator is class that generates basic SQL statements (such as 'select',
- * 'update', 'insert' or 'delete' queries) based on {@link EntityMetaData}
- * derived from {@link EntityScanner} scanning.
+ * SQLGenerator is class that generates basic SQL statements (such as 'select', 'update', 'insert' or 'delete' queries) based on {@link EntityMetaData} derived
+ * from {@link EntityScanner} scanning.
  */
 public class SQLGenerator {
 
 	/**
-	 * Method generates the basic SQL statements (in a form of
-	 * {@link SQLStatements}) for a table described with given
-	 * {@link EntityMetaData} parameter.
+	 * Method generates the basic SQL statements (in a form of {@link SQLStatements}) for a table described with given {@link EntityMetaData} parameter.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -42,11 +38,9 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * Method generated SQL statement used to insert values into the database
-	 * table.
+	 * Method generated SQL statement used to insert values into the database table.
 	 * 
-	 * Statement is generated based on {@link EntityMetaData} parameter. If meta
-	 * data does not contain table name, method will return empty string.
+	 * Statement is generated based on {@link EntityMetaData} parameter. If meta data does not contain table name, method will return empty string.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -77,15 +71,13 @@ public class SQLGenerator {
 
 			// Iterate through the relationship meta data in order to append
 			// those columns too.
-			List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaDataByChild(
-					metaData.getDescribingClass());
+			List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaDataByChild(metaData.getDescribingClass());
 			if (rMetaDataList != null && !rMetaDataList.isEmpty()) {
 
 				for (RelationshipMetaData rmd : rMetaDataList) {
 					// Do not skip ONE_TO_ONE relationship because its value has
 					// to be filled also.
-					EntityMetaData parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(
-							rmd.getParentClass());
+					EntityMetaData parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(rmd.getParentClass());
 					if (parentMetaData != null) {
 						sb.append(", ").append(rmd.getForeignKeyColumnName());
 						paramSb.append(", ?");
@@ -101,12 +93,10 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * Method generated SQL statement used to update values of database table.
-	 * Method assumes that {@link EntityMetaData#getIdentifier()} will return
-	 * not null value. If it does, null SQL statement is returned.
+	 * Method generated SQL statement used to update values of database table. Method assumes that {@link EntityMetaData#getIdentifier()} will return not null
+	 * value. If it does, null SQL statement is returned.
 	 * 
-	 * Statement is generated based on {@link EntityMetaData} parameter. If meta
-	 * data does not contain table name, method will return empty string.
+	 * Statement is generated based on {@link EntityMetaData} parameter. If meta data does not contain table name, method will return empty string.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -143,14 +133,11 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * Method generated SQL statement used to select single record from database
-	 * table. Method assumes that {@link EntityMetaData#getIdentifier()} will
-	 * return not null value. If it does null SQL statement is returned.
+	 * Method generated SQL statement used to select single record from database table. Method assumes that {@link EntityMetaData#getIdentifier()} will return
+	 * not null value. If it does null SQL statement is returned.
 	 * 
-	 * Statement is generated based on {@link EntityMetaData} parameter. Record
-	 * is identified using table identifier field, returned by
-	 * {@link EntityMetaData#getIdentifier()}. If meta data does not contain
-	 * table name, method will return empty string.
+	 * Statement is generated based on {@link EntityMetaData} parameter. Record is identified using table identifier field, returned by
+	 * {@link EntityMetaData#getIdentifier()}. If meta data does not contain table name, method will return empty string.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -197,11 +184,9 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * Method generated SQL statement used to select all records from database
-	 * table.
+	 * Method generated SQL statement used to select all records from database table.
 	 * 
-	 * Statement is generated based on {@link EntityMetaData} parameter. If meta
-	 * data does not contain table name, method will return empty string.
+	 * Statement is generated based on {@link EntityMetaData} parameter. If meta data does not contain table name, method will return empty string.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -243,14 +228,11 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * Method generated SQL statement used to delete record from database table.
-	 * Method assumes that {@link EntityMetaData#getIdentifier()} will return
-	 * not null value. If it does null SQL statement is returned.
+	 * Method generated SQL statement used to delete record from database table. Method assumes that {@link EntityMetaData#getIdentifier()} will return not null
+	 * value. If it does null SQL statement is returned.
 	 * 
-	 * Statement is generated based on {@link EntityMetaData} parameter. Record
-	 * is identified using table identifier field, returned by
-	 * {@link EntityMetaData#getIdentifier()}. If meta data does not contain
-	 * table name, method will return empty string.
+	 * Statement is generated based on {@link EntityMetaData} parameter. Record is identified using table identifier field, returned by
+	 * {@link EntityMetaData#getIdentifier()}. If meta data does not contain table name, method will return empty string.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -265,19 +247,16 @@ public class SQLGenerator {
 
 		String tableName = metaData.getTableName();
 		if (tableName != null && !"".equals(tableName)) {
-			sb.append("DELETE FROM ").append(tableName).append(" WHERE ")
-					.append(metaData.getIdentifier().getColumnName()).append(" = ?");
+			sb.append("DELETE FROM ").append(tableName).append(" WHERE ").append(metaData.getIdentifier().getColumnName()).append(" = ?");
 		}
 
 		return sb.toString();
 	}
 
 	/**
-	 * Method generated SQL statement used to delete all records from database
-	 * table.
+	 * Method generated SQL statement used to delete all records from database table.
 	 * 
-	 * Statement is generated based on {@link EntityMetaData} parameter. If meta
-	 * data does not contain table name, method will return empty string.
+	 * Statement is generated based on {@link EntityMetaData} parameter. If meta data does not contain table name, method will return empty string.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -295,11 +274,9 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * Method generates SQL statement used to create database table described
-	 * with given {@link EntityMetaData} parameter.
+	 * Method generates SQL statement used to create database table described with given {@link EntityMetaData} parameter.
 	 * 
-	 * If meta data does not contain table name, method will return empty
-	 * string.
+	 * If meta data does not contain table name, method will return empty string.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -340,16 +317,14 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * Method appends to the buffer SQL describing relationship (columns and
-	 * their types) that specified class has.
+	 * Method appends to the buffer SQL describing relationship (columns and their types) that specified class has.
 	 * 
 	 * @param sb
 	 *            string buffer
 	 * @param cls
 	 *            describing class, class which SQL is being generated
 	 * @param forStructure
-	 *            parameter should be true if types are needed (for create
-	 *            statement, for example), otherwise false
+	 *            parameter should be true if types are needed (for create statement, for example), otherwise false
 	 */
 	private static void appendRelationshipColumns(final StringBuilder sb, Class<?> cls, boolean forStructure) {
 		List<RelationshipMetaData> rMetaDataList = RelationshipMetaDataProvider.getInstance().getMetaDataByChild(cls);
@@ -369,8 +344,7 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * Method appends to the buffer SQL describing relationship that specified
-	 * class has.
+	 * Method appends to the buffer SQL describing relationship that specified class has.
 	 * 
 	 * @param sb
 	 *            string buffer
@@ -385,24 +359,21 @@ public class SQLGenerator {
 				// Skip ONE_TO_ONE relationship since it's persistent fields
 				// will be processed as persistent fields of
 				// parent of the relationship.
-				if (!RelationshipType.ONE_TO_ONE.equals(rmd.getRelationshipType())) {
-					EntityMetaData parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(
-							rmd.getParentClass());
-					if (parentMetaData != null) {
-						sb.append(", ").append(rmd.getForeignKeyColumnName()).append(" = ?");
-					}
+				// if (!RelationshipType.ONE_TO_ONE.equals(rmd.getRelationshipType())) {
+				EntityMetaData parentMetaData = EntityMetaDataProvider.getInstance().getMetaData(rmd.getParentClass());
+				if (parentMetaData != null) {
+					sb.append(", ").append(rmd.getForeignKeyColumnName()).append(" = ?");
 				}
+				// }
 			}
 
 		}
 	}
 
 	/**
-	 * Method generates SQL statement used to drop database table described with
-	 * given {@link EntityMetaData} parameter.
+	 * Method generates SQL statement used to drop database table described with given {@link EntityMetaData} parameter.
 	 * 
-	 * If meta data does not contain table name, method will return empty
-	 * string.
+	 * If meta data does not contain table name, method will return empty string.
 	 * 
 	 * @param metaData
 	 *            table descriptor
@@ -420,8 +391,7 @@ public class SQLGenerator {
 	}
 
 	/**
-	 * This is data transfer object class that holds SQL statements generated by
-	 * {@link SQLGenerator#generateSQL(EntityMetaData)} method.
+	 * This is data transfer object class that holds SQL statements generated by {@link SQLGenerator#generateSQL(EntityMetaData)} method.
 	 */
 	public static class SQLStatements {
 

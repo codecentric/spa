@@ -1,6 +1,7 @@
 package de.codecentric.spa.tester;
 
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.Assert;
 import android.app.Activity;
@@ -13,11 +14,11 @@ import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.ctx.PersistenceApplicationContext;
 import de.codecentric.spa.tester.context.SpaTesterApplicationContext;
 import de.codecentric.spa.tester.entity.City;
+import de.codecentric.spa.tester.entity.Government;
 import de.codecentric.spa.tester.entity.State;
 
 /**
- * OneToOneActivity is used to test different database operations over
- * data-structures containing fields with ONE-TO-ONE relationship.
+ * OneToOneActivity is used to test different database operations over data-structures containing fields with ONE-TO-ONE relationship.
  */
 public class OneToOneActivity extends Activity {
 
@@ -62,47 +63,69 @@ public class OneToOneActivity extends Activity {
 				wrapper.saveOrUpdate(state);
 				logMessage("Saved 'state' instance:\n" + state.toString());
 
+				List<City> persistedCities1 = wrapper.findBy("state_cities_fk = " + state.id, City.class);
+				Assert.assertNotNull(persistedCities1);
+
 				// check new database state
 				Assert.assertTrue(state.id != 0L);
 				Assert.assertTrue(wrapper.listAll(State.class).size() == 1);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 5);
 
-				State persisted = wrapper.findById(state.id, State.class);
-				Assert.assertNotNull(persisted);
-				Assert.assertNull(persisted.capitol);
+				State persistedState = wrapper.findById(state.id, State.class);
+				Assert.assertNotNull(persistedState);
+				Assert.assertNull(persistedState.capitol);
 
 				// modify structure
-				logMessage("Modifying 'state' structure, deleting and adding new capitol city, change state name, last updated...\n");
+				logMessage("Modifying 'state' structure, deleting and adding new capitol city, modifying persisted capitol, change state name, last updated...\n");
 
 				// delete capitol city from state
 				wrapper.deleteBy("name = 'state_capitol_city'", City.class);
 				City newCity = new City("new capitol city", 123456);
-				state.name = "new state name";
-				state.lastUpdated = new Date();
-				state.capitol = newCity;
+				persistedState.name = "new state name";
+				persistedState.lastUpdated = new Date();
+				persistedState.capitol = newCity;
+
+				// load persisted government
+				Government persistedGovernment = wrapper.executeSelect("select g.* from government g, state s where g.id = s.state_government_fk and s.id = "
+						+ persistedState.id, Government.class);
+				Assert.assertNotNull(persistedGovernment);
+				persistedState.government = persistedGovernment;
+
+				// load persisted cities
+				List<City> persistedCities = wrapper.findBy("state_cities_fk = " + persistedState.id, City.class);
+				Assert.assertNotNull(persistedCities);
+				Assert.assertFalse(persistedCities.isEmpty());
+				persistedState.cities = persistedCities;
+
 				logMessage("Saving modified 'state' structure...\n");
-				wrapper.saveOrUpdate(state);
-				logMessage("Saved modified 'state' structure:\n" + state.toString());
+				wrapper.saveOrUpdate(persistedState);
+				logMessage("Saved modified 'state' structure:\n" + persistedState.toString());
+
+				// load persisted capitol
+				City persistedCapitol = wrapper.findBy("state_capitol_fk = " + persistedState.id, City.class).get(0);
+				Assert.assertNotNull(persistedCapitol);
+				persistedState.capitol = persistedCapitol;
 
 				// modify structure
 				logMessage("Modifying 'state' structure, change capitol city name and population\n");
-				state.lastUpdated = new Date();
-				state.capitol.name = "changed_capitol_name";
-				state.capitol.population = 1001;
+				persistedState.lastUpdated = new Date();
+				persistedState.capitol.name = "changed_capitol_name";
+				persistedState.capitol.population = 1001;
 				logMessage("Saving modified 'state' structure...\n");
-				wrapper.saveOrUpdate(state);
-				logMessage("Saved modified 'state' structure:\n" + state.toString());
+				wrapper.saveOrUpdate(persistedState);
+				logMessage("Number of cities: " + wrapper.listAll(City.class).size() + "\n");
+				logMessage("Saved modified 'state' structure:\n" + persistedState.toString());
 
 				// do some deleting
 				logMessage("Deleting capitol city.\n");
-				wrapper.delete(state.capitol.id, City.class);
+				wrapper.delete(persistedState.capitol.id, City.class);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 4);
 				logMessage("Deleting capitol city went as expected.\n");
 
 				// delete given structure
-				logMessage("Deleting state (and substructure) with id: " + state.id + "\n");
-				wrapper.delete(state.id, State.class);
-				logMessage("Deleted state (and substructure) with id: " + state.id + "\n");
+				logMessage("Deleting state (and substructure) with id: " + persistedState.id + "\n");
+				wrapper.delete(persistedState.id, State.class);
+				logMessage("Deleted state (and substructure) with id: " + persistedState.id + "\n");
 
 				// check database structure, it should be empty again
 				Assert.assertTrue(wrapper.listAll(State.class).size() == 0);
