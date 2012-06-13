@@ -142,7 +142,26 @@ public class EntityWrapper {
 		return entityHelper.findBy(condition);
 	}
 
-	public <T> T executeSelect(String sql, Class<T> clazz) {
+	/**
+	 * Method executes given SQL as already prepared select statement
+	 * 
+	 * @param sql
+	 * @param clazz
+	 * @return single instance or null
+	 */
+	public <T> T executeSelectSingle(String sql, Class<T> clazz) {
+		EntityHelper<T> entityHelper = getEntityHelper(clazz);
+		return entityHelper.executeSelectSingle(sql);
+	}
+
+	/**
+	 * Method executes given SQL as already prepared select statement
+	 * 
+	 * @param sql
+	 * @param clazz
+	 * @return a list of instances or empty list
+	 */
+	public <T> List<T> executeSelect(String sql, Class<T> clazz) {
 		EntityHelper<T> entityHelper = getEntityHelper(clazz);
 		return entityHelper.executeSelect(sql);
 	}

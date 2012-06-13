@@ -86,7 +86,7 @@ public class OneToOneActivity extends Activity {
 				persistedState.capitol = newCity;
 
 				// load persisted government
-				Government persistedGovernment = wrapper.executeSelect("select g.* from government g, state s where g.id = s.state_government_fk and s.id = "
+				Government persistedGovernment = wrapper.executeSelectSingle("select g.* from government g, state s where g.id = s.state_government_fk and s.id = "
 						+ persistedState.id, Government.class);
 				Assert.assertNotNull(persistedGovernment);
 				persistedState.government = persistedGovernment;

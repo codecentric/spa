@@ -130,8 +130,44 @@ public class EntityHelper<T> {
 		}
 	}
 
+	/**
+	 * Method executes given SQL as already prepared select statement.
+	 * 
+	 * @param sql
+	 * @return a list of instances or empty list
+	 */
 	@SuppressWarnings("unchecked")
-	public T executeSelect(String sql) {
+	public List<T> executeSelect(String sql) {
+		try {
+			Class<?> cls = entityMData.getDescribingClass();
+			List<T> list = new ArrayList<T>();
+
+			Cursor c = context.getDatabaseHelper().getDatabase().rawQuery(sql, null);
+			while (c.moveToNext()) {
+				T entity = (T) cls.newInstance();
+				int columnCount = c.getColumnCount();
+				for (int i = 0; i < columnCount; i++) {
+					String colName = c.getColumnName(i);
+					FieldMetaData mFld = resolveMetaField(entityMData, colName);
+					readColumn(c, entity, i, mFld);
+				}
+				list.add(entity);
+			}
+			c.close();
+			return list;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Method executes given SQL as already prepared select statement.
+	 * 
+	 * @param sql
+	 * @return single instance or null
+	 */
+	@SuppressWarnings("unchecked")
+	public T executeSelectSingle(String sql) {
 		try {
 			Class<?> cls = entityMData.getDescribingClass();
 			T entity = (T) cls.newInstance();
