@@ -39,7 +39,6 @@ public class ContentValuesPreparer {
 		ContentValues values = new ContentValues();
 
 		try {
-
 			List<FieldMetaData> mFieldList = emd.getPersistentFields();
 			if (mFieldList != null && !mFieldList.isEmpty()) {
 
