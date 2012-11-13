@@ -70,8 +70,8 @@ public class OneToManyActivity extends Activity {
 
 				RelationshipMetaData rMetaData = ((PersistenceApplicationContext) getApplication()).getRelationshipMetaDataProvider().getMetaDataByField(
 						State.class, "cities");
-				String condition = rMetaData.getForeignKeyColumnName() + " = " + state.id;
-				Assert.assertEquals(4, wrapper.findBy(condition, City.class).size());
+				String condition = rMetaData.getForeignKeyColumnName() + " = ?";
+				Assert.assertEquals(4, wrapper.findBy(condition,new String[]{String.valueOf(state.id)}, City.class).size());
 
 				// modify structure
 				logMessage("Modifying 'state' structure, adding new city.\n");
@@ -85,13 +85,13 @@ public class OneToManyActivity extends Activity {
 
 				// check database structure
 				logMessage("Listing cities for state with id = " + state.id + "\n");
-				Assert.assertTrue(wrapper.findBy(condition, City.class).size() == 5);
+				Assert.assertTrue(wrapper.findBy(condition,new String[]{String.valueOf(state.id)}, City.class).size() == 5);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 6);
 				logMessage("Listing cities for state with id = " + state.id + " went as expected.\n");
 
 				// do some deleting
 				logMessage("Deleting cities with id <= 2.\n");
-				wrapper.deleteBy("id <= 2", City.class);
+				wrapper.deleteBy("id <= ?",new String[]{"2"}, City.class);
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 4);
 				logMessage("Deleting cities with id <= 2 went as expected.\n");
 

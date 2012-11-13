@@ -63,7 +63,7 @@ public class OneToOneActivity extends Activity {
 				wrapper.saveOrUpdate(state);
 				logMessage("Saved 'state' instance:\n" + state.toString());
 
-				List<City> persistedCities1 = wrapper.findBy("state_cities_fk = " + state.id, City.class);
+				List<City> persistedCities1 = wrapper.findBy("state_cities_fk = ?",new String[]{String.valueOf(state.id)}, City.class);
 				Assert.assertNotNull(persistedCities1);
 
 				// check new database state
@@ -79,7 +79,7 @@ public class OneToOneActivity extends Activity {
 				logMessage("Modifying 'state' structure, deleting and adding new capitol city, modifying persisted capitol, change state name, last updated...\n");
 
 				// delete capitol city from state
-				wrapper.deleteBy("name = 'state_capitol_city'", City.class);
+				wrapper.deleteBy("name = ?",new String[]{"state_capitol_city"}, City.class);
 				City newCity = new City("new capitol city", 123456);
 				persistedState.name = "new state name";
 				persistedState.lastUpdated = new Date();
@@ -92,7 +92,7 @@ public class OneToOneActivity extends Activity {
 				persistedState.government = persistedGovernment;
 
 				// load persisted cities
-				List<City> persistedCities = wrapper.findBy("state_cities_fk = " + persistedState.id, City.class);
+				List<City> persistedCities = wrapper.findBy("state_cities_fk = ?",new String[]{String.valueOf(persistedState.id)}, City.class);
 				Assert.assertNotNull(persistedCities);
 				Assert.assertFalse(persistedCities.isEmpty());
 				persistedState.cities = persistedCities;
@@ -102,7 +102,7 @@ public class OneToOneActivity extends Activity {
 				logMessage("Saved modified 'state' structure:\n" + persistedState.toString());
 
 				// load persisted capitol
-				City persistedCapitol = wrapper.findBy("state_capitol_fk = " + persistedState.id, City.class).get(0);
+				City persistedCapitol = wrapper.findBy("state_capitol_fk = ?",new String[]{String.valueOf(persistedState.id)}, City.class).get(0);
 				Assert.assertNotNull(persistedCapitol);
 				persistedState.capitol = persistedCapitol;
 
@@ -119,6 +119,7 @@ public class OneToOneActivity extends Activity {
 				// do some deleting
 				logMessage("Deleting capitol city.\n");
 				wrapper.delete(persistedState.capitol.id, City.class);
+				
 				Assert.assertTrue(wrapper.listAll(City.class).size() == 4);
 				logMessage("Deleting capitol city went as expected.\n");
 

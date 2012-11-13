@@ -102,7 +102,7 @@ public class EntityHelper<T> {
 	 * @return list of objects or empty list if nothing is found
 	 */
 	@SuppressWarnings("unchecked")
-	public List<T> findBy(String condition) {
+	public List<T> findBy(String condition,String[] parameters) {
 		try {
 			Class<?> cls = entityMData.getDescribingClass();
 			List<T> list = new ArrayList<T>();
@@ -112,7 +112,7 @@ public class EntityHelper<T> {
 				query += " WHERE " + condition;
 			}
 
-			Cursor c = context.getDatabaseHelper().getDatabase().rawQuery(query, new String[] {});
+			Cursor c = context.getDatabaseHelper().getDatabase().rawQuery(query, parameters);
 			while (c.moveToNext()) {
 				T entity = (T) cls.newInstance();
 				int columnCount = c.getColumnCount();
@@ -220,7 +220,7 @@ public class EntityHelper<T> {
 					// TODO Check is it possible to make this more efficient.
 					// This approach is necessarily because EntityHelper is
 					// different for child entity.
-					List<Class<?>> children = eh.findBy(columnName + "=" + primaryKeyField.get(entity));
+					List<Class<?>> children = eh.findBy(columnName + " = ?",new String[]{String.valueOf(primaryKeyField.get(entity))});
 					field.set(entity, children);
 
 				} else if (field.getAnnotation(ManyToOne.class) != null) {
@@ -556,12 +556,12 @@ public class EntityHelper<T> {
 	 * @param where
 	 *            a where clause (should not contain 'where' word)
 	 */
-	public void deleteBy(String where) {
+	public void deleteBy(String where, String[] parameters) {
 		SQLiteDatabase db = context.getDatabaseHelper().getDatabase();
 		db.beginTransaction();
 
 		try {
-			List<T> entities = findBy(where);
+			List<T> entities = findBy(where,parameters);
 			for (T entity : entities) {
 				delete(getIdentifierValue(entity));
 			}
@@ -588,7 +588,7 @@ public class EntityHelper<T> {
 
 				if (id != -1) {
 					// delete only children for parent with given id
-					eh.deleteBy(rMetaData.getForeignKeyColumnName() + " = " + id);
+					eh.deleteBy(rMetaData.getForeignKeyColumnName() + " = ?",new String[]{String.valueOf(id)});
 				} else {
 					// parent id=-1, which indicates that all entries from
 					// parent table will be deleted, so we have to delete all

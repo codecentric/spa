@@ -137,9 +137,9 @@ public class EntityWrapper {
 	 *            entity class
 	 * @return list of entries
 	 */
-	public <T> List<T> findBy(String condition, Class<T> clazz) {
+	public <T> List<T> findBy(String condition,String[] args, Class<T> clazz) {
 		EntityHelper<T> entityHelper = getEntityHelper(clazz);
-		return entityHelper.findBy(condition);
+		return entityHelper.findBy(condition,args);
 	}
 
 	/**
@@ -185,9 +185,9 @@ public class EntityWrapper {
 	 * @param where
 	 *            a where clause (should not contain 'where' word)
 	 */
-	public <T> void deleteBy(String where, Class<T> clazz) {
+	public <T> void deleteBy(String where,String[] args, Class<T> clazz) {
 		EntityHelper<T> entityHelper = getEntityHelper(clazz);
-		entityHelper.deleteBy(where);
+		entityHelper.deleteBy(where,args);
 	}
 
 	/**

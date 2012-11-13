@@ -72,8 +72,8 @@ public class ManyToOneActivity extends Activity {
 
 				RelationshipMetaData rMetaData = ((PersistenceApplicationContext) getApplication()).getRelationshipMetaDataProvider().getMetaDataByField(
 						State.class, "government");
-				String condition = rMetaData.getForeignKeyColumnName() + " = " + state.government.id;
-				Assert.assertEquals(1, wrapper.findBy(condition, State.class).size());
+				String condition = rMetaData.getForeignKeyColumnName() + " = ?";
+				Assert.assertEquals(1, wrapper.findBy(condition,new String[]{String.valueOf(state.government.id)}, State.class).size());
 
 				// modify structure
 				logMessage("Modifying 'state' structure, changing name of the government.\n");
@@ -102,7 +102,7 @@ public class ManyToOneActivity extends Activity {
 
 				// do some deleting
 				logMessage("Deleting governments with id < 2.\n");
-				wrapper.deleteBy("id < 2", Government.class);
+				wrapper.deleteBy("id < ?",new String[]{"2"}, Government.class);
 				Assert.assertTrue(wrapper.listAll(Government.class).size() == 1);
 				logMessage("Deleting governments with id < 2 went as expected.\n");
 
