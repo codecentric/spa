@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="de.codecentric.spa.tester.PerformanceTestActivity">
+
+    <Button
+        android:id="@+id/executePerformanceTestBtn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/execute" />
+
+    <TextView
+        android:id="@+id/startTimestamp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/executePerformanceTestBtn"
+        android:textColor="#53E01B" />
+
+    <TextView
+        android:id="@+id/endTimestamp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/startTimestamp"
+        android:textColor="#53E01B" />
+
+    <TextView
+        android:id="@+id/differenceValue"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/endTimestamp"
+        android:textColor="#53E01B" />
+
+</RelativeLayout>
