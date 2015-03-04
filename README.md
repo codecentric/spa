@@ -6,13 +6,14 @@ VoiceNotes is small application that can be used as example how SPA library shou
 
 ### short usage instructions
 - extend *de.codecentric.spa.ctx.DatabaseHelper* and override its *onCreate* and *onUpgrade* methods
-- extend *de.codecentric.spa.ctx.PersistenceApplicationContext* and register it in your AndoridManifest.xml (application name)
+- extend *android.app.Application* and inside it initialize *de.codecentric.spa.ctx.PersistenceContext* to trigger scanning of annotated classes
 - on creation of your application context provide it with the list of classes that should be mapped and persisted
-  - scan those classes by calling *PersistenceApplicationContext#inspectClass* method
-  - generate SQL statements for each scanned class by calling *SQLGenerator#generateSQL*
-  - create *EntityHelper* instance for each scanned class
-  - instantiate your database helper class
-- use *PersistenceApplicationContext#getEntityWrapper* to obtain created *EntityWrapper* instance and exploit its features
+  - scan those classes by calling *PersistenceContext#init* method
+  - scanning process will generate SQL statements for each scanned class by calling *SQLGenerator#generateSQL*
+  - it will also create *EntityHelper* instance for each scanned class
+  - then you have to instantiate your database helper class, retrieve generated SQL statements by calling *de.codecentric.spa.ctx.DatabaseHelper#retrieveSqlStatements* method...
+  - and set your freshly instantiated and SQL-populated database helper into *de.codecentric.spa.ctx.PersistenceContext*
+- use *PersistenceContext#getEntityWrapper* to obtain created *EntityWrapper* instance and exploit its features
 - usages notes:
   - Do not use primitive types. They are not supported.
   - Loading is done lazily, user will have to load any relationship objects manually (hopefully not in the future...)
