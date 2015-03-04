@@ -33,4 +33,11 @@
         android:layout_below="@+id/endTimestamp"
         android:textColor="#53E01B" />
 
+    <TextView
+        android:id="@+id/deletionTime"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/differenceValue"
+        android:textColor="#53E01B" />
+
 </RelativeLayout>

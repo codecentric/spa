@@ -1,87 +1,61 @@
 package de.codecentric.spa.tester.context;
 
-import de.codecentric.spa.EntityHelper;
-import de.codecentric.spa.ctx.PersistenceApplicationContext;
-import de.codecentric.spa.metadata.EntityMetaData;
-import de.codecentric.spa.sql.SQLGenerator;
-import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
+import android.app.Application;
 
-public class SpaTesterApplicationContext extends PersistenceApplicationContext {
+import de.codecentric.spa.ctx.DatabaseHelper;
+import de.codecentric.spa.ctx.PersistenceContext;
 
-	private static int identationLevel = 0;
+public class SpaTesterApplicationContext extends Application {
+
+	private static int indentationLevel = 0;
+
+    private DatabaseHelper dbHelper;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
-		try {
-			String[] clsNames = new String[] { "de.codecentric.spa.tester.entity.State",
-					"de.codecentric.spa.tester.entity.City", "de.codecentric.spa.tester.entity.Government" };
+        String[] classNames = new String[] { "de.codecentric.spa.tester.entity.State", "de.codecentric.spa.tester.entity.City", "de.codecentric.spa.tester.entity.Government" };
+        PersistenceContext persistenceContext = PersistenceContext.init(getApplicationContext(), classNames);
 
-			// first do the scan...
-			if (clsNames != null && clsNames.length != 0) {
-				for (String className : clsNames) {
-					Class<?> cls = Class.forName(className);
-					inspectClass(cls);
-				}
-			}
-
-			// ... generate SQL for scanned classes...
-			Class<?>[] classes = entityMetaDataProvider.getPersistentClasses();
-			if (classes != null && classes.length > 0) {
-				for (Class<?> cls : classes) {
-					EntityMetaData metaData = entityMetaDataProvider.getMetaData(cls);
-					if (metaData != null && metaData.hasStructure()) {
-						SQLStatements sql = SQLGenerator.generateSQL(metaData);
-						sqlProvider.addSQL(cls, sql);
-					}
-
-					// ... instantiate entity helpers for every persistent class
-					// ... when SQL statements are ready
-					entityWrapper.putEntityHelper(cls, new EntityHelper(this, cls));
-				}
-			}
-
-			// ... and then instantiate database helper
-			dbHelper = new SpaTesterDatabaseHelper((PersistenceApplicationContext) getApplicationContext(),
-					"VOICE_NOTES_DB", 1);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+        // ... and then instantiate database helper
+        dbHelper = new SpaTesterDatabaseHelper(getApplicationContext(), "VOICE_NOTES_DB", 1);
+        dbHelper.retrieveSqlStatements(persistenceContext);
+        persistenceContext.setDatabaseHelper(dbHelper);
 	}
 
-	public static void resetIdentationLevel() {
-		identationLevel = 0;
+	public static void resetIndentationLevel() {
+		indentationLevel = 0;
 	}
 
-	public static String increaseIdentationLevel() {
-		String identPrefix = "";
-		identationLevel++;
-		for (int i = 0; i < identationLevel; i++) {
-			identPrefix += "\t";
+	public static String increaseIndentationLevel() {
+		String indentPrefix = "";
+		indentationLevel++;
+		for (int i = 0; i < indentationLevel; i++) {
+			indentPrefix += "\t";
 		}
-		return identPrefix;
+		return indentPrefix;
 	}
 
-	public static String decreaseIdentationLevel() {
-		String identPrefix = "";
-		identationLevel--;
-		if (identationLevel < 0) {
-			identationLevel = 0;
+	public static String decreaseIndentationLevel() {
+		String indentPrefix = "";
+		indentationLevel--;
+		if (indentationLevel < 0) {
+			indentationLevel = 0;
 		}
-		for (int i = 0; i < identationLevel; i++) {
-			identPrefix += "\t";
+		for (int i = 0; i < indentationLevel; i++) {
+			indentPrefix += "\t";
 		}
-		return identPrefix;
+		return indentPrefix;
 	}
 
-	public static String getIdentationPrefix() {
-		String identPrefix = "";
-		for (int i = 0; i < identationLevel; i++) {
-			identPrefix += "\t";
+	public static String getIndentationPrefix() {
+		String indentPrefix = "";
+		for (int i = 0; i < indentationLevel; i++) {
+			indentPrefix += "\t";
 		}
-		return identPrefix;
+		return indentPrefix;
 	}
 
 }

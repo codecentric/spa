@@ -23,10 +23,10 @@ public class City extends DataEntity {
 
 	@Override
 	public String toString() {
-		String prefix = SpaTesterApplicationContext.getIdentationPrefix();
+		String prefix = SpaTesterApplicationContext.getIndentationPrefix();
 		StringBuffer toString = new StringBuffer(prefix + "### City ###\n");
 
-		prefix = SpaTesterApplicationContext.increaseIdentationLevel();
+		prefix = SpaTesterApplicationContext.increaseIndentationLevel();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss:SSS");
 
@@ -36,7 +36,7 @@ public class City extends DataEntity {
 		toString.append(prefix + "name: " + name + "\n");
 		toString.append(prefix + "population: " + population + "\n");
 
-		SpaTesterApplicationContext.decreaseIdentationLevel();
+		SpaTesterApplicationContext.decreaseIndentationLevel();
 
 		return toString.toString();
 	}

@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.codecentric.spa.EntityWrapper;
-import de.codecentric.spa.ctx.PersistenceApplicationContext;
+import de.codecentric.spa.ctx.PersistenceContext;
 import de.codecentric.spa.tester.context.SpaTesterApplicationContext;
 import de.codecentric.spa.tester.entity.City;
 import de.codecentric.spa.tester.entity.Government;
@@ -35,7 +35,7 @@ public class OneToOneActivity extends Activity {
 		executeButton = (Button) findViewById(R.id.executeOneToOneBtn);
 		executionText = (TextView) findViewById(R.id.executionOneToOneText);
 
-		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
+		wrapper = PersistenceContext.getInstance().getEntityWrapper();
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class OneToOneActivity extends Activity {
 				logMessage("Table 'city' is empty.\n");
 
 				Toast.makeText(OneToOneActivity.this, "Test passed", 1000).show();
-				SpaTesterApplicationContext.resetIdentationLevel();
+				SpaTesterApplicationContext.resetIndentationLevel();
 			}
 		});
 	}

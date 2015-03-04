@@ -21,10 +21,10 @@ public class Government extends DataEntity {
 
 	@Override
 	public String toString() {
-		String prefix = SpaTesterApplicationContext.getIdentationPrefix();
+		String prefix = SpaTesterApplicationContext.getIndentationPrefix();
 		StringBuffer toString = new StringBuffer(prefix + "### Government ###\n");
 
-		prefix = SpaTesterApplicationContext.increaseIdentationLevel();
+		prefix = SpaTesterApplicationContext.increaseIndentationLevel();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss:SSS");
 
@@ -33,7 +33,7 @@ public class Government extends DataEntity {
 		toString.append(prefix + "lastUpdated: " + sdf.format(lastUpdated) + "\n");
 		toString.append(prefix + "name: " + name + "\n");
 
-		SpaTesterApplicationContext.decreaseIdentationLevel();
+		SpaTesterApplicationContext.decreaseIndentationLevel();
 
 		return toString.toString();
 	}

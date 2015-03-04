@@ -37,10 +37,10 @@ public class State extends DataEntity {
 
 	@Override
 	public String toString() {
-		String prefix = SpaTesterApplicationContext.getIdentationPrefix();
+		String prefix = SpaTesterApplicationContext.getIndentationPrefix();
 		StringBuffer toString = new StringBuffer(prefix + "### State ###\n");
 
-		prefix = SpaTesterApplicationContext.increaseIdentationLevel();
+		prefix = SpaTesterApplicationContext.increaseIndentationLevel();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss:SSS");
 
@@ -59,9 +59,9 @@ public class State extends DataEntity {
 
 		toString.append(prefix + "government:\n");
 		if (government != null) {
-			prefix = SpaTesterApplicationContext.increaseIdentationLevel();
+			prefix = SpaTesterApplicationContext.increaseIndentationLevel();
 			toString.append(government.toString());
-			SpaTesterApplicationContext.decreaseIdentationLevel();
+			SpaTesterApplicationContext.decreaseIndentationLevel();
 		} else {
 			toString.append("null\n");
 		}
@@ -76,7 +76,7 @@ public class State extends DataEntity {
 			toString.append("null\n");
 		}
 
-		SpaTesterApplicationContext.decreaseIdentationLevel();
+		SpaTesterApplicationContext.decreaseIndentationLevel();
 
 		return toString.toString();
 	}

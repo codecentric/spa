@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.codecentric.spa.EntityWrapper;
-import de.codecentric.spa.ctx.PersistenceApplicationContext;
+import de.codecentric.spa.ctx.PersistenceContext;
 import de.codecentric.spa.metadata.RelationshipMetaData;
 import de.codecentric.spa.tester.context.SpaTesterApplicationContext;
 import de.codecentric.spa.tester.entity.City;
@@ -31,7 +31,7 @@ public class OneToManyActivity extends Activity {
 		executeButton = (Button) findViewById(R.id.executeBtn);
 		executionText = (TextView) findViewById(R.id.executionText);
 
-		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
+		wrapper = PersistenceContext.getInstance().getEntityWrapper();
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class OneToManyActivity extends Activity {
 				Assert.assertNotNull(persisted);
 				Assert.assertNull(persisted.cities);
 
-				RelationshipMetaData rMetaData = ((PersistenceApplicationContext) getApplication()).getRelationshipMetaDataProvider().getMetaDataByField(
+				RelationshipMetaData rMetaData = PersistenceContext.getInstance().getRelationshipMetaDataProvider().getMetaDataByField(
 						State.class, "cities");
 				String condition = rMetaData.getForeignKeyColumnName() + " = ?";
 				Assert.assertEquals(4, wrapper.findBy(condition,new String[]{String.valueOf(state.id)}, City.class).size());
@@ -107,7 +107,7 @@ public class OneToManyActivity extends Activity {
 				logMessage("Table 'city' is empty.\n");
 
 				Toast.makeText(OneToManyActivity.this, "Test passed", 1000).show();
-				SpaTesterApplicationContext.resetIdentationLevel();
+				SpaTesterApplicationContext.resetIndentationLevel();
 			}
 		});
 	}

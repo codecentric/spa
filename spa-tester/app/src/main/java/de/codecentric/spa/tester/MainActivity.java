@@ -1,7 +1,7 @@
 package de.codecentric.spa.tester;
 
 import de.codecentric.spa.EntityWrapper;
-import de.codecentric.spa.ctx.PersistenceApplicationContext;
+import de.codecentric.spa.ctx.PersistenceContext;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,8 +26,6 @@ public class MainActivity extends Activity {
 		oneToManyButton = (Button) findViewById(R.id.oneToManyBtn);
 		manyToOneButton = (Button) findViewById(R.id.manyToOneBtn);
         performanceTestButton = (Button) findViewById(R.id.performanceTestBtn);
-
-		wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
 	}
 
 	@Override
@@ -52,6 +50,8 @@ public class MainActivity extends Activity {
 		oneToOneButton.setOnClickListener(clickListener);
 		manyToOneButton.setOnClickListener(clickListener);
         performanceTestButton.setOnClickListener(clickListener);
+
+        wrapper = PersistenceContext.getInstance().getEntityWrapper();
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void clearDatabase() {
-		Class<?>[] classes = ((PersistenceApplicationContext) getApplication()).getEntityMetaDataProvider()
+		Class<?>[] classes = PersistenceContext.getInstance().getEntityMetaDataProvider()
 				.getPersistentClasses();
 		for (Class<?> cls : classes) {
 			wrapper.deleteAll(cls);

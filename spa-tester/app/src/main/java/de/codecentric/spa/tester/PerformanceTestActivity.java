@@ -12,11 +12,12 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import de.codecentric.spa.EntityWrapper;
-import de.codecentric.spa.ctx.PersistenceApplicationContext;
+import de.codecentric.spa.ctx.PersistenceContext;
 import de.codecentric.spa.tester.R;
 import de.codecentric.spa.tester.entity.City;
 
@@ -26,6 +27,7 @@ public class PerformanceTestActivity extends Activity {
     private TextView startTimestampText;
     private TextView endTimestampText;
     private TextView differenceValueText;
+    private TextView deletionTimeText;
 
     private EntityWrapper wrapper;
 
@@ -40,8 +42,9 @@ public class PerformanceTestActivity extends Activity {
         startTimestampText = (TextView) findViewById(R.id.startTimestamp);
         endTimestampText = (TextView) findViewById(R.id.endTimestamp);
         differenceValueText = (TextView) findViewById(R.id.differenceValue);
+        deletionTimeText = (TextView) findViewById(R.id.deletionTime);
 
-        wrapper = ((PersistenceApplicationContext) getApplication()).getEntityWrapper();
+        wrapper = PersistenceContext.getInstance().getEntityWrapper();
     }
 
     @Override
@@ -58,15 +61,18 @@ public class PerformanceTestActivity extends Activity {
                 Date start = new Date();
                 startTimestampText.setText(simpleDateFormat.format(start));
 
-                for (City c:data) {
-                    wrapper.saveOrUpdate(c);
-                }
+                wrapper.batchInsert(data, City.class);
 
                 Date end = new Date();
                 endTimestampText.setText(simpleDateFormat.format(end));
 
                 long difference = end.getTime() - start.getTime();
-                differenceValueText.setText(difference + " ms");
+                differenceValueText.setText("Time to insert: " + difference + " ms");
+
+                Date deleteStart = new Date();
+                wrapper.deleteBy("id <> ?", new String[]{"0"}, City.class);
+                Date deleteEnd = new Date();
+                deletionTimeText.setText("Time to delete: " + (deleteEnd.getTime() - deleteStart.getTime()) + " ms");
             }
         });
     }
