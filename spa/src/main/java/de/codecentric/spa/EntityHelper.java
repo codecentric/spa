@@ -389,10 +389,9 @@ public class EntityHelper<T> {
                             statement.bindLong(i, (long) value);
                         } else if (value instanceof String) {
                             statement.bindString(i, (String) value);
-                        } else if (value instanceof Integer || value instanceof Float) {
+                        } else if (value instanceof Integer || value instanceof Float || value instanceof Short) {
                             statement.bindString(i, String.valueOf(value));
-                        }
-                        // TODO statement.bindBlob(index, value);
+                        } // TODO blob
                     }
 
                 }

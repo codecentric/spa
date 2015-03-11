@@ -1,5 +1,6 @@
 package de.codecentric.spa.tester;
 
+import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +15,7 @@ import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.ctx.PersistenceContext;
 import de.codecentric.spa.tester.entity.TypeCheckBean;
 
-public class TypeCheckActivity extends ActionBarActivity {
+public class TypeCheckActivity extends Activity {
 
     private Button executeButton;
     private TextView executionText;
@@ -43,9 +44,58 @@ public class TypeCheckActivity extends ActionBarActivity {
                 List<TypeCheckBean> data = prepareData();
                 wrapper.batchInsert(data, TypeCheckBean.class);
                 logMessage("Batch inserted...\n");
+
                 logMessage("Loading and checking data...\n");
+                List<TypeCheckBean> dataFromDB = wrapper.listAll(TypeCheckBean.class);
+                for (TypeCheckBean bean : dataFromDB) {
+                    if (!checkBeanFromDB(bean)) {
+                        logMessage("Bean does not look alright:\n");
+                        logMessage(bean.toString());
+                        throw new RuntimeException(bean.toString());
+                    }
+                }
+                logMessage("Data checked: everything is ok.\n");
+
+                logMessage("\nClearing database table.\n");
+                wrapper.deleteAll(TypeCheckBean.class);
+                if (wrapper.listAll(TypeCheckBean.class).size() == 0) {
+                    logMessage("Database cleared.\n");
+                }
+
+                logMessage("\nStarting new single operation test...\n");
+                data = prepareData();
+                TypeCheckBean aBean = data.get(0);
+                logMessage("Fresh insert...\n");
+                wrapper.saveOrUpdate(aBean);
+                logMessage("Loading and checking data...\n");
+                wrapper.findById(1L, TypeCheckBean.class);
+                if (!checkBeanFromDB(aBean)) {
+                    logMessage("Bean does not look alright:\n");
+                    logMessage(aBean.toString());
+                    throw new RuntimeException();
+                }
+                logMessage("Data checked: everything is ok.\n");
+                logMessage("Updating data...\n");
+                wrapper.saveOrUpdate(aBean);
+                logMessage("Loading and checking data...\n");
+                wrapper.findById(1L, TypeCheckBean.class);
+                if (!checkBeanFromDB(aBean)) {
+                    logMessage("Bean does not look alright:\n");
+                    logMessage(aBean.toString());
+                    throw new RuntimeException();
+                }
+                logMessage("Data checked: everything is ok.\n");
+
+                logMessage("\nTest finished successfully.\n");
             }
         });
+    }
+
+    private boolean checkBeanFromDB(TypeCheckBean bean) {
+        return (bean.id != 0 && bean.aLong != null && bean.date != null && bean.aInteger != null
+                && bean.aString != null && bean.aFloat != null && bean.aShort != null &&
+                bean.aBoolean != null && bean.aDouble != null &&
+                bean.timeCreated != null && bean.lastUpdated != null);
     }
 
     private List<TypeCheckBean> prepareData() {
@@ -56,7 +106,6 @@ public class TypeCheckActivity extends ActionBarActivity {
             bean.aBoolean = i % 2 == 0;
 
             String iString = String.valueOf(i);
-            bean.aByte = Byte.parseByte(iString);
             bean.aDouble = Double.parseDouble(iString);
             bean.aFloat = Float.parseFloat(iString);
             bean.aInteger = Integer.parseInt(iString);
@@ -64,6 +113,7 @@ public class TypeCheckActivity extends ActionBarActivity {
             bean.aShort = Short.parseShort(iString);
             bean.aString = iString;
             bean.date = new Date();
+            data.add(bean);
         }
 
         return data;

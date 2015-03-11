@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	private Button oneToOneButton, oneToManyButton, manyToOneButton, performanceTestButton;
+	private Button oneToOneButton, oneToManyButton, manyToOneButton, performanceTestButton, typeCheckTestButton;
 
 	private EntityWrapper wrapper;
 
@@ -26,30 +26,19 @@ public class MainActivity extends Activity {
 		oneToManyButton = (Button) findViewById(R.id.oneToManyBtn);
 		manyToOneButton = (Button) findViewById(R.id.manyToOneBtn);
         performanceTestButton = (Button) findViewById(R.id.performanceTestBtn);
+        typeCheckTestButton = (Button) findViewById(R.id.typeCheckTestBtn);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-//		oneToManyButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View view) {
-//				startActivity(new Intent(MainActivity.this, OneToManyActivity.class));
-//			}
-//		});
-//
-//		manyToOneButton.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View view) {
-//				startActivity(new Intent(MainActivity.this, ManyToOneActivity.class));
-//			}
-//		});
 		ButtonClickListener clickListener = new ButtonClickListener();
 		oneToManyButton.setOnClickListener(clickListener);
 		oneToOneButton.setOnClickListener(clickListener);
 		manyToOneButton.setOnClickListener(clickListener);
         performanceTestButton.setOnClickListener(clickListener);
+        typeCheckTestButton.setOnClickListener(clickListener);
 
         wrapper = PersistenceContext.getInstance().getEntityWrapper();
 	}
@@ -88,6 +77,9 @@ public class MainActivity extends Activity {
 				break;
             case R.id.performanceTestBtn:
                 startActivity(new Intent(MainActivity.this, PerformanceTestActivity.class));
+                break;
+            case R.id.typeCheckTestBtn:
+                startActivity(new Intent(MainActivity.this, TypeCheckActivity.class));
                 break;
 			}
 

@@ -8,6 +8,7 @@
     <string name="one_to_many_btn_text">OneToMany</string>
     <string name="many_to_one_btn_text">ManyToOne</string>
     <string name="performance_test_text">Performance test</string>
+    <string name="type_check_text">Type check test</string>
     <string name="execute">Execute</string>
 
     <string name="title_activity_performance_measure">PerformanceMeasureActivity</string>
