@@ -93,7 +93,7 @@ public class EntityHelper<T> {
      * NOTE: method works based on lazy loading logic - it will not load any relationship data.
      * 
      * @param condition
-     *            a 'where' clause built before calling this method with {@link ConditionBuilder} (should not include 'where' word)
+     *            a 'where' clause built before calling this method (should not include 'where' word)
      * @return list of objects or empty list if nothing is found
      */
     @SuppressWarnings("unchecked")
