@@ -26,7 +26,6 @@ import de.codecentric.spa.metadata.EntityScanner.StringUtils;
 import de.codecentric.spa.metadata.FieldMetaData;
 import de.codecentric.spa.metadata.RelationshipMetaData;
 import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
-import de.codecentric.spa.sql.ConditionBuilder;
 import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 
 /**
@@ -45,8 +44,8 @@ public class EntityHelper<T> {
     private String insertStmtSQL;
 
     /**
-     * Constructor - during the construction of instance {@link EntityMetaData} is retrieved from {@link EntityMetaDataProvider} used in given {@link PersistenceContext}. All further
-     * operations are performed on class and database table described with that {@link EntityMetaData}.
+     * Constructor - during the construction of instance {@link EntityMetaData} is retrieved from {@link EntityMetaDataProvider} used in given {@link PersistenceContext}. All further operations are
+     * performed on class and database table described with that {@link EntityMetaData}.
      * 
      * @param ctx
      *            Application context in use
@@ -390,6 +389,8 @@ public class EntityHelper<T> {
                             statement.bindLong(i, (long) value);
                         } else if (value instanceof String) {
                             statement.bindString(i, (String) value);
+                        } else if (value instanceof Integer || value instanceof Float) {
+                            statement.bindString(i, String.valueOf(value));
                         }
                         // TODO statement.bindBlob(index, value);
                     }

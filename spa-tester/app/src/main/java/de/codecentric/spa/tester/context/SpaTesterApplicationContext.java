@@ -16,7 +16,7 @@ public class SpaTesterApplicationContext extends Application {
 	public void onCreate() {
 		super.onCreate();
 
-        String[] classNames = new String[] { "de.codecentric.spa.tester.entity.State", "de.codecentric.spa.tester.entity.City", "de.codecentric.spa.tester.entity.Government" };
+        String[] classNames = new String[] { "de.codecentric.spa.tester.entity.TypeCheckBean", "de.codecentric.spa.tester.entity.State", "de.codecentric.spa.tester.entity.City", "de.codecentric.spa.tester.entity.Government" };
         PersistenceContext persistenceContext = PersistenceContext.init(getApplicationContext(), classNames);
 
         // ... and then instantiate database helper

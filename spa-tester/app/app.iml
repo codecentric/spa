@@ -88,7 +88,7 @@
     <orderEntry type="library" exported="" name="appcompat-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
-    <orderEntry type="library" exported="" name="spa-0.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="spa-0.1.1-SNAPSHOT" level="project" />
   </component>
 </module>
 
