@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	private Button oneToOneButton, oneToManyButton, manyToOneButton, performanceTestButton, typeCheckTestButton;
+	private Button performanceTestButton, typeCheckTestButton;
 
 	private EntityWrapper wrapper;
 
@@ -22,9 +22,6 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		oneToOneButton = (Button) findViewById(R.id.oneToOneBtn);
-		oneToManyButton = (Button) findViewById(R.id.oneToManyBtn);
-		manyToOneButton = (Button) findViewById(R.id.manyToOneBtn);
         performanceTestButton = (Button) findViewById(R.id.performanceTestBtn);
         typeCheckTestButton = (Button) findViewById(R.id.typeCheckTestBtn);
 	}
@@ -34,9 +31,6 @@ public class MainActivity extends Activity {
 		super.onStart();
 
 		ButtonClickListener clickListener = new ButtonClickListener();
-		oneToManyButton.setOnClickListener(clickListener);
-		oneToOneButton.setOnClickListener(clickListener);
-		manyToOneButton.setOnClickListener(clickListener);
         performanceTestButton.setOnClickListener(clickListener);
         typeCheckTestButton.setOnClickListener(clickListener);
 
@@ -66,15 +60,6 @@ public class MainActivity extends Activity {
 		@Override
 		public void onClick(View view) {
 			switch (view.getId()) {
-			case R.id.oneToOneBtn:
-				startActivity(new Intent(MainActivity.this, OneToOneActivity.class));
-				break;
-			case R.id.oneToManyBtn:
-				startActivity(new Intent(MainActivity.this, OneToManyActivity.class));
-				break;
-			case R.id.manyToOneBtn:
-				startActivity(new Intent(MainActivity.this, ManyToOneActivity.class));
-				break;
             case R.id.performanceTestBtn:
                 startActivity(new Intent(MainActivity.this, PerformanceTestActivity.class));
                 break;

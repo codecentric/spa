@@ -6,7 +6,6 @@ import de.codecentric.spa.EntityWrapper;
 import de.codecentric.spa.metadata.EntityMetaData;
 import de.codecentric.spa.metadata.EntityMetaDataProvider;
 import de.codecentric.spa.metadata.EntityScanner;
-import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
 import de.codecentric.spa.sql.SQLGenerator;
 import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 import de.codecentric.spa.sql.SQLProvider;
@@ -25,7 +24,6 @@ public class PersistenceContext {
 
     protected SQLProvider sqlProvider;
     protected EntityMetaDataProvider entityMetaDataProvider;
-    protected RelationshipMetaDataProvider relationshipMetaDataProvider;
     protected EntityWrapper entityWrapper;
 
     /**
@@ -38,7 +36,6 @@ public class PersistenceContext {
         super();
         sqlProvider = SQLProvider.getInstance();
         entityMetaDataProvider = EntityMetaDataProvider.getInstance();
-        relationshipMetaDataProvider = RelationshipMetaDataProvider.getInstance();
         entityWrapper = EntityWrapper.getInstance(this);
     }
 
@@ -126,16 +123,6 @@ public class PersistenceContext {
     public EntityMetaDataProvider getEntityMetaDataProvider() {
         checkContext();
         return entityMetaDataProvider;
-    }
-
-    /**
-     * Method returns the {@link RelationshipMetaDataProvider} used by this context. In case context is not initialized, exception is thrown.
-     * 
-     * @return {@link RelationshipMetaDataProvider} used by this context
-     */
-    public RelationshipMetaDataProvider getRelationshipMetaDataProvider() {
-        checkContext();
-        return relationshipMetaDataProvider;
     }
 
     /**

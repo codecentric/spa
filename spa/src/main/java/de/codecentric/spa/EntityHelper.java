@@ -1,11 +1,8 @@
 package de.codecentric.spa;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -13,19 +10,13 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
-import de.codecentric.spa.annotations.CascadeType;
 import de.codecentric.spa.annotations.Column;
 import de.codecentric.spa.annotations.Id;
-import de.codecentric.spa.annotations.ManyToOne;
-import de.codecentric.spa.annotations.OneToMany;
-import de.codecentric.spa.annotations.OneToOne;
 import de.codecentric.spa.ctx.PersistenceContext;
 import de.codecentric.spa.metadata.EntityMetaData;
 import de.codecentric.spa.metadata.EntityMetaDataProvider;
 import de.codecentric.spa.metadata.EntityScanner.StringUtils;
 import de.codecentric.spa.metadata.FieldMetaData;
-import de.codecentric.spa.metadata.RelationshipMetaData;
-import de.codecentric.spa.metadata.RelationshipMetaDataProvider;
 import de.codecentric.spa.sql.SQLGenerator.SQLStatements;
 
 /**
@@ -195,58 +186,6 @@ public class EntityHelper<T> {
     }
 
     /**
-     * Read fields annotated using OneToMany or ManyToOne annotation. For each fetch children eagerly if field is annotated using FetchType.EAGER . In other case just skip field.
-     * 
-     * @param entity
-     *            parent entity which holds child collection
-     * @param cls
-     *            parent class
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void readRelationColumnsForEntity(T entity, Class<?> cls) {
-        // in case there are one-many or many-to-one relations read values from
-        // table and attach to current entity.
-        try {
-            Field[] fields = cls.getDeclaredFields();
-            for (Field field : fields) {
-                if (field.getAnnotation(OneToMany.class) != null) {
-
-                    // Load "many" part of association. In this class it will be
-                    // referred as child.
-                    Type genericParameterTypes = field.getGenericType();
-                    Class<T> childClass = (Class<T>) ((ParameterizedType) genericParameterTypes).getActualTypeArguments()[0];
-                    EntityHelper eh = persistenceContext.getEntityHelper(childClass);
-                    RelationshipMetaData md = persistenceContext.getRelationshipMetaDataProvider().getMetaDataByChildAndField(childClass, field.getName());
-                    String columnName = md.getForeignKeyColumnName();
-                    Field primaryKeyField = getPrimaryKeyField(cls.getDeclaredFields());
-
-                    // TODO Check is it possible to make this more efficient.
-                    // This approach is necessarily because EntityHelper is
-                    // different for child entity.
-                    List<Class<?>> children = eh.findBy(columnName + " = ?", new String[] { String.valueOf(primaryKeyField.get(entity)) });
-                    field.set(entity, children);
-
-                } else if (field.getAnnotation(ManyToOne.class) != null) {
-
-                    // Load "one" part of association. In this class it will be
-                    // referred as parent.
-                    Class<?> parentClass = field.getType();
-                    String columnName = getColumnName(field);
-                    String foreignKeyColumnValue = getForeignKeyValue(entity, columnName);
-                    EntityHelper ehParent = persistenceContext.getEntityHelper(parentClass);
-                    Object parent = ehParent.findById(Long.parseLong(foreignKeyColumnValue));
-                    if (parent != null) {
-                        field.set(entity, parent);
-                    }
-
-                }
-            }
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
-        }
-    }
-
-    /**
      * Return column name for given field.
      * 
      * @param field
@@ -409,9 +348,6 @@ public class EntityHelper<T> {
     /**
      * Method saves or updates the record in database table representing given entity.
      * 
-     * Currently persisting is done eagerly, meaning persisting the object itself and all of its children that are currently bound to it. Only persisting will be done through call of this method,
-     * deleting any of its children must be done explicitly.
-     * 
      * @param object
      *            entity to save or update
      */
@@ -419,7 +355,7 @@ public class EntityHelper<T> {
         SQLiteDatabase db = persistenceContext.getDatabaseHelper().getDatabase();
         db.beginTransaction();
         try {
-            doSaveOrUpdate(object, null, true);
+            doSaveOrUpdate(object, null);
             db.setTransactionSuccessful();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -432,22 +368,16 @@ public class EntityHelper<T> {
     /**
      * Method persists given object.
      * 
-     * Currently persisting is done eagerly, meaning persisting the object itself and all of its children that are currently bound to it. Only persisting will be done through call of this method,
-     * deleting any of its children must be done explicitly.
-     * 
      * @param object
      * @param fieldName
      *            field defining the relationship containing given object; if this parameter is null, object will be treated as root of the relationship
-     * @param cascade
-     *            if true, relationship objects will be persisted, otherwise not
      */
-    private void doSaveOrUpdate(final T object, String fieldName, boolean cascade) {
+    private void doSaveOrUpdate(final T object, String fieldName) {
         if (object == null) {
             return;
         }
 
         SQLiteDatabase db = persistenceContext.getDatabaseHelper().getDatabase();
-        EntityTransactionCache eCache = EntityTransactionCache.getInstance();
 
         try {
             Long idVal = getIdentifierValue(object);
@@ -458,26 +388,10 @@ public class EntityHelper<T> {
                 if (rowsAffected == 0) {
                     throw new RuntimeException("No row to update! Database not consistent, problematic table: " + entityMData.getTableName() + ", row identifier: " + idVal);
                 }
-
-                // cache parent object in order to be able to use it later for
-                // persisting its relationship rows
-                eCache.cache(object);
-
-                if (cascade) {
-                    saveRelationshipObjects(object);
-                }
             } else { // new one, insert it
                 Long rowId = db.insert(entityMData.getTableName(), null, contentValuesPreparer.prepareValues(object, entityMData, fieldName));
                 if (rowId != -1) {
                     setIdentifierValue(object, rowId);
-
-                    // cache parent object in order to be able to use it later
-                    // for persisting its relationship rows
-                    eCache.cache(object);
-
-                    if (cascade) {
-                        saveRelationshipObjects(object);
-                    }
                 }
             }
         } catch (Exception e) {
@@ -486,73 +400,7 @@ public class EntityHelper<T> {
     }
 
     /**
-     * Method saves or updates all relationship objects found on given entity object.
-     * 
-     * @param entity
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void saveRelationshipObjects(final T entity) throws IllegalArgumentException, IllegalAccessException {
-        RelationshipMetaDataProvider rMetaDataProvider = persistenceContext.getRelationshipMetaDataProvider();
-
-        Class<?> cls = entityMData.getDescribingClass();
-        Field[] fields = cls.getDeclaredFields();
-        for (Field field : fields) {
-            RelationshipMetaData rMetaData = rMetaDataProvider.getMetaDataByField(cls, field.getName());
-
-            if (field.getAnnotation(OneToOne.class) != null) {
-
-                Object child = field.get(entity);
-                EntityHelper childEntityHelper = persistenceContext.getEntityHelper(rMetaData.getChildClass());
-                childEntityHelper.doSaveOrUpdate(child, field.getName(), true);
-
-            } else if (field.getAnnotation(OneToMany.class) != null) {
-
-                // take "many" part of relationship and persist it
-                List<Class<?>> children = (List<Class<?>>) field.get(entity);
-                if (children != null && !children.isEmpty()) {
-                    for (Iterator<Class<?>> iterator = children.iterator(); iterator.hasNext();) {
-                        Object child = iterator.next();
-                        EntityHelper childEntityHelper = persistenceContext.getEntityHelper(rMetaData.getChildClass());
-                        childEntityHelper.doSaveOrUpdate(child, field.getName(), true);
-                    }
-                }
-
-            } else if (field.getAnnotation(ManyToOne.class) != null) {
-
-                // take "one" part of relationship and persist it
-                Object parent = field.get(entity);
-                EntityHelper childEntityHelper = persistenceContext.getEntityHelper(rMetaData.getParentClass());
-                childEntityHelper.doSaveOrUpdate(parent, null, true);
-
-                // take "many" part of relationship and update it - no cascading
-                doSaveOrUpdate(entity, field.getName(), false);
-
-            }
-        }
-    }
-
-    /**
-     * Check if current filed has expected cascading type
-     * 
-     * @param cascade
-     * @param cascadeTypesToCheck
-     * @return
-     */
-    private boolean isProperCascadeType(CascadeType[] cascadeTypes, CascadeType[] acceptedCascadeTypes) {
-        for (CascadeType currentCascadeType : cascadeTypes) {
-            for (CascadeType acceptedCascadeType : acceptedCascadeTypes) {
-                if (acceptedCascadeType.equals(currentCascadeType)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Method deletes the entity with given id. This includes cascading deletion of its relationship child-rows.
+     * Method deletes the entity with given id.
      * 
      * @param id
      *            identifier value
@@ -563,9 +411,6 @@ public class EntityHelper<T> {
         db.beginTransaction();
 
         try {
-            // first delete children, then parent
-            deleteRelationshipObjects(id);
-
             String tableName = entityMData.getTableName();
             String idColumn = entityMData.getIdentifier().getColumnName();
             String where = idColumn + " = ?";
@@ -581,15 +426,13 @@ public class EntityHelper<T> {
     }
 
     /**
-     * Method deletes all database rows from table for which entity helper instance is responsible. This includes cascading deletion of relationship child-rows.
+     * Method deletes all database rows from table for which entity helper instance is responsible.
      */
     public void deleteAll() {
         SQLiteDatabase db = persistenceContext.getDatabaseHelper().getDatabase();
         db.beginTransaction();
 
         try {
-            deleteRelationshipObjects(-1L);
-
             String tableName = entityMData.getTableName();
             db.delete(tableName, null, new String[] {});
             db.setTransactionSuccessful();
@@ -619,35 +462,6 @@ public class EntityHelper<T> {
             throw new RuntimeException();
         } finally {
             db.endTransaction();
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-    private void deleteRelationshipObjects(Long id) {
-        // id=-1 will be indicator that deletion should be performed for all
-        // entries of a class for which this entity helper is responsible
-        Class<?> cls = entityMData.getDescribingClass();
-        Field[] fields = cls.getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.getAnnotation(OneToMany.class) != null) {
-
-                RelationshipMetaData rMetaData = persistenceContext.getRelationshipMetaDataProvider().getMetaDataByField(cls, field.getName());
-                EntityHelper eh = persistenceContext.getEntityHelper(rMetaData.getChildClass());
-
-                if (id != -1) {
-                    // delete only children for parent with given id
-                    eh.deleteBy(rMetaData.getForeignKeyColumnName() + " = ?", new String[] { String.valueOf(id) });
-                } else {
-                    // parent id=-1, which indicates that all entries from
-                    // parent table will be deleted, so we have to delete all
-                    // from child table also.
-                    eh.deleteAll();
-                }
-            }
-            // In case of ManyToOne we are not deleting the "one" side of the
-            // relationship - it is the parent of the relationship, we should not
-            // delete parent if we are deleting its children.
         }
     }
 

@@ -4,7 +4,7 @@
 
 	<groupId>de.codecentric</groupId>
 	<artifactId>spa</artifactId>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<name>Simple Persistence for Android</name>
 	<description>Simple persistence library for Android</description>
 	<packaging>jar</packaging>
